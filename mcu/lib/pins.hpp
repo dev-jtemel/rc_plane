@@ -39,8 +39,18 @@ const uint8_t OUT_PIN = 11U;
 
 } // namespace rudder
 
+namespace led {
+
+namespace wing {
+
+const uint8_t OUT_PIN = 23U;
+
+} // namespace wing
+
+} // namespace led
+
 } // namespace pins
 } // namespace lib
 } // namespace mcu
-  //
+
 #endif //__MCU__LIB__PINS_HPP__

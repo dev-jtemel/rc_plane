@@ -2,6 +2,7 @@
 #include "lib/elevator.hpp"
 #include "lib/rudder.hpp"
 #include "lib/motor.hpp"
+#include "lib/wing_led.hpp"
 #include "lib/logger.hpp"
 
 mcu::lib::logger logger;
@@ -11,11 +12,9 @@ mcu::lib::aileron aileron;
 mcu::lib::elevator elevator;
 mcu::lib::rudder rudder;
 
-mcu::lib::interface::controller *controllers[4];
+mcu::lib::wing_led wing_led;
 
-const uint8_t MOTOR_OUT_1 = 22;
-const uint8_t MOTOR_OUT_2 = 24;
-const uint8_t MOTOR_ENABLE = 12;
+mcu::lib::interface::controller *controllers[5];
 
 void setup() {
   logger.init();
@@ -25,6 +24,7 @@ void setup() {
   controllers[1] = &aileron;
   controllers[2] = &elevator;
   controllers[3] = &rudder;
+  controllers[4] = &wing_led;
 
   for (auto ctr : controllers) {
     ctr->setup();
