@@ -1,10 +1,11 @@
-#ifndef __MCU__LIB__SERVO_HPP__
-#define __MCU__LIB__SERVO_HPP__
+#ifndef __MCU__LIB__INTERFACE__SERVO_HPP__
+#define __MCU__LIB__INTERFACE__SERVO_HPP__
 
 #include <Arduino.h>
 
 namespace mcu {
 namespace lib {
+namespace interface {
 
 class servo {
  public:
@@ -23,7 +24,8 @@ class servo {
   uint8_t _pin;
 };
 
+} // namespace interface
 } // namespace lib
 } // namespace mcu
 
-#endif //__MCU__LIB__SERVO_HPP__
+#endif //__MCU__LIB__INTERFACE__SERVO_HPP__

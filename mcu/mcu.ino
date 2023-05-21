@@ -1,9 +1,9 @@
-#include "lib/aileron.hpp"
-#include "lib/elevator.hpp"
-#include "lib/rudder.hpp"
-#include "lib/motor.hpp"
-#include "lib/wing_led.hpp"
-#include "lib/logger.hpp"
+#include "lib/controllers/aileron.hpp"
+#include "lib/controllers/elevator.hpp"
+#include "lib/controllers/rudder.hpp"
+#include "lib/controllers/motor.hpp"
+#include "lib/leds/wing_led.hpp"
+#include "lib/utils/logger.hpp"
 
 mcu::lib::logger logger;
 

@@ -1,30 +1,30 @@
-#ifndef __MCU__LIB__RUDDER_HPP__
-#define __MCU__LIB__RUDDER_HPP__
+#ifndef __MCU__LIB__ELEVATOR_HPP__
+#define __MCU__LIB__ELEVATOR_HPP__
 
 #include <Arduino.h>
-#include "pins.hpp"
-#include "controller.hpp"
+#include "../pins.hpp"
+#include "../interface/controller.hpp"
 
 namespace mcu {
 namespace lib {
 
-class rudder : public interface::controller {
+class elevator : public interface::controller {
  public:
-  rudder() : interface::controller("rudder", 115, 35, -35) {
+  elevator() : interface::controller("elevator", 115, 50, -50) {
   }
 
-  ~rudder() = default;
+  ~elevator() = default;
 
   virtual bool setup() {
-    _servos = new servo[1];
+    _servos = new interface::servo[1];
     if (_servos == nullptr) {
       return false;
     }
 
-    pinMode(pins::rudder::IN_PIN, INPUT);
-    pinMode(pins::rudder::OUT_PIN, OUTPUT);
+    pinMode(pins::elevator::IN_PIN, INPUT);
+    pinMode(pins::elevator::OUT_PIN, OUTPUT);
 
-    _servos[0].bind(pins::rudder::OUT_PIN);
+    _servos[0].bind(pins::elevator::OUT_PIN);
 
     log("setup complete");
   }
@@ -46,7 +46,12 @@ class rudder : public interface::controller {
   }
 
   virtual void step() {
-    _pulse = toRange(pulseIn(pins::rudder::IN_PIN, HIGH));
+    _pulse = toRange(pulseIn(pins::elevator::IN_PIN, HIGH));
+
+    // restrict lift to avoid nose dives
+    if (_pulse > 0) {
+      _pulse /= 2;
+    }
     _servos[0].write(NEUTRAL - _pulse);
 
     open_log();
@@ -59,4 +64,4 @@ class rudder : public interface::controller {
 } // namespace lib
 } // namespace mcu
 
-#endif //__MCU__LIB__RUDDER_HPP__
+#endif //__MCU__LIB__ELEVATOR_HPP__

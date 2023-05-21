@@ -2,16 +2,13 @@
 #define __MCU__LIB__AILERON_HPP__
 
 #include <Arduino.h>
-#include "controller.hpp"
+#include "../interface/controller.hpp"
 
 namespace mcu {
 namespace lib {
 
 class aileron : public interface::controller {
  public:
-  const uint8_t IN_PIN = 2U;
-  const uint8_t LEFT_PIN = 8U;
-  const uint8_t RIGHT_PIN = 9U;
   const uint8_t LEFT = 0U;
   const uint8_t RIGHT = 1U;
 
@@ -21,17 +18,17 @@ class aileron : public interface::controller {
   ~aileron() = default;
 
   virtual bool setup() {
-    _servos = new servo[2];
+    _servos = new interface::servo[2];
     if (_servos == nullptr) {
       return false;
     }
 
-    pinMode(IN_PIN, INPUT);
-    pinMode(LEFT_PIN, OUTPUT);
-    pinMode(RIGHT_PIN, OUTPUT);
+    pinMode(pins::aileron::IN_PIN, INPUT);
+    pinMode(pins::aileron::LEFT_PIN, OUTPUT);
+    pinMode(pins::aileron::RIGHT_PIN, OUTPUT);
 
-    _servos[LEFT].bind(LEFT_PIN);
-    _servos[RIGHT].bind(RIGHT_PIN);
+    _servos[LEFT].bind(pins::aileron::LEFT_PIN);
+    _servos[RIGHT].bind(pins::aileron::RIGHT_PIN);
 
     log("setup complete");
   }
@@ -57,7 +54,7 @@ class aileron : public interface::controller {
   }
 
   virtual void step() {
-    _pulse = toRange(pulseIn(IN_PIN, HIGH));
+    _pulse = toRange(pulseIn(pins::aileron::IN_PIN, HIGH));
     _servos[LEFT].write(NEUTRAL - _pulse);
     _servos[RIGHT].write(NEUTRAL + _pulse);
 

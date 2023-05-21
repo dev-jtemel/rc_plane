@@ -2,8 +2,8 @@
 #define __MCU__LIB__MOTOR_HPP__
 
 #include <Arduino.h>
-#include "pins.hpp"
-#include "controller.hpp"
+#include "../pins.hpp"
+#include "../interface/controller.hpp"
 
 namespace mcu {
 namespace lib {

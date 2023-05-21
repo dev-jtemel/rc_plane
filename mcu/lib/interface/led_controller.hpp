@@ -1,5 +1,5 @@
-#ifndef __MCU__LIB__LED_CONTROLLER_HPP__
-#define __MCU__LIB__LED_CONTROLLER_HPP__
+#ifndef __MCU__LIB__INTERFACE__LED_CONTROLLER_HPP__
+#define __MCU__LIB__INTERFACE__LED_CONTROLLER_HPP__
 
 #include <Arduino.h>
 #include "controller.hpp"
@@ -51,4 +51,4 @@ class led_controller : public controller {
 } // namespace lib
 } // namespace mcu
 
-#endif //__MCU__LIB__LED_CONTROLLER_HPP__
+#endif //__MCU__LIB__INTERFACE__LED_CONTROLLER_HPP__

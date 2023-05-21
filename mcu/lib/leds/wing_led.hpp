@@ -2,8 +2,8 @@
 #define __MCU__LIB__WING_LED_HPP__
 
 #include <Arduino.h>
-#include "pins.hpp"
-#include "led_controller.hpp"
+#include "../pins.hpp"
+#include "../interface/led_controller.hpp"
 
 namespace mcu {
 namespace lib {
