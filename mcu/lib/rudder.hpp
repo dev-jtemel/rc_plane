@@ -9,8 +9,8 @@ namespace lib {
 
 class rudder : public interface::controller {
  public:
-  const uint8_t IN_PIN = 3U;
-  const uint8_t OUT_PIN = 10U;
+  const uint8_t IN_PIN = 5U;
+  const uint8_t OUT_PIN = 12U;
 
   rudder() : interface::controller(115, 35, -35) {
   }
