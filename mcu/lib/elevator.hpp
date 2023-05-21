@@ -1,5 +1,5 @@
-#ifndef __MCU__LIB__RUDDER_HPP__
-#define __MCU__LIB__RUDDER_HPP__
+#ifndef __MCU__LIB__ELEVATOR_HPP__
+#define __MCU__LIB__ELEVATOR_HPP__
 
 #include <Arduino.h>
 #include "controller.hpp"
@@ -7,15 +7,15 @@
 namespace mcu {
 namespace lib {
 
-class rudder : public interface::controller {
+class elevator : public interface::controller {
  public:
-  const uint8_t IN_PIN = 4U;
-  const uint8_t OUT_PIN = 11U;
+  const uint8_t IN_PIN = 3U;
+  const uint8_t OUT_PIN = 10U;
 
-  rudder() : interface::controller(115, 35, -35) {
+  elevator() : interface::controller(115, 35, -35) {
   }
 
-  ~rudder() = default;
+  ~elevator() = default;
 
   virtual bool setup() {
     _servos = new servo[1];
@@ -57,4 +57,4 @@ class rudder : public interface::controller {
 } // namespace lib
 } // namespace mcu
 
-#endif //__MCU__LIB__RUDDER_HPP__
+#endif //__MCU__LIB__ELEVATOR_HPP__
