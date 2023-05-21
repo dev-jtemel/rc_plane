@@ -2,6 +2,7 @@
 #define __MCU__LIB__ELEVATOR_HPP__
 
 #include <Arduino.h>
+#include "pins.hpp"
 #include "controller.hpp"
 
 namespace mcu {
@@ -9,9 +10,6 @@ namespace lib {
 
 class elevator : public interface::controller {
  public:
-  const uint8_t IN_PIN = 3U;
-  const uint8_t OUT_PIN = 10U;
-
   elevator() : interface::controller("elevator", 115, 35, -35) {
   }
 
@@ -23,10 +21,10 @@ class elevator : public interface::controller {
       return false;
     }
 
-    pinMode(IN_PIN, INPUT);
-    pinMode(OUT_PIN, OUTPUT);
+    pinMode(pins::elevator::IN_PIN, INPUT);
+    pinMode(pins::elevator::OUT_PIN, OUTPUT);
 
-    _servos[0].bind(OUT_PIN);
+    _servos[0].bind(pins::elevator::OUT_PIN);
 
     log("setup complete");
   }
@@ -48,7 +46,7 @@ class elevator : public interface::controller {
   }
 
   virtual void step() {
-    _pulse = toRange(pulseIn(IN_PIN, HIGH));
+    _pulse = toRange(pulseIn(pins::elevator::IN_PIN, HIGH));
     _servos[0].write(NEUTRAL - _pulse);
   }
 
