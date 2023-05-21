@@ -2,6 +2,7 @@
 #define __MCU__LIB__RUDDER_HPP__
 
 #include <Arduino.h>
+#include "pins.hpp"
 #include "controller.hpp"
 
 namespace mcu {
@@ -9,9 +10,6 @@ namespace lib {
 
 class rudder : public interface::controller {
  public:
-  const uint8_t IN_PIN = 4U;
-  const uint8_t OUT_PIN = 11U;
-
   rudder() : interface::controller("rudder", 115, 35, -35) {
   }
 
@@ -23,10 +21,10 @@ class rudder : public interface::controller {
       return false;
     }
 
-    pinMode(IN_PIN, INPUT);
-    pinMode(OUT_PIN, OUTPUT);
+    pinMode(pins::rudder::IN_PIN, INPUT);
+    pinMode(pins::rudder::OUT_PIN, OUTPUT);
 
-    _servos[0].bind(OUT_PIN);
+    _servos[0].bind(pins::rudder::OUT_PIN);
 
     log("setup complete");
   }
@@ -48,7 +46,7 @@ class rudder : public interface::controller {
   }
 
   virtual void step() {
-    _pulse = toRange(pulseIn(IN_PIN, HIGH));
+    _pulse = toRange(pulseIn(pins::rudder::IN_PIN, HIGH));
     _servos[0].write(NEUTRAL - _pulse);
 
     open_log();
