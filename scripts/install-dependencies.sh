@@ -20,6 +20,10 @@ setup_permissions() {
   sudo usermod -a -G tty ${USER}
 }
 
+install_apt() {
+  sudo apt install picocom
+}
+
 echo "**************************************"
 echo "Installing and configuring arduino-cli"
 echo "**************************************"
@@ -28,6 +32,10 @@ echo "**************************************"
 echo "Adding permissions"
 echo "**************************************"
 setup_permissions
+echo "**************************************"
+echo "Installing apt dependencies"
+echo "**************************************"
+install_apt
 echo "****"
 echo "Done"
 echo "****"

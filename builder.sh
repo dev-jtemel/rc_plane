@@ -6,6 +6,7 @@ DEV="/dev/ttyACM0"
 OPTIONS="\
   Compile-MCU \
   Flash-MCU \
+  Read-Serial-MCU \
   Install-Dependencies \
   Help \
   Quit\
@@ -21,9 +22,10 @@ usage() {
   echo "COMMANDS:"
   echo "  1) Compile-MCU          : Compile the MCU code."
   echo "  2) Flash-MCU            : Flash the MCU code to the connected microcontroller."
-  echo "  3) Install-Dependencies : Install the required dependencies."
-  echo "  4) Help                 : Display this message."
-  echo "  5) Quit                 : Exit the builder script."
+  echo "  3) Read-Serial-MCU      : Read the serial output of the microcontroller."
+  echo "  4) Install-Dependencies : Install the required dependencies."
+  echo "  5) Help                 : Display this message."
+  echo "  6) Quit                 : Exit the builder script."
 }
 
 while getopts "d:h" opt; do
@@ -50,6 +52,10 @@ do
     elif [ "$opt" = "Flash-MCU" ];
     then
       bash scripts/flash-mcu.sh "$ROOT_DIR" "$DEV"
+      break
+    elif [ "$opt" = "Read-Serial-MCU" ];
+    then
+      bash scripts/read-serial-mcu.sh "$ROOT_DIR" "$DEV"
       break
     elif [ "$opt" = "Install-Dependencies" ];
     then
