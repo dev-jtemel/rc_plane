@@ -21,7 +21,6 @@ class servo {
 
  private:
   uint8_t _pin;
-
 };
 
 } // namespace lib
