@@ -6,20 +6,26 @@ mcu::lib::aileron aileron;
 mcu::lib::elevator elevator;
 mcu::lib::rudder rudder;
 
+mcu::lib::interface::controller *controllers[3];
+
 void setup() {
   Serial.begin(115200);
 
-  aileron.setup();  
-  elevator.setup();
-  rudder.setup();  
+  controllers[0] = &aileron;
+  controllers[1] = &elevator;
+  controllers[2] = &rudder;
 
-  aileron.test();
-  elevator.test();
-  rudder.test();
+  for (auto ctr : controllers) {
+    ctr->setup();
+  }
+
+  for (auto ctr : controllers) {
+    ctr->test();
+  }
 }
 
 void loop() {
-  aileron.step();
-  elevator.step();
-  rudder.step();
+  for (auto ctr : controllers) {
+    ctr->step();
+  }
 }

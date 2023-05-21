@@ -10,6 +10,8 @@ namespace interface {
 
 class controller {
  public:
+  controller() = default;
+
   controller(double NEUTRAL_, double MAX_OFFSET_, double MIN_OFFSET_) 
     : NEUTRAL(NEUTRAL_), MAX_OFFSET(MAX_OFFSET_), MIN_OFFSET(MIN_OFFSET_) {
   }
@@ -20,9 +22,15 @@ class controller {
     }
   }
 
-  virtual bool setup() = 0;
-  virtual void test() = 0;
-  virtual void step() = 0;
+  virtual bool setup() {
+    return false;
+  }
+
+  virtual void test() {
+  }
+
+  virtual void step() {
+  }
 
   double toRange(double value) {
     return ((value - PVM_MIN) / (PVM_MAX - PVM_MIN)) * (MAX_OFFSET - MIN_OFFSET) + MIN_OFFSET; 
