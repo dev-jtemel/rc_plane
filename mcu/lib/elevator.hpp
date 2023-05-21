@@ -10,7 +10,7 @@ namespace lib {
 
 class elevator : public interface::controller {
  public:
-  elevator() : interface::controller("elevator", 115, 35, -35) {
+  elevator() : interface::controller("elevator", 115, 50, -50) {
   }
 
   ~elevator() = default;
@@ -47,6 +47,11 @@ class elevator : public interface::controller {
 
   virtual void step() {
     _pulse = toRange(pulseIn(pins::elevator::IN_PIN, HIGH));
+
+    // restrict lift to avoid nose dives
+    if (_pulse > 0) {
+      _pulse /= 2;
+    }
     _servos[0].write(NEUTRAL - _pulse);
 
     open_log();
