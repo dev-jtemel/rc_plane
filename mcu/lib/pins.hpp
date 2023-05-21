@@ -2,11 +2,20 @@
 #define __MCU__LIB__PINS_HPP__
 
 #include <Arduino.h>
-#include "controller.hpp"
 
 namespace mcu {
 namespace lib {
 namespace pins {
+
+namespace motor {
+
+const uint8_t IN_PIN = 5;
+const uint8_t OUT_1_PIN = 22;
+const uint8_t OUT_2_PIN = 24;
+const uint8_t ENABLE_PIN = 12;
+
+} // namespace motor
+
 
 namespace aileron {
 
