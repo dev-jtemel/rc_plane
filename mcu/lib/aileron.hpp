@@ -58,7 +58,6 @@ class aileron : public interface::controller {
 
   virtual void step() {
     _pulse = toRange(pulseIn(IN_PIN, HIGH));
-    Serial.println(_pulse);
     _servos[LEFT].write(NEUTRAL - _pulse);
     _servos[RIGHT].write(NEUTRAL + _pulse);
 
