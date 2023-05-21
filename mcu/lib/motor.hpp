@@ -48,7 +48,7 @@ class motor : public interface::controller {
     _pulse = toRange(pulseIn(pins::motor::IN_PIN, HIGH));
 
     // restrict lift to avoid nose dives
-    if (_pulse > MAX_OFFSET) {
+    if (_pulse > MAX_OFFSET - 10) {
       _pulse = MAX_OFFSET;
     }
     analogWrite(pins::motor::ENABLE_PIN, _pulse);
