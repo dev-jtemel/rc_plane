@@ -12,8 +12,8 @@ class controller {
  public:
   controller() = default;
 
-  controller(double NEUTRAL_, double MAX_OFFSET_, double MIN_OFFSET_) 
-    : NEUTRAL(NEUTRAL_), MAX_OFFSET(MAX_OFFSET_), MIN_OFFSET(MIN_OFFSET_) {
+  controller(String TAG_, double NEUTRAL_, double MAX_OFFSET_, double MIN_OFFSET_) 
+    : TAG(TAG_), NEUTRAL(NEUTRAL_), MAX_OFFSET(MAX_OFFSET_), MIN_OFFSET(MIN_OFFSET_) {
   }
 
   ~controller() {
@@ -36,10 +36,22 @@ class controller {
     return ((value - PVM_MIN) / (PVM_MAX - PVM_MIN)) * (MAX_OFFSET - MIN_OFFSET) + MIN_OFFSET; 
   }
 
+  template <typename T>
+  void log(T t) {
+    Serial.print("[");
+    Serial.print(micros());
+    Serial.print("] ");
+    Serial.print("[");
+    Serial.print(TAG);
+    Serial.print("] ");
+    Serial.println(t);
+  }
+
  protected:
-  uint8_t _in;
   servo *_servos;
   double _pulse;
+
+  String TAG;
   double NEUTRAL;
   double MIN_OFFSET;
   double MAX_OFFSET;

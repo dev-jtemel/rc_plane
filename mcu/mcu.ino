@@ -11,6 +11,8 @@ mcu::lib::interface::controller *controllers[3];
 void setup() {
   Serial.begin(115200);
 
+  delay(2000);
+
   controllers[0] = &aileron;
   controllers[1] = &elevator;
   controllers[2] = &rudder;

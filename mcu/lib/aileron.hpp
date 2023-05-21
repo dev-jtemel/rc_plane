@@ -15,7 +15,7 @@ class aileron : public interface::controller {
   const uint8_t LEFT = 0U;
   const uint8_t RIGHT = 1U;
 
-  aileron() : interface::controller(115, 30, -30) {
+  aileron() : interface::controller("aileron", 115, 30, -30) {
   }
 
   ~aileron() = default;
@@ -32,28 +32,28 @@ class aileron : public interface::controller {
 
     _servos[LEFT].bind(LEFT_PIN);
     _servos[RIGHT].bind(RIGHT_PIN);
+
+    log("setup complete");
   }
 
   virtual void test() {
     _servos[LEFT].write(NEUTRAL);
     _servos[RIGHT].write(NEUTRAL);
-    Serial.println("Mid");
     delay(1000);
 
     _servos[LEFT].write(NEUTRAL - MAX_OFFSET);
     _servos[RIGHT].write(NEUTRAL + MAX_OFFSET);
-    Serial.println("Left");
     delay(1000);
 
     _servos[LEFT].write(NEUTRAL + MAX_OFFSET);
     _servos[RIGHT].write(NEUTRAL - MAX_OFFSET);
-    Serial.println("Right");
     delay(1000);
 
     _servos[LEFT].write(NEUTRAL);
     _servos[RIGHT].write(NEUTRAL);
-    Serial.println("Mid");
     delay(1000);
+
+    log("test complete");
   }
 
   virtual void step() {

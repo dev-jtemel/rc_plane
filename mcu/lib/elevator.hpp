@@ -12,7 +12,7 @@ class elevator : public interface::controller {
   const uint8_t IN_PIN = 3U;
   const uint8_t OUT_PIN = 10U;
 
-  elevator() : interface::controller(115, 35, -35) {
+  elevator() : interface::controller("elevator", 115, 35, -35) {
   }
 
   ~elevator() = default;
@@ -27,24 +27,24 @@ class elevator : public interface::controller {
     pinMode(OUT_PIN, OUTPUT);
 
     _servos[0].bind(OUT_PIN);
+
+    log("setup complete");
   }
 
   virtual void test() {
     _servos[0].write(NEUTRAL);
-    Serial.println("Mid");
     delay(1000);
 
     _servos[0].write(NEUTRAL - MAX_OFFSET);
-    Serial.println("Left");
     delay(1000);
 
     _servos[0].write(NEUTRAL + MAX_OFFSET);
-    Serial.println("Right");
     delay(1000);
 
     _servos[0].write(NEUTRAL);
-    Serial.println("Mid");
     delay(1000);
+
+    log("test complete");
   }
 
   virtual void step() {
