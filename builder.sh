@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+ROOT_DIR="$PWD"
 DEV="/dev/ttyACM0"
 
 OPTIONS="\
@@ -44,13 +45,15 @@ do
   do
     if [ "$opt" = "Compile-MCU" ];
     then
-      echo "Compile-MCU"
+      bash scripts/compile-mcu.sh "$ROOT_DIR"
       break
     elif [ "$opt" = "Flash-MCU" ];
     then
+      bash scripts/flash-mcu.sh "$ROOT_DIR" "$DEV"
       break
     elif [ "$opt" = "Install-Dependencies" ];
     then
+      bash scripts/install-dependencies.sh "$ROOT_DIR"
       break
     elif [ "$opt" = "Help" ];
     then
