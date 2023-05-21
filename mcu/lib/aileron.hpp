@@ -61,6 +61,12 @@ class aileron : public interface::controller {
     Serial.println(_pulse);
     _servos[LEFT].write(NEUTRAL - _pulse);
     _servos[RIGHT].write(NEUTRAL + _pulse);
+
+    open_log();
+    log(NEUTRAL - _pulse);
+    log(" ");
+    log(NEUTRAL + _pulse);
+    close_log();
   }
 
 };

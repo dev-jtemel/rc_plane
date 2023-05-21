@@ -50,6 +50,10 @@ class rudder : public interface::controller {
   virtual void step() {
     _pulse = toRange(pulseIn(IN_PIN, HIGH));
     _servos[0].write(NEUTRAL - _pulse);
+
+    open_log();
+    log(NEUTRAL - _pulse);
+    close_log();
   }
 
 };

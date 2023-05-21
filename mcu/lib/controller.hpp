@@ -38,6 +38,11 @@ class controller {
 
   template <typename T>
   void log(T t) {
+    if (_log_open) {
+      Serial.print(t);
+      return;
+    }
+
     Serial.print("[");
     Serial.print(micros());
     Serial.print("] ");
@@ -45,6 +50,21 @@ class controller {
     Serial.print(TAG);
     Serial.print("] ");
     Serial.println(t);
+  }
+
+  void open_log() {
+    Serial.print("[");
+    Serial.print(micros());
+    Serial.print("] ");
+    Serial.print("[");
+    Serial.print(TAG);
+    Serial.print("] ");
+    _log_open = true;
+  }
+
+  void close_log() {
+    Serial.println();
+    _log_open = false;
   }
 
  protected:
@@ -59,7 +79,7 @@ class controller {
  private:
   const double PVM_MIN = 1000.00;
   const double PVM_MAX = 2000.00;
-
+  bool _log_open;
 };
 
 } // namespace interface
