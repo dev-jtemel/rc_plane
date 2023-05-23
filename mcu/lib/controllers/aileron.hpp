@@ -2,6 +2,7 @@
 #define __MCU__LIB__AILERON_HPP__
 
 #include <Arduino.h>
+#include "../pins.hpp"
 #include "../interface/controller.hpp"
 
 namespace mcu {
