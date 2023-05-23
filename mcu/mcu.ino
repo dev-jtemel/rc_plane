@@ -7,6 +7,7 @@
 
 mcu::lib::logger logger;
 
+// Controllers
 mcu::lib::motor motor;
 mcu::lib::aileron aileron;
 mcu::lib::elevator elevator;
@@ -14,7 +15,8 @@ mcu::lib::rudder rudder;
 
 mcu::lib::wing_led wing_led;
 
-mcu::lib::interface::controller *controllers[5];
+const uint8_t CONTROLLERS_COUNT = 5U;
+mcu::lib::interface::controller *controllers[CONTROLLERS_COUNT];
 
 void setup() {
   logger.init();
