@@ -1,3 +1,12 @@
+#include <strings.h>
+#include <string.h>
+#include <termios.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <unistd.h>
+
 #include "rcplane/common/io/serial.hpp"
 #include "rcplane/common/io/journal.hpp"
 #include "rcplane/common/io/packet.hpp"
@@ -49,6 +58,21 @@ serial::~serial() {
   tcsetattr(_fd, TCSANOW, &_otio);
 }
 
+void serial::motor_cb(std::function<void(packet &)> cb) {
+  _motor_cb = cb;
+}
+
+void serial::aileron_cb(std::function<void(packet &)> cb) {
+  _aileron_cb = cb;
+}
+
+void serial::elevator_cb(std::function<void(packet &)> cb) {
+  _elevator_cb = cb;
+}
+void serial::rudder_cb(std::function<void(packet &)> cb) {
+  _rudder_cb = cb;
+}
+
 void serial::read_serial() {
    while (1) { 
       _res = read(_fd, _buf, MAX_LEN - 1); 
@@ -56,10 +80,35 @@ void serial::read_serial() {
       if (_res <= 1) {
         continue;
       }
+
       try {
         uint32_t ubuf = std::stoul(_buf, nullptr, 2);
         rcplane::common::io::packet packet(ubuf);
-        RCPLANE_LOG(trace, "packet", packet.type_to_str() << " " << packet.data());
+
+        switch (packet.type()) {
+          case packet::type::motor:
+            if (_motor_cb) {
+              _motor_cb(packet);
+            }
+            break;
+          case packet::type::aileron:
+            if (_aileron_cb) {
+              _aileron_cb(packet);
+            }
+            break;
+          case packet::type::elevator:
+            if (_elevator_cb) {
+              _elevator_cb(packet);
+            }
+            break;
+          case packet::type::rudder:
+            if (_rudder_cb) {
+              _rudder_cb(packet);
+            }
+            break;
+          default:
+            break;
+        }
       } catch (...) {
         // Do nothing
       }

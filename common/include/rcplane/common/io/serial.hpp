@@ -1,16 +1,9 @@
 #ifndef __RCPLANE__COMMON__IO__SERIAL_HPP__
 #define __RCPLANE__COMMON__IO__SERIAL_HPP__
 
-#include <strings.h>
-#include <string.h>
 #include <termios.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <termios.h>
-#include <stdio.h>
-#include <unistd.h>
 
+#include <functional>
 #include <string>
 
 #include "rcplane/common/io/journal.hpp"
@@ -29,6 +22,11 @@ class serial {
 
   void read_serial();
 
+  void motor_cb(std::function<void(packet &)> cb);
+  void aileron_cb(std::function<void(packet &)> cb);
+  void elevator_cb(std::function<void(packet &)> cb);
+  void rudder_cb(std::function<void(packet &)> cb);
+
  private:
   static const uint32_t MAX_LEN = 33U;
   const std::string TAG = "serial";
@@ -38,6 +36,11 @@ class serial {
   termios _otio;
   termios _ntio;
   char _buf[MAX_LEN];
+
+  std::function<void(packet &)> _motor_cb;
+  std::function<void(packet &)> _aileron_cb;
+  std::function<void(packet &)> _elevator_cb;
+  std::function<void(packet &)> _rudder_cb;
 };
 
 } // namesapce io
