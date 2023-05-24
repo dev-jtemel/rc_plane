@@ -33,7 +33,7 @@ The following components are used directly by the microcontroller:
 - (1x) 9V DC breadboard power supply (+9V battery)
 - (1x) FS-IA10B 2.4GHz 10 Channel DC receiver
 - (5x) Tower Pro 9G micro servos
-- (1x) L923D motor controller
+- (1x) L293D motor controller
 - (2x) Brushed DC motor
 - (3x) 220 Ohm resistors
 - (1) Green LED
