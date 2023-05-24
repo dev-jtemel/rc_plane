@@ -12,20 +12,6 @@ namespace rcplane {
 namespace common {
 namespace io {
 
-#define RCPLANE_SEVERITY(lvl) \
-  rcplane::io::journal::instance().lock(); \
-  rcplane::io::journal::instance().set_severity(rcplane::io::journal::severity::lvl); \
-  rcplane::io::journal::instance().unlock();
-
-#define RCPLANE_LOG(lvl, tag, str) \
-  do { \
-    rcplane::io::journal::instance().lock(); \
-    rcplane::io::journal::instance().stream() << str; \
-    rcplane::io::journal::instance().log(rcplane::io::journal::severity::lvl, tag); \
-    rcplane::io::journal::instance().unlock(); \
-  } while (false)
-
-
 /**
  * This singleton class handles logging to the console.
  *
