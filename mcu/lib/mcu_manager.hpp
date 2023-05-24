@@ -9,6 +9,8 @@
 #include "./controllers/test_switch.hpp"
 #include "./leds/wing_led.hpp"
 
+#include "flag.hpp"
+
 namespace mcu {
 namespace lib {
  
@@ -18,6 +20,7 @@ class mcu_manager {
   ~mcu_manager() = default;
 
   void init() {
+    STATE = 0U;
     _controllers[0] = &_motor;
     _controllers[1] = &_aileron;
     _controllers[2] = &_elevator;
@@ -43,16 +46,23 @@ class mcu_manager {
   }
 
   void step() {
-    _test_switch.state();
-    /*
+    if (!(STATE & flag::TEST_COMPLETE)) {
+      bool state = _test_switch.state();
+      if (state) {
+        test();
+        STATE |= flag::TEST_COMPLETE;
+      }
+      return;
+    }
+
     for (auto ctr : _controllers) {
       ctr->step();
     }
-    */
   }
 
  private:
   static const uint8_t CONTROLLERS_COUNT = 5U;
+  uint8_t STATE;
 
   motor _motor;
   aileron _aileron;
