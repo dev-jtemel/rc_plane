@@ -6,8 +6,11 @@
 #include "./controllers/elevator.hpp"
 #include "./controllers/rudder.hpp"
 #include "./controllers/motor.hpp"
-#include "./controllers/test_switch.hpp"
+
 #include "./leds/wing_led.hpp"
+
+#include "./controllers/test_switch.hpp"
+#include "./controllers/flight_switch.hpp"
 
 #include "flag.hpp"
 
@@ -30,6 +33,7 @@ class mcu_manager {
 
   bool setup() {
     _test_switch.setup();
+    _flight_switch.setup();
 
     for (auto ctr : _controllers) {
       if (!ctr->setup()) {
@@ -49,14 +53,22 @@ class mcu_manager {
     if (!(STATE & flag::TEST_COMPLETE)) {
       bool state = _test_switch.state();
       if (state) {
-        test();
+        //test();
         STATE |= flag::TEST_COMPLETE;
       }
       return;
     }
 
-    for (auto ctr : _controllers) {
-      ctr->step();
+    if (_flight_switch.state()) {
+      STATE |= flag::FLIGHT_MODE;
+    } else {
+      STATE &= ~flag::FLIGHT_MODE;
+    }
+
+    if (STATE & flag::FLIGHT_MODE) {
+      for (auto ctr : _controllers) {
+        ctr->step();
+      }
     }
   }
 
@@ -72,6 +84,7 @@ class mcu_manager {
 
   interface::controller *_controllers[CONTROLLERS_COUNT];
   test_switch _test_switch;
+  flight_switch _flight_switch;
 };
 
 } // namespace lib
