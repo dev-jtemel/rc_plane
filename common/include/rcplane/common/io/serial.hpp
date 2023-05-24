@@ -31,13 +31,13 @@ class serial {
 
  private:
   const std::string TAG = "serial";
-  static const uint32_t MAX_LEN = 34U;
+  static const uint32_t MAX_LEN = 33U;
   const std::string _tty = "/dev/ttyACM0";
   int _fd;
-  int res;
-  struct termios oldtio;
-  struct termios newtio;
-  char buf[MAX_LEN];
+  int _res;
+  struct termios _otio;
+  struct termios _ntio;
+  char _buf[MAX_LEN];
 };
 
 } // namesapce io
