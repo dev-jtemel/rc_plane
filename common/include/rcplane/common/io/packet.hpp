@@ -1,7 +1,7 @@
 #ifndef __RCPLANE__COMMON__IO__PACKET_HPP__
 #define __RCPLANE__COMMON__IO__PACKET_HPP__
 
-#include "rcplane/common/io/journal_impl.hpp"
+#include "rcplane/common/io/journal.hpp"
 
 namespace rcplane {
 namespace common {
@@ -18,47 +18,15 @@ class packet {
     rudder
   };
 
-  explicit packet(uint32_t buffer) : _buffer(buffer) {
-    _type = p_type();
-    _data = static_cast<int>(_buffer & DATA) * ((_buffer & SIGN) ? -1 : 1);
-  }
+  explicit packet(uint32_t buffer);
 
-  type type() {
-    return _type;
-  }
+  type type();
+  int data();
 
-  int data() {
-    return _data;
-  } 
-
-  std::string type_to_str() {
-    switch (_type) {
-      case type::state:    return "state";
-      case type::motor:    return "motor";
-      case type::aileron:  return "aileron";
-      case type::elevator: return "elevator";
-      case type::rudder:   return "rudder";
-      default:             return "invalid";
-    }
-    return "";
-  }
+  std::string type_to_str();
 
  private:
-  enum type p_type() {
-    if (STATE & _buffer) {
-      return type::state;
-    } else if (MOTOR & _buffer) {
-      return type::motor;
-    } else if (AILERON & _buffer) {
-      return type::aileron;
-    } else if (ELEVATOR & _buffer) {
-      return type::elevator;
-    } else if (RUDDER & _buffer) {
-      return type::rudder;
-    } else {
-      return type::invalid;
-    }
-  }
+  enum type p_type();
 
   // Bit 31
   const uint32_t SIGN = 0x80000000;
