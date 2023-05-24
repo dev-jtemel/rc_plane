@@ -8,4 +8,6 @@ add_executable(flight-deck
 
 target_link_libraries(flight-deck PUBLIC
   rcplane_common_io
+  SDL2main
+  SDL2 
 )

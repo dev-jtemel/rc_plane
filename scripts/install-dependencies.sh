@@ -21,7 +21,7 @@ setup_permissions() {
 }
 
 install_apt() {
-  sudo apt install picocom
+  sudo apt install picocom libsdl2-2.0-0
 }
 
 echo "**************************************"

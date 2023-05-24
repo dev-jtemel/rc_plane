@@ -7,10 +7,7 @@ mcu::lib::mcu_manager mcu_manager;
 void setup() {
   logger.init();
   mcu_manager.init();
-  delay(2000);
-
   mcu_manager.setup();
-  delay(2000);
 }
 
 void loop() {

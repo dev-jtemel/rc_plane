@@ -46,8 +46,12 @@ class mcu_manager {
   }
 
   void test() {
+    uint16_t i = 0;
+    Serial.println(0x1000000 | STATE, BIN);
     for (auto ctr : _controllers) {
       ctr->test();
+      STATE |= flag::TEST_FLAGS[i++];
+      Serial.println(0x1000000 | STATE, BIN);
     }
   }
 
@@ -58,9 +62,7 @@ class mcu_manager {
       _power_led.on();
       if (state) {
         test();
-        STATE |= flag::TEST_COMPLETE;
       }
-      delay(500);
       return;
     }
 

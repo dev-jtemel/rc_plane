@@ -7,9 +7,18 @@ namespace mcu {
 namespace lib {
 namespace flag {
 
-const uint8_t FLIGHT_MODE = 0x1;
-const uint8_t TEST_COMPLETE = 0x2;
-const uint8_t RX_CONNECTED = 0x4;
+const uint16_t FLIGHT_MODE = 0x1;
+
+const uint16_t TEST_FLAGS[] = {
+0x2,
+0x4,
+0x8,
+0x10,
+0x0,
+0x0
+};
+
+const uint16_t TEST_COMPLETE = 0x1E;
 
 } // namespace flag
 } // namespace lib
