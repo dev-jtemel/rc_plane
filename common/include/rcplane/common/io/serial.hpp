@@ -4,6 +4,7 @@
 #include <termios.h>
 
 #include <functional>
+#include <vector>
 #include <string>
 
 #include "rcplane/common/io/journal.hpp"
@@ -22,10 +23,7 @@ class serial {
 
   void read_serial();
 
-  void motor_cb(std::function<void(packet &)> cb);
-  void aileron_cb(std::function<void(packet &)> cb);
-  void elevator_cb(std::function<void(packet &)> cb);
-  void rudder_cb(std::function<void(packet &)> cb);
+  void register_cb(std::function<void(std::vector<packet> &)> cb);
 
  private:
   static const uint32_t MAX_LEN = 33U;
@@ -37,10 +35,8 @@ class serial {
   termios _ntio;
   char _buf[MAX_LEN];
 
-  std::function<void(packet &)> _motor_cb;
-  std::function<void(packet &)> _aileron_cb;
-  std::function<void(packet &)> _elevator_cb;
-  std::function<void(packet &)> _rudder_cb;
+  std::vector<packet> _packets;
+  std::function<void(std::vector<packet> &)> _cb;
 };
 
 } // namesapce io

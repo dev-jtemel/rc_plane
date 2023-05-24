@@ -15,32 +15,26 @@ int main(int argc, char *argv[]) {
 
   rcplane::common::io::serial s;
 
-  s.motor_cb([&](rcplane::common::io::packet &p) {
-    (void)system("clear"); 
-    std::cout
-      << "Power: ["
-      << std::string(p.data()/2, '#')
-      << std::string((255 - p.data())/2, ' ')
-      << "]\n";
-  });
+  s.register_cb([&](std::vector<rcplane::common::io::packet> &packets) {
+    auto res = system("clear"); 
+    (void)res;
 
-  s.aileron_cb([&](rcplane::common::io::packet &p) {
+    bool test_complete = (packets[0].data() & 0x2);
+    bool flight_mode = (packets[0].data() & 0x1);
+
     std::cout
+      << "FLIGHT_MODE: " << flight_mode << " | TEST COMPLETE: " << test_complete
+      << "\nPower: ["
+      << std::string(packets[1].data()/2, '#')
+      << std::string((255 - packets[1].data())/2, ' ')
+      << "]\n"
       << "Aileron: ["
-      << p.data() << "*|"
-      << (-1 * p.data()) << "*]\n";
-  });
-
-  s.elevator_cb([&](rcplane::common::io::packet &p) {
-    std::cout
+      << packets[2].data() << "*|"
+      << (-1 * packets[2].data()) << "*]\n"
       << "Elevator: ["
-      << p.data() << "*|"
-      << p.data() << "*]\n";
-  });
-
-  s.rudder_cb([&](rcplane::common::io::packet &p) {
-    std::cout
-      << "Rudder: [" << p.data() << "*]" << std::endl;
+      << packets[3].data() << "*|"
+      << packets[3].data() << "*]\n"
+      << "Rudder: [" << packets[4].data() << "*]" << std::endl;
   });
 
   s.read_serial();

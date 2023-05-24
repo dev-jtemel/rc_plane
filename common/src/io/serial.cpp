@@ -15,6 +15,7 @@ namespace rcplane {
 namespace common {
 namespace io {
 serial::serial() {
+  _packets.reserve(5);
   _fd = open(_tty.c_str(), O_RDWR | O_NOCTTY);
   if (_fd < 0) {
     RCPLANE_LOG(error, TAG, "Failed to open " << _tty);
@@ -58,19 +59,8 @@ serial::~serial() {
   tcsetattr(_fd, TCSANOW, &_otio);
 }
 
-void serial::motor_cb(std::function<void(packet &)> cb) {
-  _motor_cb = cb;
-}
-
-void serial::aileron_cb(std::function<void(packet &)> cb) {
-  _aileron_cb = cb;
-}
-
-void serial::elevator_cb(std::function<void(packet &)> cb) {
-  _elevator_cb = cb;
-}
-void serial::rudder_cb(std::function<void(packet &)> cb) {
-  _rudder_cb = cb;
+void serial::register_cb(std::function<void(std::vector<packet> &)> cb) {
+  _cb = cb;
 }
 
 void serial::read_serial() {
@@ -81,33 +71,21 @@ void serial::read_serial() {
         continue;
       }
 
-      RCPLANE_LOG(trace, TAG, _buf);
       try {
         uint32_t ubuf = std::stoul(_buf, nullptr, 2);
         rcplane::common::io::packet packet(ubuf);
 
         switch (packet.type()) {
-          case packet::type::state:
-            RCPLANE_LOG(trace, packet.type_to_str(), packet.data());
-            break;
           case packet::type::motor:
-            if (_motor_cb) {
-              _motor_cb(packet);
-            }
-            break;
           case packet::type::aileron:
-            if (_aileron_cb) {
-              _aileron_cb(packet);
-            }
-            break;
           case packet::type::elevator:
-            if (_elevator_cb) {
-              _elevator_cb(packet);
-            }
-            break;
           case packet::type::rudder:
-            if (_rudder_cb) {
-              _rudder_cb(packet);
+            _packets[static_cast<int>(packet.type())] = packet;
+            break;
+          case packet::type::state:
+            _packets[static_cast<int>(packet.type())] = packet;
+            if (_cb) {
+              _cb(_packets);
             }
             break;
           default:

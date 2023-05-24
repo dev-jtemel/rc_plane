@@ -57,9 +57,10 @@ class mcu_manager {
       bool state = _test_switch.state();
       _power_led.on();
       if (state) {
-        //test();
+        test();
         STATE |= flag::TEST_COMPLETE;
       }
+      delay(500);
       return;
     }
 
@@ -69,6 +70,7 @@ class mcu_manager {
     } else {
       STATE &= ~flag::FLIGHT_MODE;
       stop();
+      delay(500);
     }
   }
 

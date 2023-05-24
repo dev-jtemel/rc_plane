@@ -29,17 +29,17 @@ class packet {
   enum type p_type();
 
   // Bit 31
-  const uint32_t SIGN = 0x80000000;
+  uint32_t SIGN = 0x80000000;
 
   // Bits 30 - 24
-  const uint32_t STATE = 0x1000000;
-  const uint32_t MOTOR = 0x2000000;
-  const uint32_t AILERON = 0x4000000;
-  const uint32_t ELEVATOR = 0x8000000;
-  const uint32_t RUDDER = 0x10000000;
+  uint32_t STATE = 0x1000000;
+  uint32_t MOTOR = 0x2000000;
+  uint32_t AILERON = 0x4000000;
+  uint32_t ELEVATOR = 0x8000000;
+  uint32_t RUDDER = 0x10000000;
 
   // Bits 23 - 0
-  const uint32_t DATA = 0x00FFFFFF;
+  uint32_t DATA = 0x00FFFFFF;
 
   enum type _type;
   int _data; 
