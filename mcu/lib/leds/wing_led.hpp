@@ -19,8 +19,6 @@ class wing_led : public interface::led_controller {
     pinMode(pins::led::wing::OUT_PIN, OUTPUT);
 
     off();
-
-    log("setup complete");
   }
 
   virtual void test() {

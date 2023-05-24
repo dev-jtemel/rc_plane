@@ -19,8 +19,6 @@ class power_led : public interface::led_controller {
     pinMode(pins::led::power::OUT_PIN, OUTPUT);
 
     off();
-
-    log("setup complete");
   }
 
   virtual void test() {

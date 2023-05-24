@@ -17,8 +17,6 @@ class test_switch : public interface::switch_controller{
 
   virtual bool setup() {
     pinMode(pins::test_switch::IN_PIN, INPUT);
-
-    log("setup complete");
   }
 
   virtual void test() {
@@ -26,9 +24,6 @@ class test_switch : public interface::switch_controller{
 
   virtual bool state() {
     bool state = pulseIn(pins::test_switch::IN_PIN, HIGH) > PVM_MID;
-    open_log();
-    log(state);
-    close_log();
     return state;
   }
 

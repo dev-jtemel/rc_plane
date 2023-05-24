@@ -24,8 +24,6 @@ class motor : public interface::controller {
     analogWrite(pins::motor::ENABLE_PIN, NEUTRAL);
     digitalWrite(pins::motor::OUT_1_PIN, HIGH);
     digitalWrite(pins::motor::OUT_2_PIN, LOW);
-
-    log("setup complete");
   }
 
   virtual void test() {
@@ -40,8 +38,6 @@ class motor : public interface::controller {
       analogWrite(pins::motor::ENABLE_PIN, i);
       delay(10);
     }
-
-    log("test complete");
   }
 
   virtual void step() {

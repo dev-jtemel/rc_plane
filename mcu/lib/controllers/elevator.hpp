@@ -25,8 +25,6 @@ class elevator : public interface::controller {
     pinMode(pins::elevator::OUT_PIN, OUTPUT);
 
     _servos[0].bind(pins::elevator::OUT_PIN);
-
-    log("setup complete");
   }
 
   virtual void test() {
@@ -41,8 +39,6 @@ class elevator : public interface::controller {
 
     _servos[0].write(NEUTRAL);
     delay(1000);
-
-    log("test complete");
   }
 
   virtual void step() {

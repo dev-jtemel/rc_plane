@@ -30,8 +30,6 @@ class aileron : public interface::controller {
 
     _servos[LEFT].bind(pins::aileron::LEFT_PIN);
     _servos[RIGHT].bind(pins::aileron::RIGHT_PIN);
-
-    log("setup complete");
   }
 
   virtual void test() {
@@ -50,8 +48,6 @@ class aileron : public interface::controller {
     _servos[LEFT].write(NEUTRAL);
     _servos[RIGHT].write(NEUTRAL);
     delay(1000);
-
-    log("test complete");
   }
 
   virtual void step() {

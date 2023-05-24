@@ -17,8 +17,6 @@ class flight_switch : public interface::switch_controller{
 
   virtual bool setup() {
     pinMode(pins::flight_switch::IN_PIN, INPUT);
-
-    log("setup complete");
   }
 
   virtual void test() {
