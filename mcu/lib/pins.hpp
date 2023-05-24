@@ -47,6 +47,12 @@ const uint8_t OUT_PIN = 23U;
 
 } // namespace wing
 
+namespace power {
+
+const uint8_t OUT_PIN = 25U;
+
+} // namespace power
+
 } // namespace led
 
 namespace test_switch {

@@ -35,9 +35,10 @@ The following components are used directly by the microcontroller:
 - (5x) Tower Pro 9G micro servos
 - (1x) L923D motor controller
 - (2x) Brushed DC motor
-- (2x) 220 Ohm resistors
+- (3x) 220 Ohm resistors
 - (1) Green LED
 - (1) Red LED
+- (1) Blue LED
 
 ### Build and Flash the microcontroller
 Using the `builder.sh` script, deploy the following commands *after* the microcontroller's USB port is connected to your computer **and** the 9V power supply is turned on.
