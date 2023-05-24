@@ -58,6 +58,10 @@ class motor : public interface::controller {
     close_log();
   }
 
+  virtual void stop() {
+    analogWrite(pins::motor::ENABLE_PIN, NEUTRAL);
+  }
+
 };
 
 } // namespace lib

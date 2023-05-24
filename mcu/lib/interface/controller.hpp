@@ -32,6 +32,9 @@ class controller {
   virtual void step() {
   }
 
+  virtual void stop() {
+  }
+
   double toRange(double value) {
     return ((value - PVM_MIN) / (PVM_MAX - PVM_MIN)) * (MAX_OFFSET - MIN_OFFSET) + MIN_OFFSET; 
   }

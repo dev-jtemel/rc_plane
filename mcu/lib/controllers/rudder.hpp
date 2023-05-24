@@ -54,6 +54,10 @@ class rudder : public interface::controller {
     close_log();
   }
 
+  virtual void stop() {
+    _servos[0].write(NEUTRAL);
+  }
+
 };
 
 } // namespace lib

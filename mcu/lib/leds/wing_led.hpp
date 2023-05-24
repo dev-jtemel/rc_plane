@@ -35,6 +35,10 @@ class wing_led : public interface::led_controller {
     digitalWrite(pins::led::wing::OUT_PIN, LOW); 
     log("off");
   }
+
+  virtual void stop() {
+    off();
+  }
 };
 
 } // namespace lib

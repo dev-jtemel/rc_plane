@@ -61,18 +61,26 @@ class mcu_manager {
 
     if (_flight_switch.state()) {
       STATE |= flag::FLIGHT_MODE;
+      handle_step();
     } else {
       STATE &= ~flag::FLIGHT_MODE;
-    }
-
-    if (STATE & flag::FLIGHT_MODE) {
-      for (auto ctr : _controllers) {
-        ctr->step();
-      }
+      stop();
     }
   }
 
  private:
+  void stop() {
+    for (auto ctr : _controllers) {
+      ctr->stop();
+    }
+  }
+
+  void handle_step() {
+    for (auto ctr : _controllers) {
+      ctr->step();
+    }
+  }
+
   static const uint8_t CONTROLLERS_COUNT = 5U;
   uint8_t STATE;
 

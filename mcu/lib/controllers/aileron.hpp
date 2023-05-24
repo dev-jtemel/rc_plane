@@ -66,6 +66,11 @@ class aileron : public interface::controller {
     close_log();
   }
 
+  virtual void stop() {
+    _servos[LEFT].write(NEUTRAL);
+    _servos[RIGHT].write(NEUTRAL);
+  }
+
 };
 
 } // namespace lib
