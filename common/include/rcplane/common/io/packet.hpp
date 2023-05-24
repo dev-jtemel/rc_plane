@@ -10,12 +10,12 @@ namespace io {
 class packet {
  public:
   enum type {
-    invalid = 0,
-    state,
-    motor,
-    aileron,
-    elevator,
-    rudder
+    state = 0,
+    motor = 1,
+    aileron = 2,
+    elevator = 3,
+    rudder = 4,
+    invalid = 255,
   };
 
   explicit packet(uint32_t buffer);

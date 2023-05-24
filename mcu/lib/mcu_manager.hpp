@@ -52,6 +52,7 @@ class mcu_manager {
   }
 
   void step() {
+    Serial.println(0x1000000 | STATE, BIN);
     if (!(STATE & flag::TEST_COMPLETE)) {
       bool state = _test_switch.state();
       _power_led.on();
@@ -85,7 +86,7 @@ class mcu_manager {
   }
 
   static const uint8_t CONTROLLERS_COUNT = 6U;
-  uint8_t STATE;
+  uint16_t STATE;
 
   motor _motor;
   aileron _aileron;

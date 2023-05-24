@@ -15,5 +15,4 @@ void setup() {
 
 void loop() {
   mcu_manager.step();
-  Serial.println(0x40000000);
 }

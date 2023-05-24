@@ -73,7 +73,7 @@ class controller {
   void serial_log(double value) {
     uint32_t sign = value > 0 ? 0x00000000 : 0x80000000;
     uint32_t buffer = static_cast<uint32_t>(abs(value));
-    Serial.println(sign | TYPE | buffer);
+    Serial.println(sign | TYPE | buffer, BIN);
   }
 
  protected:

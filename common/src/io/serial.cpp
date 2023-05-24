@@ -81,11 +81,15 @@ void serial::read_serial() {
         continue;
       }
 
+      RCPLANE_LOG(trace, TAG, _buf);
       try {
         uint32_t ubuf = std::stoul(_buf, nullptr, 2);
         rcplane::common::io::packet packet(ubuf);
 
         switch (packet.type()) {
+          case packet::type::state:
+            RCPLANE_LOG(trace, packet.type_to_str(), packet.data());
+            break;
           case packet::type::motor:
             if (_motor_cb) {
               _motor_cb(packet);
