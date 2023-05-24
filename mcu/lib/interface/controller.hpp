@@ -12,8 +12,8 @@ class controller {
  public:
   controller() = default;
 
-  controller(String TAG_, double NEUTRAL_, double MAX_OFFSET_, double MIN_OFFSET_) 
-    : TAG(TAG_), NEUTRAL(NEUTRAL_), MAX_OFFSET(MAX_OFFSET_), MIN_OFFSET(MIN_OFFSET_) {
+  controller(String TAG_, double NEUTRAL_, double MAX_OFFSET_, double MIN_OFFSET_, uint32_t TYPE_) 
+    : TAG(TAG_), NEUTRAL(NEUTRAL_), MAX_OFFSET(MAX_OFFSET_), MIN_OFFSET(MIN_OFFSET_), TYPE(TYPE_) {
   }
 
   ~controller() {
@@ -70,6 +70,12 @@ class controller {
     _log_open = false;
   }
 
+  void serial_log(double value) {
+    uint32_t sign = value > 0 ? 0x00000000 : 0x80000000;
+    uint32_t buffer = static_cast<uint32_t>(abs(value));
+    Serial.println(sign | TYPE | buffer);
+  }
+
  protected:
   servo *_servos;
   double _pulse;
@@ -82,6 +88,7 @@ class controller {
  private:
   const double PVM_MIN = 1000.00;
   const double PVM_MAX = 2000.00;
+  uint32_t TYPE = 0x0;
   bool _log_open;
 };
 

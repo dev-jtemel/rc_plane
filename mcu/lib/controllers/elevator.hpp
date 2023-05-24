@@ -10,7 +10,7 @@ namespace lib {
 
 class elevator : public interface::controller {
  public:
-  elevator() : interface::controller("elevator", 115, 50, -50) {
+  elevator() : interface::controller("elevator", 115, 50, -50, 0x8000000) {
   }
 
   ~elevator() = default;
@@ -54,9 +54,7 @@ class elevator : public interface::controller {
     }
     _servos[0].write(NEUTRAL - _pulse);
 
-    open_log();
-    log(NEUTRAL - _pulse);
-    close_log();
+    serial_log(_pulse);
   }
 
   virtual void stop() {

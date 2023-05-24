@@ -28,12 +28,10 @@ class power_led : public interface::led_controller {
 
   virtual void on() {
     digitalWrite(pins::led::power::OUT_PIN, HIGH); 
-    log("on");
   }
 
   virtual void off() {
     digitalWrite(pins::led::power::OUT_PIN, LOW); 
-    log("off");
   }
 
   virtual void stop() {

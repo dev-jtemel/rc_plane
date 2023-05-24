@@ -13,7 +13,7 @@ class led_controller : public controller {
   led_controller() = default;
 
   led_controller(String tag, uint64_t interval)
-    : interface::controller(tag, 0, 0, 0),
+    : interface::controller(tag, 0, 0, 0, 0),
       _on(true),
       _interval(interval),
       _prev_ms(millis()) {

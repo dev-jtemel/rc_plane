@@ -26,9 +26,6 @@ class flight_switch : public interface::switch_controller{
 
   virtual bool state() {
     bool state = pulseIn(pins::flight_switch::IN_PIN, HIGH) > PVM_MID;
-    open_log();
-    log(state);
-    close_log();
     return state;
   }
 

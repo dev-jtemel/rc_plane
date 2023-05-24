@@ -14,6 +14,5 @@ void setup() {
 }
 
 void loop() {
-  logger.log("******************");
   mcu_manager.step();
 }

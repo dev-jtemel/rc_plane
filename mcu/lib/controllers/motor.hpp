@@ -10,7 +10,7 @@ namespace lib {
 
 class motor : public interface::controller {
  public:
-  motor() : interface::controller("motor", 0, 255, 0) {
+  motor() : interface::controller("motor", 0, 255, 0, 0x2000000) {
   }
 
   ~motor() = default;
@@ -47,15 +47,15 @@ class motor : public interface::controller {
   virtual void step() {
     _pulse = toRange(pulseIn(pins::motor::IN_PIN, HIGH));
 
-    // restrict lift to avoid nose dives
     if (_pulse > MAX_OFFSET - 10) {
       _pulse = MAX_OFFSET;
     }
+    if (_pulse < 10) {
+      _pulse = MIN_OFFSET;
+    }
     analogWrite(pins::motor::ENABLE_PIN, _pulse);
 
-    open_log();
-    log(_pulse);
-    close_log();
+    serial_log(_pulse);
   }
 
   virtual void stop() {

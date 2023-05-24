@@ -10,7 +10,7 @@ namespace lib {
 
 class rudder : public interface::controller {
  public:
-  rudder() : interface::controller("rudder", 115, 35, -35) {
+  rudder() : interface::controller("rudder", 115, 35, -35, 0x10000000) {
   }
 
   ~rudder() = default;
@@ -48,10 +48,7 @@ class rudder : public interface::controller {
   virtual void step() {
     _pulse = toRange(pulseIn(pins::rudder::IN_PIN, HIGH));
     _servos[0].write(NEUTRAL - _pulse);
-
-    open_log();
-    log(NEUTRAL - _pulse);
-    close_log();
+    serial_log(_pulse);
   }
 
   virtual void stop() {
