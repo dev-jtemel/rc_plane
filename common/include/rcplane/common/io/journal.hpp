@@ -1,7 +1,7 @@
 #ifndef __RCPLANE__COMMON__IO__JOURNAL_HPP__
 #define __RCPLANE__COMMON__IO__JOURNAL_HPP__
 
-#include "rc/io/journal_impl.hpp"
+#include "rcplane/common/io/journal_impl.hpp"
 
 namespace rcplane {
 namespace common {
