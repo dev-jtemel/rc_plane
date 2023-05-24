@@ -30,13 +30,13 @@ class serial {
   void read_serial();
 
  private:
-  const std::string TAG = "serial";
   static const uint32_t MAX_LEN = 33U;
+  const std::string TAG = "serial";
   const std::string _tty = "/dev/ttyACM0";
   int _fd;
   int _res;
-  struct termios _otio;
-  struct termios _ntio;
+  termios _otio;
+  termios _ntio;
   char _buf[MAX_LEN];
 };
 
