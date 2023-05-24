@@ -25,6 +25,8 @@ The following schematic lays out the hardware design and communication of the mi
 
 For direct access to pin mapping, see the `pins.hpp` file in the `mcu` library.
 
+![mcu-schematic](imgs/schematic.png)
+
 ### Build and Flash the microcontroller
 Using the `builder.sh` script, deploy the following commands *after* the microcontroller's USB port is connected to your computer **and** the 9V power supply is turned on.
 

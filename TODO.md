@@ -1,7 +1,7 @@
 # TODO
 
 ## General
-[ ] Add schematic
+[X] Add schematic
 
 ## Microcontroller
 [ ] Add power/test led indicator
