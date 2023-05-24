@@ -1,10 +1,29 @@
 # RC Plane
 DIY RC Plane built and designed from scratch.
 
+ - [Hardware](#hardware)
+   - [Controller](#controller)
+   - [Schematic](#schematic)
  - [Microcontroller](#microcontroller)
    - [Components](#components)
-   - [Schematic](#schematic)
    - [Build and Flash the microcontroller](#build-and-flash-the-microcontroller)
+
+## Hardware
+
+This sections lays out the schematic of the hardware and the relation of the controls
+of the flight controller to the plane.
+
+### Controller
+The following schematic lays out the control mapping of transmitter.
+
+![controller](resources/controller.png)
+
+### Schematic
+The following schematic lays out the hardware design of the plane.
+
+![schematic](resources/schematic.png)
+
+For direct access to pin mapping, see the `pins.hpp` file in the `mcu` library.
 
 ##  Microcontroller
 The microcontroller used for this build is the Arduino Mega 2560 Rev3, although most Arduino (or similar) microcontrollers would suffice for this project.
@@ -19,13 +38,6 @@ The following components are used directly by the microcontroller:
 - (2x) 220 Ohm resistors
 - (1) Green LED
 - (1) Red LED
-
-### Schematic
-The following schematic lays out the hardware design and communication of the microcontroller. 
-
-For direct access to pin mapping, see the `pins.hpp` file in the `mcu` library.
-
-![mcu-schematic](resources/schematic.png)
 
 ### Build and Flash the microcontroller
 Using the `builder.sh` script, deploy the following commands *after* the microcontroller's USB port is connected to your computer **and** the 9V power supply is turned on.
