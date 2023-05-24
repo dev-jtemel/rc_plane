@@ -2,6 +2,7 @@
 #include <fstream>
 #include "rcplane/common/io/journal.hpp"
 #include "rcplane/common/io/packet.hpp"
+#include "rcplane/common/io/serial.hpp"
 
 int main(int argc, char *argv[]) {
   RCPLANE_SEVERITY(trace);
@@ -12,11 +13,7 @@ int main(int argc, char *argv[]) {
   RCPLANE_LOG(warn, "test", 4);
   RCPLANE_LOG(error, "test", 5);
 
-  std::ifstream infile("./log.log");
-  
-  uint32_t b;
-  while (infile >> b) {
-    rcplane::common::io::packet packet(b);
-    RCPLANE_LOG(info, "packet", packet.type_to_str() << " " << packet.data());
-  }
+  rcplane::common::io::serial s;
+
+  s.read_serial();
 }
