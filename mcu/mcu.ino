@@ -10,7 +10,7 @@ void setup() {
   delay(2000);
 
   mcu_manager.setup();
-  mcu_manager.test();
+  //mcu_manager.test();
   delay(2000);
 }
 

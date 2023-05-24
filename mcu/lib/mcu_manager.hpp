@@ -6,6 +6,7 @@
 #include "./controllers/elevator.hpp"
 #include "./controllers/rudder.hpp"
 #include "./controllers/motor.hpp"
+#include "./controllers/test_switch.hpp"
 #include "./leds/wing_led.hpp"
 
 namespace mcu {
@@ -25,6 +26,8 @@ class mcu_manager {
   }
 
   bool setup() {
+    _test_switch.setup();
+
     for (auto ctr : _controllers) {
       if (!ctr->setup()) {
         return false;
@@ -40,9 +43,12 @@ class mcu_manager {
   }
 
   void step() {
+    _test_switch.state();
+    /*
     for (auto ctr : _controllers) {
       ctr->step();
     }
+    */
   }
 
  private:
@@ -55,6 +61,7 @@ class mcu_manager {
   wing_led _wing_led;
 
   interface::controller *_controllers[CONTROLLERS_COUNT];
+  test_switch _test_switch;
 };
 
 } // namespace lib

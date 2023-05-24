@@ -49,6 +49,10 @@ const uint8_t OUT_PIN = 23U;
 
 } // namespace led
 
+namespace test_switch {
+const uint8_t IN_PIN = 52U;
+} // namespace test_switch
+
 } // namespace pins
 } // namespace lib
 } // namespace mcu
