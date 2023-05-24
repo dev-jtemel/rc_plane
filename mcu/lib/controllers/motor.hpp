@@ -32,7 +32,7 @@ class motor : public interface::controller {
       delay(10);
     }
 
-    delay(1000);
+    delay(200);
 
     for (double i = MAX_OFFSET/3; i >= 0; --i) {
       analogWrite(pins::motor::ENABLE_PIN, i);

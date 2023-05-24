@@ -35,19 +35,19 @@ class aileron : public interface::controller {
   virtual void test() {
     _servos[LEFT].write(NEUTRAL);
     _servos[RIGHT].write(NEUTRAL);
-    delay(1000);
+    delay(200);
 
     _servos[LEFT].write(NEUTRAL - MAX_OFFSET);
     _servos[RIGHT].write(NEUTRAL + MAX_OFFSET);
-    delay(1000);
+    delay(200);
 
     _servos[LEFT].write(NEUTRAL + MAX_OFFSET);
     _servos[RIGHT].write(NEUTRAL - MAX_OFFSET);
-    delay(1000);
+    delay(200);
 
     _servos[LEFT].write(NEUTRAL);
     _servos[RIGHT].write(NEUTRAL);
-    delay(1000);
+    delay(200);
   }
 
   virtual void step() {

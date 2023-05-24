@@ -29,16 +29,16 @@ class rudder : public interface::controller {
 
   virtual void test() {
     _servos[0].write(NEUTRAL);
-    delay(1000);
+    delay(200);
 
     _servos[0].write(NEUTRAL - MAX_OFFSET);
-    delay(1000);
+    delay(200);
 
     _servos[0].write(NEUTRAL + MAX_OFFSET);
-    delay(1000);
+    delay(200);
 
     _servos[0].write(NEUTRAL);
-    delay(1000);
+    delay(200);
   }
 
   virtual void step() {
