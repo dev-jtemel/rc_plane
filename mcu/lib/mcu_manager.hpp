@@ -8,6 +8,7 @@
 #include "./controllers/motor.hpp"
 
 #include "./leds/wing_led.hpp"
+#include "./leds/power_led.hpp"
 
 #include "./controllers/test_switch.hpp"
 #include "./controllers/flight_switch.hpp"
@@ -29,6 +30,7 @@ class mcu_manager {
     _controllers[2] = &_elevator;
     _controllers[3] = &_rudder;
     _controllers[4] = &_wing_led;
+    _controllers[5] = &_power_led;
   }
 
   bool setup() {
@@ -52,8 +54,9 @@ class mcu_manager {
   void step() {
     if (!(STATE & flag::TEST_COMPLETE)) {
       bool state = _test_switch.state();
+      _power_led.on();
       if (state) {
-        //test();
+        test();
         STATE |= flag::TEST_COMPLETE;
       }
       return;
@@ -81,7 +84,7 @@ class mcu_manager {
     }
   }
 
-  static const uint8_t CONTROLLERS_COUNT = 5U;
+  static const uint8_t CONTROLLERS_COUNT = 6U;
   uint8_t STATE;
 
   motor _motor;
@@ -89,6 +92,7 @@ class mcu_manager {
   elevator _elevator;
   rudder _rudder;
   wing_led _wing_led;
+  power_led _power_led;
 
   interface::controller *_controllers[CONTROLLERS_COUNT];
   test_switch _test_switch;
