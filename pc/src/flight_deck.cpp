@@ -17,37 +17,14 @@ int main(int argc, char *argv[]) {
 
   rcplane::common::io::serial s;
 
-  /*
-  s.register_cb([&](std::vector<rcplane::common::io::packet> &packets) {
-    auto res = system("clear"); 
-    (void)res;
-
-    bool test_complete = (packets[0].data() & 0x2);
-    bool flight_mode = (packets[0].data() & 0x1);
-
-    std::cout
-      << "FLIGHT_MODE: " << flight_mode << " | TEST COMPLETE: " << test_complete
-      << "\nPower: ["
-      << std::string(packets[1].data()/2, '#')
-      << std::string((255 - packets[1].data())/2, ' ')
-      << "]\n"
-      << "Aileron: ["
-      << packets[2].data() << "*|"
-      << (-1 * packets[2].data()) << "*]\n"
-      << "Elevator: ["
-      << packets[3].data() << "*|"
-      << packets[3].data() << "*]\n"
-      << "Rudder: [" << packets[4].data() << "*]" << std::endl;
-  });
-  */
-
+  // TODO CLEAN THIS UP
   if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
         printf("error initializing SDL: %s\n", SDL_GetError());
     }
     SDL_Window* window = SDL_CreateWindow("PROTOTYPE 1.2",
                                        SDL_WINDOWPOS_CENTERED,
                                        SDL_WINDOWPOS_CENTERED,
-                                       1000, 1000, 0);
+                                       340, 340, 0);
     SDL_Renderer* renderer = NULL;
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
@@ -57,13 +34,12 @@ int main(int argc, char *argv[]) {
 
     
     s.register_cb([&](std::vector<rcplane::common::io::packet> &packets) {
-      RCPLANE_LOG(trace, "sdl", packets[0].type_to_str());
       SDL_SetRenderDrawColor(renderer, 18, 18, 18, 255);
       SDL_RenderClear(renderer);
 
       SDL_Rect flight_indicator;
-      flight_indicator.x = 10;
-      flight_indicator.y = 10;
+      flight_indicator.x = 40;
+      flight_indicator.y = 40;
       flight_indicator.w = 20;
       flight_indicator.h = 20;
 
@@ -86,43 +62,75 @@ int main(int argc, char *argv[]) {
       for (int i = 0; i < 4; ++i) {
         SDL_Rect test_indicator;
         test_indicator.x = 40 + (i * 30);
-        test_indicator.y = 10;
+        test_indicator.y = 70;
         test_indicator.w = 20;
         test_indicator.h = 20;
 
         if (test_flags[i]) {
-          SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-        } else {
           SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+        } else {
+          SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
         }
         SDL_RenderFillRect(renderer, &test_indicator);
       }
 
-      /*
-      SDL_Rect r;
-      r.x = 50;
-      r.y = 813 - packets[1].data() * 3;
-      r.w = 50;
-      r.h = packets[1].data() * 3;
+      SDL_Rect power_box;
+      power_box.x = 10;
+      power_box.y = 40;
+      power_box.w = 20;
+      power_box.h = 200;
+      SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+      SDL_RenderDrawRect(renderer, &power_box);
 
-      SDL_SetRenderDrawColor(renderer, 108, 18, 18, 255);
-      SDL_RenderFillRect(renderer, &r);
+      int pwr = packets[1].data() * 0.78039215686;
+      SDL_Rect power_indicator;
+      power_indicator.x = 11;
+      power_indicator.y = 239 - pwr;
+      power_indicator.w = 18;
+      power_indicator.h = pwr;
 
-      SDL_Rect r2;
-      r2.x = 48;
-      r2.y = 48;
-      r2.w = 52;
-      r2.h = 767;
+      SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+      SDL_RenderFillRect(renderer, &power_indicator);
 
-      SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
-      SDL_RenderDrawRect(renderer, &r2);
+      for (int i = 0; i < 5; ++i) {
+        auto y = 100 + 30 *i;
+        SDL_Rect border;
+        border.x = 40;
+        border.y = y;
+        border.w = 200;
+        border.h = 20;
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+        SDL_RenderDrawRect(renderer, &border);
 
-      SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
-      SDL_RenderDrawLine(renderer, 800, 50, 900, 50 + packets[2].data());
+        for (int j = 1; j <10; ++j) {
+          SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
+          SDL_RenderDrawLine(renderer, 40 + 20 * j, y + 1, 40 + 20 * j, y + 19);
+        }
 
-      SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
-      SDL_RenderDrawLine(renderer, 800, 200, 900, 200 - packets[2].data());
-      */
+        SDL_Rect value;
+        value.x = 140;
+        value.y = y;
+        value.h = 19;
+        switch (i) {
+          case 0:
+            value.w = -packets[2].data();
+            break;
+          case 1:
+            value.w = packets[2].data();
+            break;
+          case 2:
+          case 3:
+            value.w = packets[3].data();
+            break;
+          case 4:
+            value.w = packets[4].data();
+            break;
+        }
+        value.w *= 2;
+
+        SDL_SetRenderDrawColor(renderer, 0, 191, 255, 255);
+        SDL_RenderFillRect(renderer, &value);
+      }
 
       SDL_RenderPresent(renderer);
     });
