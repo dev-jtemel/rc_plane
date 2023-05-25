@@ -24,7 +24,7 @@ int main(int argc, char *argv[]) {
     SDL_Window* window = SDL_CreateWindow("PROTOTYPE 1.2",
                                        SDL_WINDOWPOS_CENTERED,
                                        SDL_WINDOWPOS_CENTERED,
-                                       340, 340, 0);
+                                       250, 220, 0);
     SDL_Renderer* renderer = NULL;
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
 
       SDL_Rect flight_indicator;
       flight_indicator.x = 40;
-      flight_indicator.y = 40;
+      flight_indicator.y = 10;
       flight_indicator.w = 20;
       flight_indicator.h = 20;
 
@@ -62,7 +62,7 @@ int main(int argc, char *argv[]) {
       for (int i = 0; i < 4; ++i) {
         SDL_Rect test_indicator;
         test_indicator.x = 40 + (i * 30);
-        test_indicator.y = 70;
+        test_indicator.y = 40;
         test_indicator.w = 20;
         test_indicator.h = 20;
 
@@ -76,7 +76,7 @@ int main(int argc, char *argv[]) {
 
       SDL_Rect power_box;
       power_box.x = 10;
-      power_box.y = 40;
+      power_box.y = 10;
       power_box.w = 20;
       power_box.h = 200;
       SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
@@ -85,7 +85,7 @@ int main(int argc, char *argv[]) {
       int pwr = packets[1].data() * 0.78039215686;
       SDL_Rect power_indicator;
       power_indicator.x = 11;
-      power_indicator.y = 239 - pwr;
+      power_indicator.y = 209 - pwr;
       power_indicator.w = 18;
       power_indicator.h = pwr;
 
@@ -93,7 +93,7 @@ int main(int argc, char *argv[]) {
       SDL_RenderFillRect(renderer, &power_indicator);
 
       for (int i = 0; i < 5; ++i) {
-        auto y = 100 + 30 *i;
+        auto y = 70 + 30 *i;
         SDL_Rect border;
         border.x = 40;
         border.y = y;
@@ -101,11 +101,6 @@ int main(int argc, char *argv[]) {
         border.h = 20;
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
         SDL_RenderDrawRect(renderer, &border);
-
-        for (int j = 1; j <10; ++j) {
-          SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
-          SDL_RenderDrawLine(renderer, 40 + 20 * j, y + 1, 40 + 20 * j, y + 19);
-        }
 
         SDL_Rect value;
         value.x = 140;
@@ -130,6 +125,11 @@ int main(int argc, char *argv[]) {
 
         SDL_SetRenderDrawColor(renderer, 0, 191, 255, 255);
         SDL_RenderFillRect(renderer, &value);
+
+        for (int j = 1; j <10; ++j) {
+          SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
+          SDL_RenderDrawLine(renderer, 40 + 20 * j, y + 1, 40 + 20 * j, y + 19);
+        }
       }
 
       SDL_RenderPresent(renderer);
