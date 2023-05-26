@@ -21,21 +21,21 @@ setup_permissions() {
 }
 
 install_apt() {
-  sudo apt install picocom libsdl2-2.0-0
+  sudo apt install picocom curl
 }
 
 echo "**************************************"
-echo "Installing and configuring arduino-cli"
+echo "Installing apt dependencies"
 echo "**************************************"
-arduino_cli
+install_apt
 echo "**************************************"
 echo "Adding permissions"
 echo "**************************************"
 setup_permissions
 echo "**************************************"
-echo "Installing apt dependencies"
+echo "Installing and configuring arduino-cli"
 echo "**************************************"
-install_apt
+arduino_cli
 echo "****"
 echo "Done"
 echo "****"
