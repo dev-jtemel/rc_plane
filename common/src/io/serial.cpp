@@ -15,7 +15,7 @@ namespace rcplane {
 namespace common {
 namespace io {
 serial::serial() {
-  _packets.reserve(5);
+#ifndef SIMULATION
   _fd = open(_tty.c_str(), O_RDWR | O_NOCTTY);
   if (_fd < 0) {
     RCPLANE_LOG(error, TAG, "Failed to open " << _tty);
@@ -52,50 +52,84 @@ serial::serial() {
 
   tcflush(_fd, TCIFLUSH);
   tcsetattr(_fd, TCSANOW, &_ntio);
+#endif
 }
 
 serial::~serial() {
+#ifndef SIMULATION
   // Restore old values
   tcsetattr(_fd, TCSANOW, &_otio);
+#endif
 }
 
-void serial::register_cb(std::function<void(std::vector<packet> &)> cb) {
+void serial::register_cb(std::function<void(std::array<packet, 5U> &)> cb) {
   _cb = cb;
 }
 
 void serial::read_serial() {
-   while (1) { 
-      _res = read(_fd, _buf, MAX_LEN - 1); 
-      _buf[_res]='\0'; 
-      if (_res <= 1) {
-        continue;
+#ifdef SIMULATION
+  p_read_log();
+#else
+  p_read_serial();
+#endif
+}
+
+void serial::p_read_serial() {
+#ifndef SIMULATION
+  while (1) { 
+    _res = read(_fd, _buf, MAX_LEN - 1); 
+    _buf[_res]='\0'; 
+
+    if (_res <= 1) {
+      continue;
+    }
+
+    try {
+      uint32_t ubuf = std::stoul(_buf, nullptr, 2);
+      packet p(ubuf);
+
+      save_packet(p);
+    } catch (...) {
+      // Do nothing
+    }
+  }
+#endif
+}
+
+void serial::p_read_log() {
+#ifdef SIMULATION
+  std::string line;
+  while (_log >> line) {
+    try {
+      uint32_t ubuf = std::stoul(line.c_str(), nullptr, 2);
+      packet p(ubuf);
+      save_packet(p);
+    } catch (...) {
+      RCPLANE_LOG(error, TAG, "failed to convert line");
+    }
+  }
+#endif
+}
+
+void serial::save_packet(packet &p) {
+  switch (p.type()) {
+    case packet::type::motor:
+    case packet::type::aileron:
+    case packet::type::elevator:
+    case packet::type::rudder:
+      _packets[static_cast<int>(p.type())] = p;
+      break;
+    case packet::type::state:
+      _packets[static_cast<int>(p.type())] = p;
+      if (_cb) {
+        _cb(_packets);
+      } else {
+        RCPLANE_LOG(warn, TAG, "no cb registered..");
       }
-
-      try {
-        uint32_t ubuf = std::stoul(_buf, nullptr, 2);
-        rcplane::common::io::packet packet(ubuf);
-
-        switch (packet.type()) {
-          case packet::type::motor:
-          case packet::type::aileron:
-          case packet::type::elevator:
-          case packet::type::rudder:
-            _packets[static_cast<int>(packet.type())] = packet;
-            break;
-          case packet::type::state:
-            _packets[static_cast<int>(packet.type())] = packet;
-            if (_cb) {
-              _cb(_packets);
-            }
-            break;
-          default:
-            break;
-        }
-      } catch (...) {
-        // Do nothing
-      }
-
-   }
+      break;
+    default:
+      break;
+  }
 }
 
 } // namesapce io

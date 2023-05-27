@@ -4,6 +4,8 @@ namespace rcplane {
 namespace common {
 namespace io {
 
+packet::packet() : _type(type::invalid), _data(0U), _buffer(0U) {
+}
 packet::packet(uint32_t buffer) : _buffer(buffer) {
   _type = p_type();
   _data = static_cast<int>(_buffer & DATA) * ((_buffer & SIGN) ? -1 : 1);

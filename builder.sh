@@ -2,6 +2,7 @@
 
 ROOT_DIR="$PWD"
 DEV="/dev/ttyACM0"
+SIMULATION="OFF"
 
 OPTIONS="\
   Compile-MCU \
@@ -17,11 +18,12 @@ OPTIONS="\
 "
 usage() {
   echo "Usage:"
-  echo "  ./builder.sh -d [dev]"
+  echo "  ./builder.sh -d [dev] -s"
   echo ""
   echo "  where:"
   echo "    -d [dev] : The tty port the microcontroller is connected to."
   echo "               Default: /dev/ttyACM0"
+  echo "    -s       : Use simulated communication."
   echo ""
   echo "COMMANDS:"
   echo "  1) Compile-MCU          : Compile the MCU code."
@@ -36,9 +38,11 @@ usage() {
   echo "  10) Quit                : Exit the builder script."
 }
 
-while getopts "d:h" opt; do
+while getopts "sd:h" opt; do
     case "$opt" in
         d) DEV="$OPTARG";
+            ;;
+        s) SIMULATION="ON";
             ;;
         h) usage; exit 0
             ;;
@@ -49,7 +53,7 @@ done
 
 while true;
 do
-  echo "DEV = ${DEV}"
+  echo "DEV = ${DEV} | SIMULATION = ${SIMULATION}"
 
   select opt in ${OPTIONS};
   do
@@ -63,7 +67,7 @@ do
       break
     elif [ "$opt" = "Compile-PC" ];
     then
-      bash scripts/compile-pc.sh "$ROOT_DIR"
+      bash scripts/compile-pc.sh "$ROOT_DIR" "$SIMULATION"
       break
     elif [ "$opt" = "Flash-MCU" ];
     then

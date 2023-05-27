@@ -18,6 +18,7 @@ class packet {
     invalid = 255,
   };
 
+  packet();
   explicit packet(uint32_t buffer);
 
   type type();

@@ -6,6 +6,11 @@ set (CMAKE_CXX_FLAGS "-O3")
 
 find_package(Threads REQUIRED)
 
+if(SIMULATION)
+  message(STATUS "Building using simulation")
+  add_definitions(-DSIMULATION)
+endif()
+
 include_directories(common/include)
 add_subdirectory(common)
 

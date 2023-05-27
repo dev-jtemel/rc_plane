@@ -4,7 +4,8 @@
 #include <termios.h>
 
 #include <functional>
-#include <vector>
+#include <fstream>
+#include <array>
 #include <string>
 
 #include "rcplane/common/io/journal.hpp"
@@ -23,20 +24,30 @@ class serial {
 
   void read_serial();
 
-  void register_cb(std::function<void(std::vector<packet> &)> cb);
+  void register_cb(std::function<void(std::array<packet, 5U> &)> cb);
 
  private:
-  static const uint32_t MAX_LEN = 33U;
+  void p_read_serial();
+  void p_read_log();
+
+  void save_packet(packet &p);
+
   const std::string TAG = "serial";
+
+#ifdef SIMULATION
+  std::ifstream _log = std::ifstream("./logs/test.log");
+#else
+  static const uint32_t MAX_LEN = 33U;
   const std::string _tty = "/dev/ttyACM0";
   int _fd;
   int _res;
   termios _otio;
   termios _ntio;
   char _buf[MAX_LEN];
+#endif
 
-  std::vector<packet> _packets;
-  std::function<void(std::vector<packet> &)> _cb;
+  std::array<packet, 5U> _packets;
+  std::function<void(std::array<packet, 5U> &)> _cb;
 };
 
 } // namesapce io

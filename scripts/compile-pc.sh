@@ -4,11 +4,12 @@
 
 ROOT_DIR="$1"
 BUILD_DIR="$ROOT_DIR/build_pc"
+SIMULATION="$2"
 
 compile_pc() {
   [ ! -d $BUILD_DIR ] && mkdir $BUILD_DIR
   cd $BUILD_DIR
-  cmake .. -DPC_BUILD=True
+  cmake .. -DPC_BUILD=True -DSIMULATION=${SIMULATION}
   make
 }
 
