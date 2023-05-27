@@ -1,4 +1,3 @@
 arduino-cli
 picocom
 curl
-libsdl2-2.0-0
