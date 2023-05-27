@@ -85,10 +85,8 @@ void serial::p_read_serial() {
     }
 
     try {
-      uint32_t ubuf = std::stoul(_buf, nullptr, 2);
-      packet p(ubuf);
-
-      save_packet(p);
+      _buffer = std::stoul(_buf, nullptr, 2);
+      p_handle_buffer();
     } catch (...) {
       // Do nothing
     }
@@ -101,35 +99,22 @@ void serial::p_read_log() {
   std::string line;
   while (_log >> line) {
     try {
-      uint32_t ubuf = std::stoul(line.c_str(), nullptr, 2);
-      packet p(ubuf);
-      save_packet(p);
+      _buffer = std::stoul(line.c_str(), nullptr, 2);
+      p_handle_buffer();
     } catch (...) {
-      RCPLANE_LOG(error, TAG, "failed to convert line");
+      RCPLANE_LOG(error, TAG, "failed to convert line: " << line);
     }
   }
 #endif
 }
 
-void serial::save_packet(packet &p) {
-  switch (p.type()) {
-    case packet::type::motor:
-    case packet::type::aileron:
-    case packet::type::elevator:
-    case packet::type::rudder:
-      _packets[static_cast<int>(p.type())] = p;
-      break;
-    case packet::type::state:
-      _packets[static_cast<int>(p.type())] = p;
-      if (_cb) {
-        _cb(_packets);
-      } else {
-        RCPLANE_LOG(warn, TAG, "no cb registered..");
-      }
-      break;
-    default:
-      break;
-  }
+void serial::p_handle_buffer() {
+  _packets[0] = packet(packet::type::state, _buffer);
+  _packets[1] = packet(packet::type::motor, _buffer >> 8);
+  _packets[2] = packet(packet::type::aileron, _buffer >> 16);
+  _packets[3] = packet(packet::type::elevator, _buffer >> 24);
+  _packets[4] = packet(packet::type::rudder, _buffer >> 32);
+  _cb(_packets);
 }
 
 } // namesapce io

@@ -30,7 +30,7 @@ class serial {
   void p_read_serial();
   void p_read_log();
 
-  void save_packet(packet &p);
+  void p_handle_buffer();
 
   const std::string TAG = "serial";
 
@@ -46,6 +46,7 @@ class serial {
   char _buf[MAX_LEN];
 #endif
 
+  uint64_t _buffer;
   std::array<packet, 5U> _packets;
   std::function<void(std::array<packet, 5U> &)> _cb;
 };

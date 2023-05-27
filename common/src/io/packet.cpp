@@ -4,11 +4,11 @@ namespace rcplane {
 namespace common {
 namespace io {
 
-packet::packet() : _type(type::invalid), _data(0U), _buffer(0U) {
+packet::packet() : _type(type::invalid), _data(0), _buffer(0U) {
 }
-packet::packet(uint32_t buffer) : _buffer(buffer) {
-  _type = p_type();
-  _data = static_cast<int>(_buffer & DATA) * ((_buffer & SIGN) ? -1 : 1);
+
+packet::packet(enum type type, uint8_t buffer) : _type(type), _buffer(buffer) {
+  convert_buffer();
 }
 
 enum packet::type packet::type() {
@@ -31,20 +31,26 @@ std::string packet::type_to_str() {
   return "";
 }
 
-enum packet::type packet::p_type() {
-  if (STATE & _buffer) {
-    return type::state;
-  } else if (MOTOR & _buffer) {
-    return type::motor;
-  } else if (AILERON & _buffer) {
-    return type::aileron;
-  } else if (ELEVATOR & _buffer) {
-    return type::elevator;
-  } else if (RUDDER & _buffer) {
-    return type::rudder;
+void packet::convert_buffer() {
+  if (is_twos_compliment() && (NEGATIVE & _buffer)) {
+    _data = -1 * static_cast<int>(static_cast<uint8_t>(~_buffer) + 1U);
   } else {
-    return type::invalid;
+    _data = static_cast<int>(_buffer);
   }
+}
+
+bool packet::is_twos_compliment() {
+  switch (_type) {
+    case type::aileron:
+    case type::elevator:
+    case type::rudder:
+      return true;
+    case type::state:
+    case type::motor:
+    default:
+      return false;
+  }
+  return false;
 }
 
 } // namesapce io
