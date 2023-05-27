@@ -3,19 +3,19 @@
 # DO NOT CALL DIRECTLY
 
 ROOT_DIR="$1"
-BUILD_DIR="$ROOT_DIR/build_pc"
+BUILD_DIR="$ROOT_DIR/build_som"
 
-compile_pc() {
+compile_som() {
   [ ! -d $BUILD_DIR ] && mkdir $BUILD_DIR
   cd $BUILD_DIR
-  cmake .. -DPC_BUILD=True
+  cmake .. -DSOM_BUILD=True
   make
 }
 
 echo "*************************"
-echo "Compiling PC"
+echo "Compiling SOM"
 echo "*************************"
-compile_pc
+compile_som
 echo "****"
 echo "Done"
 echo "****"

@@ -3,16 +3,16 @@
 # DO NOT CALL DIRECTLY
 
 ROOT_DIR="$1"
-BUILD_DIR="$ROOT_DIR/build_pc"
+BUILD_DIR="$ROOT_DIR/build_som"
 
-run_pc() {
-  $BUILD_DIR/pc/flight-deck
+run_sim() {
+  $BUILD_DIR/som/simulator
 }
 
 echo "*************************"
-echo "Running Flight Deck"
+echo "Running Simulator"
 echo "*************************"
-run_pc
+run_sim
 echo "****"
 echo "Done"
 echo "****"

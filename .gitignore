@@ -34,4 +34,4 @@
 # Directories
 bin/
 resources/.*
-build/
+build*/

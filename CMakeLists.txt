@@ -7,7 +7,14 @@ set (CMAKE_CXX_FLAGS "-O3")
 find_package(Threads REQUIRED)
 
 include_directories(common/include)
-include_directories(pc/include)
-
 add_subdirectory(common)
-add_subdirectory(pc)
+
+if(PC_BUILD)
+  include_directories(pc/include)
+  add_subdirectory(pc)
+elseif(SOM_BUILD)
+  include_directories(som/include)
+  add_subdirectory(som)
+else()
+  message(FATAL_ERROR "Please specifiy build type: PC_BUILD or SOM_BUILD")
+endif()
