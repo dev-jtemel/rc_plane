@@ -9,8 +9,9 @@ OPTIONS="\
   Compile-SOM \
   Compile-PC \
   Flash-MCU \
-  Run-Simulator \
-  Run-Flight-Deck \
+  Flash-SOM \
+  Run-SOM \
+  Run-PC \
   Read-Serial-MCU \
   Install-Dependencies \
   Help \
@@ -30,12 +31,13 @@ usage() {
   echo "  2) Compile-SOM          : Compile the SOM code."
   echo "  3) Compile-PC           : Compile the flight deck for the PC."
   echo "  4) Flash-MCU            : Flash the MCU code to the connected microcontroller."
-  echo "  5) Run-Simulator        : Run the simulator on the SOM."
-  echo "  6) Run-Flight-Deck      : Run the flight deck on the PC."
-  echo "  7) Read-Serial-MCU      : Read the serial output of the microcontroller."
-  echo "  8) Install-Dependencies : Install the required dependencies."
-  echo "  9) Help                 : Display this message."
-  echo "  10) Quit                : Exit the builder script."
+  echo "  5) Flash-SOM            : Flash the SOM code to the connected SoM."
+  echo "  6) Run-SOM              : Run the controller on the SOM."
+  echo "  7) Run-PC               : Run the flight deck on the PC."
+  echo "  8) Read-Serial-MCU      : Read the serial output of the microcontroller."
+  echo "  9) Install-Dependencies : Install the required dependencies."
+  echo "  10) Help                : Display this message."
+  echo "  12) Quit                : Exit the builder script."
 }
 
 while getopts "sd:h" opt; do
@@ -73,13 +75,17 @@ do
     then
       bash scripts/flash-mcu.sh "$ROOT_DIR" "$DEV"
       break
-    elif [ "$opt" = "Run-Simulator" ];
+    elif [ "$opt" = "Flash-SOM" ];
     then
-      bash scripts/run-simulator.sh "$ROOT_DIR"
+      bash scripts/flash-som.sh "$ROOT_DIR" "$DEV"
       break
-    elif [ "$opt" = "Run-Flight-Deck" ];
+    elif [ "$opt" = "Run-SOM" ];
     then
-      bash scripts/run-flight-deck.sh "$ROOT_DIR"
+      bash scripts/run-som.sh "$ROOT_DIR"
+      break
+    elif [ "$opt" = "Run-PC" ];
+    then
+      bash scripts/run-pc.sh "$ROOT_DIR"
       break
     elif [ "$opt" = "Read-Serial-MCU" ];
     then

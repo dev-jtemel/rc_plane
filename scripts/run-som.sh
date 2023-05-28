@@ -5,14 +5,14 @@
 ROOT_DIR="$1"
 BUILD_DIR="$ROOT_DIR/build_som"
 
-run_sim() {
-  $BUILD_DIR/som/simulator
+run_som() {
+  $BUILD_DIR/som/som-controller
 }
 
 echo "*************************"
-echo "Running Simulator"
+echo "Running SOM"
 echo "*************************"
-run_sim
+run_som
 echo "****"
 echo "Done"
 echo "****"
