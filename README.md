@@ -2,18 +2,19 @@
 # RC Plane
 DIY RC Plane built and designed from scratch.
 
- - [Design](#design)
-   - [Hardware](#hardware)
-     - [RC Controller](#rc-controller)
-     - [Schematic](#schematic)
-    - [Software](#software)
-	    - [Serial Communication](#serial-communication)
- - [Build](#build)
-   - [Microcontroller](#microcontroller)
-   - [SoM](#som)
-   - [PC](#pc)
- - [Requirements](#requirements)
-    - [Physical](#physical)
+- [Design](#design)
+ - [Hardware](#hardware)
+   - [RC Controller](#rc-controller)
+   - [Schematic](#schematic)
+  - [Software](#software)
+    - [Serial Communication](#serial-communication)
+  - [Plane Dimensions](#plane-dimensions)
+- [Build](#build)
+ - [Microcontroller](#microcontroller)
+ - [SoM](#som)
+ - [PC](#pc)
+- [Requirements](#requirements)
+  - [Physical](#physical)
 
 ## Design
 This sections lays out the schematic of the hardware and the relation of the controls
@@ -51,6 +52,10 @@ where:
 
 Timestamp buffer overflows at 16777215 milliseconds (16777.215 seconds; 279.62025 minutes; 4.66 hours), well exceeding any possible flight times. Note that the timestamp resets upon an initial read of the serial port from the MCU since the microcontroller resets on an initial read.
 
+### Plane Dimensions
+The dimensions of the plane are laid out in the following sketch.
+
+![plane](resources/plane.drawio)
 
 ## Build
 To compile the entire project, use the `full_build.sh` script. The following sections layout how to
