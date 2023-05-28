@@ -20,8 +20,7 @@ const uint8_t ENABLE_PIN = 12;
 namespace aileron {
 
 const uint8_t IN_PIN = 2U;
-const uint8_t LEFT_PIN = 8U;
-const uint8_t RIGHT_PIN = 9U;
+const uint8_t OUT_PIN = 8U;
 
 } // namespace aileron
 

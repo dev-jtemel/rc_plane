@@ -10,56 +10,46 @@ namespace lib {
 
 class aileron : public interface::controller {
  public:
-  const uint8_t LEFT = 0U;
-  const uint8_t RIGHT = 1U;
-
   aileron() : interface::controller(115, 30, -30) {
   }
 
   ~aileron() = default;
 
   virtual bool setup() {
-    _servos = new interface::servo[2];
+    _servos = new interface::servo[1];
     if (_servos == nullptr) {
       return false;
     }
 
     pinMode(pins::aileron::IN_PIN, INPUT);
-    pinMode(pins::aileron::LEFT_PIN, OUTPUT);
-    pinMode(pins::aileron::RIGHT_PIN, OUTPUT);
+    pinMode(pins::aileron::OUT_PIN, OUTPUT);
 
-    _servos[LEFT].bind(pins::aileron::LEFT_PIN);
-    _servos[RIGHT].bind(pins::aileron::RIGHT_PIN);
+    _servos[0].bind(pins::aileron::OUT_PIN);
   }
 
   virtual void test() {
-    _servos[LEFT].write(NEUTRAL);
-    _servos[RIGHT].write(NEUTRAL);
+    _servos[0].write(NEUTRAL);
     delay(200);
 
-    _servos[LEFT].write(NEUTRAL - MAX_OFFSET);
-    _servos[RIGHT].write(NEUTRAL + MAX_OFFSET);
+    _servos[0].write(NEUTRAL - MAX_OFFSET);
     delay(200);
 
-    _servos[LEFT].write(NEUTRAL + MAX_OFFSET);
-    _servos[RIGHT].write(NEUTRAL - MAX_OFFSET);
+    _servos[0].write(NEUTRAL + MAX_OFFSET);
     delay(200);
 
-    _servos[LEFT].write(NEUTRAL);
-    _servos[RIGHT].write(NEUTRAL);
+    _servos[0].write(NEUTRAL);
     delay(200);
   }
 
   virtual void step() {
     _pulse = toRange(pulseIn(pins::aileron::IN_PIN, HIGH));
-    _servos[LEFT].write(NEUTRAL - _pulse);
-    _servos[RIGHT].write(NEUTRAL + _pulse);
+    _servos[0].write(NEUTRAL - _pulse);
     _state = static_cast<uint8_t>(_pulse); 
   }
 
   virtual void stop() {
-    _servos[LEFT].write(NEUTRAL);
-    _servos[RIGHT].write(NEUTRAL);
+    _servos[0].write(NEUTRAL);
+    //_servos[RIGHT].write(NEUTRAL);
   }
 
 };
