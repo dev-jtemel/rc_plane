@@ -11,6 +11,11 @@ packet::packet(enum type type, uint8_t buffer) : _type(type), _buffer(buffer) {
   convert_buffer();
 }
 
+void packet::set(uint8_t buffer) {
+  _buffer = buffer;
+  convert_buffer();
+}
+
 enum packet::type packet::type() {
   return _type;
 }

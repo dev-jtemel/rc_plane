@@ -15,6 +15,12 @@ namespace rcplane {
 namespace common {
 namespace io {
 serial::serial() {
+  _packets[0] = packet(packet::type::state, 0U);
+  _packets[1] = packet(packet::type::motor, 0U);
+  _packets[2] = packet(packet::type::aileron, 0U);
+  _packets[3] = packet(packet::type::elevator, 0U);
+  _packets[4] = packet(packet::type::rudder, 0U);
+
 #ifndef SIMULATION
   _fd = open(_tty.c_str(), O_RDWR | O_NOCTTY);
   if (_fd < 0) {
@@ -109,11 +115,11 @@ void serial::p_read_log() {
 }
 
 void serial::p_handle_buffer() {
-  _packets[0] = packet(packet::type::state, _buffer);
-  _packets[1] = packet(packet::type::motor, _buffer >> 8);
-  _packets[2] = packet(packet::type::aileron, _buffer >> 16);
-  _packets[3] = packet(packet::type::elevator, _buffer >> 24);
-  _packets[4] = packet(packet::type::rudder, _buffer >> 32);
+  _packets[0].set(_buffer);
+  _packets[1].set(_buffer >> 8);
+  _packets[2].set(_buffer >> 16);
+  _packets[3].set(_buffer >> 24);
+  _packets[4].set(_buffer >> 32);
   _cb(_packets);
 }
 

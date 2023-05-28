@@ -20,6 +20,7 @@ class packet {
 
   packet();
   explicit packet(enum type type, uint8_t buffer);
+  void set(uint8_t buffer);
 
   type type();
   int data();
