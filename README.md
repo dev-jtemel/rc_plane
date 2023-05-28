@@ -35,7 +35,7 @@ For direct access to pin mapping, see the `pins.hpp` file in the `mcu` library.
 
 ### Software
 #### Serial Communication
-Communication from the MCU to the SoM follows a packet format defined as follows.
+Communication from the MCU to the SoM follows a 64-bit packet format defined as follows.
 
 ![packet](resources/packet.png)
 
