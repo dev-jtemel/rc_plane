@@ -14,8 +14,8 @@ class controller {
 
   controller() = default;
 
-  controller(String TAG_, double NEUTRAL_, double MAX_OFFSET_, double MIN_OFFSET_, uint32_t TYPE_) 
-    : TAG(TAG_), NEUTRAL(NEUTRAL_), MAX_OFFSET(MAX_OFFSET_), MIN_OFFSET(MIN_OFFSET_), TYPE(TYPE_) {
+  controller(double NEUTRAL_, double MAX_OFFSET_, double MIN_OFFSET_) 
+    : NEUTRAL(NEUTRAL_), MAX_OFFSET(MAX_OFFSET_), MIN_OFFSET(MIN_OFFSET_) {
   }
 
   ~controller() {
@@ -41,48 +41,16 @@ class controller {
     return ((value - PVM_MIN) / (PVM_MAX - PVM_MIN)) * (MAX_OFFSET - MIN_OFFSET) + MIN_OFFSET; 
   }
 
-  template <typename T>
-  void log(T t) {
-    if (_log_open) {
-      Serial.print(t);
-      return;
+  void write_state() {
+    for (int i = 7; i >= 0; --i) {
+      Serial.print(static_cast<bool>(bitRead(_state, i)));
     }
-
-    Serial.print("[");
-    Serial.print(micros());
-    Serial.print("] ");
-    Serial.print("[");
-    Serial.print(TAG);
-    Serial.print("] ");
-    Serial.println(t);
-  }
-
-  void open_log() {
-    Serial.print("[");
-    Serial.print(micros());
-    Serial.print("] ");
-    Serial.print("[");
-    Serial.print(TAG);
-    Serial.print("] ");
-    _log_open = true;
-  }
-
-  void close_log() {
-    Serial.println();
-    _log_open = false;
-  }
-
-  void serial_log(double value) {
-    uint32_t sign = value > 0 ? 0x00000000 : 0x80000000;
-    uint32_t buffer = static_cast<uint32_t>(abs(value));
-    Serial.println(sign | TYPE | buffer, BIN);
   }
 
  protected:
   servo *_servos;
   double _pulse;
 
-  String TAG;
   double NEUTRAL;
   double MIN_OFFSET;
   double MAX_OFFSET;
@@ -90,8 +58,6 @@ class controller {
  private:
   const double PVM_MIN = 1000.00;
   const double PVM_MAX = 2000.00;
-  uint32_t TYPE = 0x0;
-  bool _log_open;
 };
 
 } // namespace interface
