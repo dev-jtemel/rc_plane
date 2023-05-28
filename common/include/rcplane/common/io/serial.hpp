@@ -24,7 +24,7 @@ class serial {
 
   void read_serial();
 
-  void register_cb(std::function<void(std::array<packet, 5U> &)> cb);
+  void register_cb(std::function<void(uint32_t timestamp, std::array<packet, 5U> &)> cb);
 
  private:
   void p_read_serial();
@@ -48,7 +48,7 @@ class serial {
 
   uint64_t _buffer;
   std::array<packet, 5U> _packets;
-  std::function<void(std::array<packet, 5U> &)> _cb;
+  std::function<void(uint32_t timestamp, std::array<packet, 5U> &)> _cb;
 };
 
 } // namesapce io

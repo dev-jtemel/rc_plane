@@ -68,7 +68,7 @@ serial::~serial() {
 #endif
 }
 
-void serial::register_cb(std::function<void(std::array<packet, 5U> &)> cb) {
+void serial::register_cb(std::function<void(uint32_t, std::array<packet, 5U> &)> cb) {
   _cb = cb;
 }
 
@@ -120,7 +120,11 @@ void serial::p_handle_buffer() {
   _packets[2].set(_buffer >> 16);
   _packets[3].set(_buffer >> 24);
   _packets[4].set(_buffer >> 32);
-  _cb(_packets);
+  if (_cb) {
+    _cb(static_cast<uint32_t>(_buffer >> 40), _packets);
+  } else {
+    RCPLANE_LOG(warn, TAG, "no cb regisetered");
+  }
 }
 
 } // namesapce io
