@@ -33,7 +33,7 @@ std::string packet::type_to_str() {
 
 void packet::convert_buffer() {
   if (is_twos_compliment() && (NEGATIVE & _buffer)) {
-    _data = -1 * static_cast<int>(static_cast<uint8_t>(~_buffer) + 1U);
+    _data = -static_cast<int>(static_cast<uint8_t>(~_buffer) + 1U);
   } else {
     _data = static_cast<int>(_buffer);
   }

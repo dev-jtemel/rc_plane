@@ -26,7 +26,7 @@ class packet {
 
   std::string type_to_str();
  private:
-  uint8_t NEGATIVE = 0x8;
+  uint8_t NEGATIVE = 0b10000000;
   void convert_buffer();
   bool is_twos_compliment();
 
