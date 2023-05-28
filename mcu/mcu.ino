@@ -22,15 +22,14 @@ mcu::lib::flight_switch flight_switch;
 
 void write_state() {
   uint32_t ms = static_cast<uint32_t>(millis());
-  for (int i = 23; i >= 0; --i) {
-    Serial.print(static_cast<bool>(bitRead(ms, i)));
+  for (int i = 5; i >= 0; --i) {
+    Serial.print(0xF & (ms >> i * 4), HEX);
   }
   for (int i = CONTROLLERS_COUNT - 1; i >= 0; --i) {
     controllers[i]->write_state();
   }
-  for (int i = 7; i >= 0; --i) {
-    Serial.print(static_cast<bool>(bitRead(STATE, i)));
-  }
+  Serial.print(STATE >> 4, HEX);
+  Serial.print((0x0F & STATE), HEX);
   Serial.println();
 }
 

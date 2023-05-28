@@ -42,9 +42,8 @@ class controller {
   }
 
   void write_state() {
-    for (int i = 7; i >= 0; --i) {
-      Serial.print(static_cast<bool>(bitRead(_state, i)));
-    }
+    Serial.print(_state >> 4, HEX);
+    Serial.print((0x0F & _state), HEX);
   }
 
  protected:

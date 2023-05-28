@@ -6,6 +6,7 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <bitset>
 
 #include "rcplane/common/io/serial.hpp"
 #include "rcplane/common/io/journal.hpp"
@@ -91,7 +92,7 @@ void serial::p_read_serial() {
     }
 
     try {
-      _buffer = std::stoul(_buf, nullptr, 2);
+      _buffer = std::stoul(_buf, nullptr, 16);
       p_handle_buffer();
     } catch (...) {
       // Do nothing
@@ -105,7 +106,7 @@ void serial::p_read_log() {
   std::string line;
   while (_log >> line) {
     try {
-      _buffer = std::stoul(line.c_str(), nullptr, 2);
+      _buffer = std::stoul(line.c_str(), nullptr, 16);
       p_handle_buffer();
     } catch (...) {
       RCPLANE_LOG(error, TAG, "failed to convert line: " << line);
