@@ -21,7 +21,10 @@ mcu::lib::test_switch test_switch;
 mcu::lib::flight_switch flight_switch;
 
 void write_state() {
-  Serial.print(PADDING);
+  uint32_t ms = static_cast<uint32_t>(millis());
+  for (int i = 23; i >= 0; --i) {
+    Serial.print(static_cast<bool>(bitRead(ms, i)));
+  }
   for (int i = CONTROLLERS_COUNT - 1; i >= 0; --i) {
     controllers[i]->write_state();
   }
