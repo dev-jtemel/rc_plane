@@ -1,3 +1,4 @@
 arduino-cli
 picocom
 curl
+python3-matplotlib

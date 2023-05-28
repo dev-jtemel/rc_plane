@@ -21,7 +21,7 @@ setup_permissions() {
 }
 
 install_apt() {
-  sudo apt install picocom curl
+  sudo apt install picocom curl python3-matplotlib
 }
 
 echo "**************************************"
