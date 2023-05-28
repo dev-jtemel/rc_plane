@@ -55,7 +55,39 @@ Timestamp buffer overflows at 16777215 milliseconds (16777.215 seconds; 279.6202
 ### Plane Dimensions
 The dimensions of the plane are laid out in the following sketch.
 
-![plane](resources/plane.drawio)
+![plane](resources/plane.png)
+
+The Dimensions were calculated as follows:
+| **Identifier** | **Relation**  | **Result** |
+|----------|-----------|----------------------|
+| Chord \(C\) | N/A | 20cm |
+| Wingspan (WS) | 5 x C | 100cm |
+| WingArea (WA) | C x WS | 2000cm^2 |
+| Fuselage Length (FL) | 75% of WS | 75cm |
+| Nose Length (NL) | 20% of FL | 15cm |
+| Mid Length (ML) | ~37% of FL | 28cm |
+| Tail Length (TL) | ~2.5% of FL | 2cm |
+| Fuselage Height (FH) | 10% of FL | 7.5cm |
+| Horz. Stabilizer Width (HSW) | FL - NL - ML - TL | 10cm |
+| Horz. Stabilizer Area (HSA) | 20% of WA | 400cm^2 |
+| Horz. Stabilizer Length (HSL) | HSA / HSW | 40cm |
+| Aileron Width (AW) | 12.5% of C | 2.5cm |
+| Aileron Length (AL) | 10 x AW | 25cm |
+| Elevator Width (EW) | (20% of HSA) / HSL | 2cm |
+| Elevator Length (EL) | HSL | 40cm |
+| Vert. Stabilizer Area (VSA) | 33% of HSA | 132 cm^2 |
+| Vert. Stabilizer Width (VSW) | HSW - EW | 8cm |
+| Vert. Stabilizer Height (VSH) | VSW | 8cm |
+| Rudder Area (RA) | 50% of VSA | 66cm |
+| Rudder Height (RH) | VSH | 8cm |
+| Rudder Width (RW) | 50% VSW | 4cm |
+| Angle of Attack (AoA) | | 3deg |
+| Dihedral (D) | | 2deg |
+| Center of Gravity (CoG) | 25% of C | 5cm |
+
+
+
+
 
 ## Build
 To compile the entire project, use the `full_build.sh` script. The following sections layout how to
@@ -117,3 +149,4 @@ The following components are used in the build:
 - (1) Green LED
 - (1) Red LED
 - (1) Blue LED
+
