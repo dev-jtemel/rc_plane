@@ -10,7 +10,7 @@ namespace lib {
 
 class test_switch : public interface::switch_controller{
  public:
-  test_switch() : interface::switch_controller("test_switch") {
+  test_switch() : interface::switch_controller() {
   }
 
   ~test_switch() = default;

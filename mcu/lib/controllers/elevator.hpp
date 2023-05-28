@@ -10,7 +10,7 @@ namespace lib {
 
 class elevator : public interface::controller {
  public:
-  elevator() : interface::controller("elevator", 115, 50, -50, 0x8000000) {
+  elevator() : interface::controller(115, 50, -50) {
   }
 
   ~elevator() = default;

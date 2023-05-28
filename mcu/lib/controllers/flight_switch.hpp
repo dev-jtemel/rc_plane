@@ -10,7 +10,7 @@ namespace lib {
 
 class flight_switch : public interface::switch_controller{
  public:
-  flight_switch() : interface::switch_controller("flight_switch") {
+  flight_switch() : interface::switch_controller() {
   }
 
   ~flight_switch() = default;

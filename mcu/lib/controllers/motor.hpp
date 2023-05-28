@@ -10,7 +10,7 @@ namespace lib {
 
 class motor : public interface::controller {
  public:
-  motor() : interface::controller("motor", 0, 255, 0, 0x2000000) {
+  motor() : interface::controller(0, 255, 0) {
   }
 
   ~motor() = default;

@@ -10,7 +10,7 @@ namespace lib {
 
 class rudder : public interface::controller {
  public:
-  rudder() : interface::controller("rudder", 115, 35, -35, 0x10000000) {
+  rudder() : interface::controller(115, 35, -35) {
   }
 
   ~rudder() = default;

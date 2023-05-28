@@ -13,7 +13,7 @@ class aileron : public interface::controller {
   const uint8_t LEFT = 0U;
   const uint8_t RIGHT = 1U;
 
-  aileron() : interface::controller("aileron", 115, 30, -30, 0x4000000) {
+  aileron() : interface::controller(115, 30, -30) {
   }
 
   ~aileron() = default;
