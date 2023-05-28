@@ -10,6 +10,8 @@ namespace interface {
 
 class controller {
  public:
+  uint8_t _state;
+
   controller() = default;
 
   controller(String TAG_, double NEUTRAL_, double MAX_OFFSET_, double MIN_OFFSET_, uint32_t TYPE_) 

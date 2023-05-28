@@ -51,7 +51,7 @@ class motor : public interface::controller {
     }
     analogWrite(pins::motor::ENABLE_PIN, _pulse);
 
-    serial_log(_pulse);
+    _state = static_cast<uint8_t>(_pulse); 
   }
 
   virtual void stop() {

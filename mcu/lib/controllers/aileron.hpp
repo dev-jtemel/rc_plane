@@ -54,8 +54,7 @@ class aileron : public interface::controller {
     _pulse = toRange(pulseIn(pins::aileron::IN_PIN, HIGH));
     _servos[LEFT].write(NEUTRAL - _pulse);
     _servos[RIGHT].write(NEUTRAL + _pulse);
-
-    serial_log(_pulse);
+    _state = static_cast<uint8_t>(_pulse); 
   }
 
   virtual void stop() {

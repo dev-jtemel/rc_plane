@@ -37,7 +37,7 @@ class serial {
 #ifdef SIMULATION
   std::ifstream _log = std::ifstream("./logs/test.log");
 #else
-  static const uint32_t MAX_LEN = 33U;
+  static const uint32_t MAX_LEN = 65U;
   const std::string _tty = "/dev/ttyACM0";
   int _fd;
   int _res;

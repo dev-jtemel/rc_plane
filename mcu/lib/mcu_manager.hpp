@@ -7,9 +7,6 @@
 #include "./controllers/rudder.hpp"
 #include "./controllers/motor.hpp"
 
-#include "./leds/wing_led.hpp"
-#include "./leds/power_led.hpp"
-
 #include "./controllers/test_switch.hpp"
 #include "./controllers/flight_switch.hpp"
 
@@ -29,8 +26,6 @@ class mcu_manager {
     _controllers[1] = &_aileron;
     _controllers[2] = &_elevator;
     _controllers[3] = &_rudder;
-    _controllers[4] = &_wing_led;
-    _controllers[5] = &_power_led;
   }
 
   bool setup() {
@@ -47,19 +42,18 @@ class mcu_manager {
 
   void test() {
     uint16_t i = 0;
-    Serial.println(0x1000000 | STATE, BIN);
+    write_state();
     for (auto ctr : _controllers) {
       ctr->test();
       STATE |= flag::TEST_FLAGS[i++];
-      Serial.println(0x1000000 | STATE, BIN);
+      write_state();
     }
   }
 
   void step() {
-    Serial.println(0x1000000 | STATE, BIN);
+    write_state();
     if (!(STATE & flag::TEST_COMPLETE)) {
       bool state = _test_switch.state();
-      _power_led.on();
       if (state) {
         test();
       }
@@ -89,15 +83,26 @@ class mcu_manager {
     }
   }
 
-  static const uint8_t CONTROLLERS_COUNT = 6U;
-  uint16_t STATE;
+  void write_state() {
+    Serial.print("000000000000000000000000");
+    for (int i = 3; i >= 0; --i) {
+      for (int j = 7; j >= 0; --j) {
+        Serial.print(static_cast<bool>(bitRead(_controllers[i]->_state, j)));
+      }
+    }
+    for (int i = 7; i >= 0; --i) {
+      Serial.print(static_cast<bool>(bitRead(STATE, i)));
+    }
+    Serial.println();
+  }
+
+  static const uint8_t CONTROLLERS_COUNT = 4U;
+  uint8_t STATE;
 
   motor _motor;
   aileron _aileron;
   elevator _elevator;
   rudder _rudder;
-  wing_led _wing_led;
-  power_led _power_led;
 
   interface::controller *_controllers[CONTROLLERS_COUNT];
   test_switch _test_switch;

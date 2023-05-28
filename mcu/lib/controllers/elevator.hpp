@@ -49,8 +49,7 @@ class elevator : public interface::controller {
       _pulse /= 2;
     }
     _servos[0].write(NEUTRAL - _pulse);
-
-    serial_log(_pulse);
+    _state = static_cast<uint8_t>(_pulse); 
   }
 
   virtual void stop() {

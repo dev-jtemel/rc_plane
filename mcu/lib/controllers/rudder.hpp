@@ -44,7 +44,7 @@ class rudder : public interface::controller {
   virtual void step() {
     _pulse = toRange(pulseIn(pins::rudder::IN_PIN, HIGH));
     _servos[0].write(NEUTRAL - _pulse);
-    serial_log(_pulse);
+    _state = static_cast<uint8_t>(_pulse); 
   }
 
   virtual void stop() {
