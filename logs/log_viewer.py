@@ -1,6 +1,7 @@
 #!/bin/env python3
 
 import matplotlib.pyplot as plt
+import sys
 
 TIMESTAMPS = []
 STATE = []
@@ -12,7 +13,7 @@ RUDDER = []
 def twos8(value):
     return -(value & 0x80) | (value & 0x7F)
 
-with open("./test.log") as file:
+with open(sys.argv[1]) as file:
     for line in file:
         line = line.rstrip()
 

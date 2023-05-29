@@ -44,6 +44,7 @@ class serial {
   termios _otio;
   termios _ntio;
   char _buf[MAX_LEN];
+  std::ofstream _blackbox;
 #endif
 
   uint64_t _buffer;

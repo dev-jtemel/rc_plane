@@ -7,6 +7,8 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <bitset>
+#include <chrono>
+#include <sstream>
 
 #include "rcplane/common/io/serial.hpp"
 #include "rcplane/common/io/journal.hpp"
@@ -28,6 +30,13 @@ serial::serial() {
     RCPLANE_LOG(error, TAG, "Failed to open " << _tty);
     throw std::runtime_error("");
   }
+
+  std::stringstream ss;
+  ss << "./logs/" << std::chrono::duration_cast<std::chrono::milliseconds>(
+    std::chrono::system_clock::now().time_since_epoch()
+  ).count() << ".log";
+
+  _blackbox = std::ofstream(ss.str());
 
   // Store copy of old values
   tcgetattr(_fd, &_otio);
@@ -66,6 +75,7 @@ serial::~serial() {
 #ifndef SIMULATION
   // Restore old values
   tcsetattr(_fd, TCSANOW, &_otio);
+  _blackbox.close();
 #endif
 }
 
@@ -94,6 +104,7 @@ void serial::p_read_serial() {
     try {
       _buffer = std::stoul(_buf, nullptr, 16);
       p_handle_buffer();
+      _blackbox << _buf << std::endl;
     } catch (...) {
       // Do nothing
     }
