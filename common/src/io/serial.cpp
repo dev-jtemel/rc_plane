@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <bitset>
 #include <chrono>
+#include <thread>
 #include <sstream>
 
 #include "rcplane/common/io/serial.hpp"
@@ -17,6 +18,7 @@
 namespace rcplane {
 namespace common {
 namespace io {
+
 serial::serial() {
   _packets[0] = packet(packet::type::state, 0U);
   _packets[1] = packet(packet::type::motor, 0U);
@@ -115,10 +117,17 @@ void serial::p_read_serial() {
 void serial::p_read_log() {
 #ifdef SIMULATION
   std::string line;
+  uint32_t lastSeenTime = 0U;
   while (_log >> line) {
     try {
       _buffer = std::stoul(line.c_str(), nullptr, 16);
+      auto timestamp = static_cast<uint32_t>(_buffer >> 40);
+
+      std::this_thread::sleep_for(std::chrono::milliseconds(timestamp - lastSeenTime));
+
       p_handle_buffer();
+
+      lastSeenTime = timestamp;
     } catch (...) {
       RCPLANE_LOG(error, TAG, "failed to convert line: " << line);
     }
