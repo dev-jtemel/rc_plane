@@ -2,6 +2,7 @@
 *.d
 *.swp
 *.log
+*.blackbox
 
 # Compiled Object files
 *.slo

@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <bitset>
 #include <chrono>
+#include <iomanip>
 #include <thread>
 #include <sstream>
 
@@ -34,9 +35,12 @@ serial::serial() {
   }
 
   std::stringstream ss;
-  ss << "./logs/" << std::chrono::duration_cast<std::chrono::milliseconds>(
-    std::chrono::system_clock::now().time_since_epoch()
-  ).count() << ".log";
+
+  std::time_t now_t = std::chrono::system_clock::to_time_t(
+    std::chrono::system_clock::now()
+  );
+
+  ss << "./logs/" << std::put_time(std::localtime(&now_t), "%F-%T") << ".blackbox";
 
   _blackbox = std::ofstream(ss.str());
 
