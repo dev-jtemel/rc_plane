@@ -26,126 +26,80 @@ with open(sys.argv[1]) as file:
         ELEVATOR.append(twos8(int(line[8:10], 16)))
         RUDDER.append(twos8(int(line[6:8], 16)))
 
-
-
-# Parameters
-length = 0.3  # Length of the rectangle
-width = 0.1  # Width of the rectangle
-height = 0.02  # Height of the rectangle
-
-elength = 0.42 # Length of the rectangle
-ewidth = 0.1  # Width of the rectangle
-eheight = 0.02  # Height of the rectangle
-
-rlength = 0.02  # Length of the rectangle
-rwidth = 0.1  # Width of the rectangle
-rheight = 0.2  # Height of the rectangle
-
-# Simulation settings
-dt = 0.01  # Time step
-num_steps = 21  # Number of simulation steps
-
 # Create figure and 3D axes
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
-ax.set_axis_off()
 
-ax.grid(False)
+class Object:
+    def __init__(self, length, width, height, offset = [0, 0, 0], color='red'):
+        self._vertices = np.array([
+            [0, 0, 0], [length, 0 , 0], [length, width, 0], [0, width, 0],
+            [0, 0, height], [length, 0, height], [length, width, height], [0, width, height]
+        ])
 
-# Define the vertices of the rectangle
-vertices = np.array([
-    [0, 0, 0], [length, 0, 0], [length, width, 0], [0, width, 0],
-    [0, 0, height], [length, 0, height], [length, width, height], [0, width, height]
-])
+        self._offset = np.array([offset for _ in range(8)])
 
-vertices2 = np.array([
-    [0.5, 0, 0], [length + 0.5, 0, 0], [length + 0.5, width, 0], [0.5, width, 0],
-    [0.5, 0, height], [length + 0.5, 0, height], [length + 0.5, width, height], [0.5, width, height]
-])
+        self._color = color 
+        self._faces = np.array([
+            [0, 1, 2, 3], [4, 5, 6, 7], [0, 1, 5, 4], [1, 2, 6, 5],
+            [2, 3, 7, 6], [3, 0, 4, 7], [0, 3, 2, 5], [1, 4, 7, 6]
+        ])
+        self._rotation_matrix = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
 
-vertices3 = np.array([
-    [0, 0 , 0], [elength, 0 , 0], [elength, ewidth , 0], [0, ewidth  , 0],
-    [0, 0 , eheight], [elength, 0 , eheight], [elength, ewidth , eheight], [0, ewidth , eheight]
-])
+    def rot_x(self, angle):
+        self._rotation_matrix = np.array([
+                                    [1, 0, 0],
+                                    [0, np.cos(np.radians(angle)), -np.sin(np.radians(angle))],
+                                    [0, np.sin(np.radians(angle)), np.cos(np.radians(angle))]
+                                ])
 
-vertices4 = np.array([
-    [0+ 0.5, 0, 0], [elength+ 0.5, 0 , 0], [elength+ 0.5, ewidth , 0], [0+ 0.5, ewidth  , 0],
-    [0+ 0.5, 0, eheight], [elength+ 0.5, 0 , eheight], [elength+ 0.5, ewidth , eheight], [0+ 0.5, ewidth , eheight]
-])
 
-vertices5 = np.array([
-    [0, 0, 0], [rlength, 0 , 0], [rlength, rwidth , 0], [0, rwidth  , 0],
-    [0, 0, rheight], [rlength, 0 , rheight], [rlength, rwidth , rheight], [0, rwidth , rheight]
-])
+    def rot_z(self, angle):
+        self._rotation_matrix = np.array([
+                                    [np.cos(np.radians(angle)), -np.sin(np.radians(angle)), 0],
+                                    [np.sin(np.radians(angle)), np.cos(np.radians(angle)), 0],
+                                    [0, 0, 1],
+                                ])
 
-# Define the faces of the rectangle
-faces = np.array([
-    [0, 1, 2, 3], [4, 5, 6, 7], [0, 1, 5, 4], [1, 2, 6, 5],
-    [2, 3, 7, 6], [3, 0, 4, 7], [0, 3, 2, 5], [1, 4, 7, 6]
-])
+    def step(self):
+        rotated_vertices = np.dot(self._vertices, self._rotation_matrix) + self._offset
+        alpha = 0.2 if self._color == 'red' else 1
+        return Poly3DCollection([rotated_vertices[face] for face in self._faces], facecolor=self._color, color=self._color, alpha=alpha)
 
-angles = [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 ]
-angles2 = [ 0, 2, 8, 10, 20, 20, 8, 7, 8, 9, 10, -11, -12, -13, -14, -15, -16, -17, -18, -19, -20 ]
-offset2 = np.array([
-                        [0.20, 0.5, 0],
-                        [0.20, 0.5, 0],
-                        [0.20, 0.5, 0],
-                        [0.20, 0.5, 0],
-                        [0.20, 0.5, 0],
-                        [0.20, 0.5, 0],
-                        [0.20, 0.5, 0],
-                        [0.20, 0.5, 0],
-                        ])
-offset3 = np.array([
-                        [0.40, 0.5, 0],
-                        [0.40, 0.5, 0],
-                        [0.40, 0.5, 0],
-                        [0.40, 0.5, 0],
-                        [0.40, 0.5, 0],
-                        [0.40, 0.5, 0],
-                        [0.40, 0.5, 0],
-                        [0.40, 0.5, 0],
-                        ])
 
-# Simulation loop
+body = Object(0.1, 0.75, 0.1, offset=[0.45, 0.0, 0.0])
+wings = Object(1, 0.15, 0.01, offset=[0.0, 0.1, 0.09])
+h_stab = Object(0.5, 0.05, 0.01, offset=[0.25, 0.65, 0.09])
+v_stab = Object(0.02, 0.03, 0.2, offset=[0.49, 0.65, 0.09])
+
+aileron_left = Object(0.4, 0.05, 0.01, offset=[0.0, 0.25, 0.09], color='blue')
+aileron_right = Object(0.4, 0.05, 0.01, offset=[0.6, 0.25, 0.09], color='blue')
+
+elevator_left = Object(0.15, 0.05, 0.01, offset=[0.25, 0.7, 0.09], color='blue')
+elevator_right = Object(0.15, 0.05, 0.01, offset=[0.6, 0.7, 0.09], color='blue')
+rudder = Object(0.02, 0.03, 0.2, offset=[0.49, 0.68, 0.09], color='blue')
+
 for step in range(len(TIMESTAMPS)):
-    # Clear the previous frame
     ax.cla()
 
-    # Calculate rotation matrix
-    rotation_matrix = np.array([[1, 0, 0],
-                                [0, np.cos(np.radians(AILERON[step])), -np.sin(np.radians(AILERON[step]))],
-                                [0, np.sin(np.radians(AILERON[step])), np.cos(np.radians(AILERON[step]))]])
+    ax.add_collection3d(body.step())
+    ax.add_collection3d(wings.step())
+    ax.add_collection3d(h_stab.step())
+    ax.add_collection3d(v_stab.step())
 
-    rotation_matrix1 = np.array([[1, 0, 0],
-                                [0, np.cos(np.radians(-AILERON[step])), -np.sin(np.radians(-AILERON[step]))],
-                                [0, np.sin(np.radians(-AILERON[step])), np.cos(np.radians(-AILERON[step]))]])
+    aileron_right.rot_x(AILERON[step])
+    aileron_left.rot_x(-AILERON[step])
+    elevator_right.rot_x(ELEVATOR[step])
+    elevator_left.rot_x(ELEVATOR[step])
+    rudder.rot_z(RUDDER[step])
 
-    rotation_matrix2 = np.array([
-                                [1, 0, 0],
-                                [0, np.cos(np.radians(ELEVATOR[step])), -np.sin(np.radians(ELEVATOR[step]))],
-                                [0, np.sin(np.radians(ELEVATOR[step])), np.cos(np.radians(ELEVATOR[step]))],
-                                ])
-    rotation_matrix3 = np.array([
-                                [np.cos(np.radians(RUDDER[step])), -np.sin(np.radians(RUDDER[step])), 0],
-                                [np.sin(np.radians(RUDDER[step])), np.cos(np.radians(RUDDER[step])), 0],
-                                [0, 0, 1],
-                                ])
+    ax.add_collection3d(aileron_left.step())
+    ax.add_collection3d(aileron_right.step())
+    ax.add_collection3d(rudder.step())
+    ax.add_collection3d(elevator_left.step())
+    ax.add_collection3d(elevator_right.step())
 
-    # Rotate the vertices
-    rotated_vertices = np.dot(vertices, rotation_matrix)
-    rotated_vertices1 = np.dot(vertices2, rotation_matrix1)
-    rotated_vertices2 = np.dot(vertices3, rotation_matrix2)
-    rotated_vertices4 = np.dot(vertices5, rotation_matrix3)
-
-    rotated_vertices2 += offset2
-    rotated_vertices4 += offset3
-
-    # Plot the rectangle
-    ax.add_collection3d(Poly3DCollection([rotated_vertices[face] for face in faces], alpha=1))
-    ax.add_collection3d(Poly3DCollection([rotated_vertices1[face] for face in faces], alpha=1))
-    ax.add_collection3d(Poly3DCollection([rotated_vertices2[face] for face in faces], alpha=1, color='red'))
-    ax.add_collection3d(Poly3DCollection([rotated_vertices4[face] for face in faces], alpha=1, color='green'))
+    plt.pause(0.1)
 
     for axis in [ax.xaxis, ax.yaxis, ax.zaxis]:
         axis.set_ticklabels([])
@@ -158,17 +112,6 @@ for step in range(len(TIMESTAMPS)):
         axis._axinfo['tick']['outward_factor'] = 0.0
         axis.set_pane_color((1, 1, 1))
 
-    # Pause to control the animation speed
-    plt.pause(0.01)
+    ax.view_init(elev=-ELEVATOR[step], azim=90 + RUDDER[step]/2)
 
-ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
-ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
-ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
-ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
-ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
-ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
-# make the grid lines transparent
-ax.xaxis._axinfo["grid"]['color'] =  (1,1,1,0)
-ax.yaxis._axinfo["grid"]['color'] =  (1,1,1,0)
-ax.zaxis._axinfo["grid"]['color'] =  (1,1,1,0)
 plt.show()
