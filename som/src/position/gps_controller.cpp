@@ -13,7 +13,7 @@ gps_controller::~gps_controller() {
 
 bool gps_controller::init() {
   RCPLANE_LOG(info, _tag, "initialized");
-  return false;
+  return true;
 }
 
 void gps_controller::start() {
