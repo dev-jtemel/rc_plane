@@ -70,7 +70,7 @@ do
       break
     elif [ "$opt" = "Compile-SOM" ];
     then
-      ssh pi@${SOMIP} 'cd rc_plane && ./scripts/compile-som.sh /home/pi/rc_plane'
+      ssh pi@${SOMIP} 'cd rc_plane && git pull && ./scripts/compile-som.sh /home/pi/rc_plane'
       break
     elif [ "$opt" = "Compile-PC" ];
     then

@@ -8,6 +8,7 @@
 #include "rcplane/common/io/journal.hpp"
 #include "rcplane/common/io/serial_controller.hpp"
 #include "rcplane/common/network/http_controller.hpp"
+#include "rcplane/som/position/gps_controller.hpp"
 
 std::string TAG = "som-controller";
 
@@ -44,6 +45,9 @@ int main(int argc, char *argv[]) {
     RCPLANE_LOG(debug, TAG, "serial_controller cb fired!");
   });
   controllers.push_back(std::move(serial_controller));
+
+  auto gps_controller = std::make_unique<rcplane::som::position::gps_controller>();
+  controllers.push_back(std::move(gps_controller));
 
   // Initialize
   network_controller->init();
