@@ -82,6 +82,7 @@ bool serial::init() {
   tcsetattr(_fd, TCSANOW, &_ntio);
 #endif
 
+  RCPLANE_LOG(info, _tag, "initialized");
   return true;
 }
 
@@ -103,6 +104,8 @@ void serial::start() {
     p_read_serial();
 #endif
   });
+
+  RCPLANE_LOG(info, _tag, "started");
 }
 
 void serial::terminate() {
@@ -117,6 +120,8 @@ void serial::terminate() {
   tcsetattr(_fd, TCSANOW, &_otio);
   _blackbox.close();
 #endif
+
+  RCPLANE_LOG(info, _tag, "terminated");
 }
 
 void serial::p_read_serial() {
@@ -175,13 +180,26 @@ void serial::p_read_log() {
 }
 
 void serial::p_handle_buffer() {
+  auto timestamp = static_cast<uint32_t>(_buffer >> 40);
   _packets[0].set(_buffer);
   _packets[1].set(_buffer >> 8);
   _packets[2].set(_buffer >> 16);
   _packets[3].set(_buffer >> 24);
   _packets[4].set(_buffer >> 32);
+
+  RCPLANE_LOG(
+    trace,
+    _tag,
+    "[" << timestamp << "]"
+    << " state = " << std::bitset<8>(_packets[0].data())
+    << " | motor = " << _packets[1].data()
+    << " | aileron = " << _packets[2].data()
+    << " | elevator = " << _packets[3].data()
+    << " | rudder = " << _packets[4].data()
+  ); 
+
   if (_cb) {
-    _cb(static_cast<uint32_t>(_buffer >> 40), _packets);
+    _cb(timestamp, _packets);
   } else {
     RCPLANE_LOG(warn, _tag, "no cb regisetered");
   }

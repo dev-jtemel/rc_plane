@@ -16,7 +16,7 @@ std::condition_variable main_cv;
 volatile bool running = false;
 
 void termination_handler(int signum) {
-  RCPLANE_LOG(warn, TAG, "termination signal received");
+  RCPLANE_LOG(warn, TAG, "\ntermination signal received");
 
   std::lock_guard<std::mutex> lock(main_lock);
   running = false;
@@ -24,7 +24,7 @@ void termination_handler(int signum) {
 }
 
 int main(int argc, char *argv[]) {
-  RCPLANE_SEVERITY(trace);
+  RCPLANE_SEVERITY(info);
   RCPLANE_LOG(info, TAG, "starting");
 
   signal(SIGINT, termination_handler);
@@ -41,16 +41,7 @@ int main(int argc, char *argv[]) {
 
   auto serial_controller = std::make_unique<rcplane::common::io::serial>();
   serial_controller->register_cb([&](auto timestamp, auto &packets){
-    RCPLANE_LOG(
-      info,
-      TAG,
-      "[" << timestamp << "]"
-      << " state = " << std::bitset<8>(packets[0].data())
-      << " | motor = " << packets[1].data()
-      << " | aileron = " << packets[2].data()
-      << " | elevator = " << packets[3].data()
-      << " | rudder = " << packets[4].data()
-    ); 
+    RCPLANE_LOG(debug, TAG, "serial_controller cb fired!");
   });
   controllers.push_back(std::move(serial_controller));
 
