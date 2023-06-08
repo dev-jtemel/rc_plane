@@ -2,13 +2,17 @@ cmake_minimum_required(VERSION 3.16)
 project(rc-plane)
 
 set(CMAKE_CXX_STANDARD 17)
-set (CMAKE_CXX_FLAGS "-O3")
+set(CMAKE_CXX_FLAGS "-O3")
 
 find_package(Threads REQUIRED)
 
 if(SIMULATION)
   message(STATUS "Building using simulation")
   add_definitions(-DSIMULATION)
+endif()
+
+if (SOM_BUILD)
+  set(CMAKE_CXX_COMPILER  aarch64-linux-gnu-g++)
 endif()
 
 include_directories(

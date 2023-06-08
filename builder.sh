@@ -2,6 +2,7 @@
 
 ROOT_DIR="$PWD"
 DEV="/dev/ttyACM0"
+SOMIP="192.168.0.13"
 SIMULATION="OFF"
 
 OPTIONS="\
@@ -25,6 +26,8 @@ usage() {
   echo "    -d [dev] : The tty port the microcontroller is connected to."
   echo "               Default: /dev/ttyACM0"
   echo "    -s       : Use simulated communication."
+  echo "    -i       : SoM IP address."
+  echo "               Default: 192.168.0.13"
   echo ""
   echo "COMMANDS:"
   echo "  1) Compile-MCU          : Compile the MCU code."
@@ -40,11 +43,13 @@ usage() {
   echo "  12) Quit                : Exit the builder script."
 }
 
-while getopts "sd:h" opt; do
+while getopts "sd:i:h" opt; do
     case "$opt" in
         d) DEV="$OPTARG";
             ;;
         s) SIMULATION="ON";
+            ;;
+        i) SOMIP="$OPTARG";
             ;;
         h) usage; exit 0
             ;;
@@ -55,7 +60,7 @@ done
 
 while true;
 do
-  echo "DEV = ${DEV} | SIMULATION = ${SIMULATION}"
+  echo "DEV = ${DEV} | SIMULATION = ${SIMULATION} | SOMIP = ${SOMIP}"
 
   select opt in ${OPTIONS};
   do
@@ -65,7 +70,7 @@ do
       break
     elif [ "$opt" = "Compile-SOM" ];
     then
-      bash scripts/compile-som.sh "$ROOT_DIR"
+      bash scripts/compile-som.sh "$ROOT_DIR" 
       break
     elif [ "$opt" = "Compile-PC" ];
     then
@@ -77,11 +82,11 @@ do
       break
     elif [ "$opt" = "Flash-SOM" ];
     then
-      bash scripts/flash-som.sh "$ROOT_DIR" "$DEV"
+      scp "$ROOT_DIR"/build_som/som/som-controller pi@${SOMIP}:~/bin
       break
     elif [ "$opt" = "Run-SOM" ];
     then
-      bash scripts/run-som.sh "$ROOT_DIR"
+      ssh pi@${SOMIP} '~/bin/som-controller'
       break
     elif [ "$opt" = "Run-PC" ];
     then
