@@ -30,20 +30,16 @@ int main(int argc, char *argv[]) {
   signal(SIGINT, termination_handler);
   RCPLANE_LOG(info, TAG, "termination handler set");
 
-  std::function<void()> start_handler = [&](){};
-  std::function<void()> stop_handler = [&](){};
-
+  // Create network controller
   std::unique_ptr<rcplane::common::network::interface::network_interface> network_controller
     = std::make_unique<rcplane::common::network::http_controller>(
         termination_handler
       );
 
-  network_controller->register_start_handler(start_handler);
-  network_controller->register_stop_handler(stop_handler);
+  // Create and link controllers
+  std::vector<std::unique_ptr<rcplane::common::interface::base_controller>> controllers;
 
-  std::unique_ptr<rcplane::common::io::serial> serial_controller
-    = std::make_unique<rcplane::common::io::serial>();
-
+  auto serial_controller = std::make_unique<rcplane::common::io::serial>();
   serial_controller->register_cb([&](auto timestamp, auto &packets){
     RCPLANE_LOG(
       info,
@@ -56,11 +52,21 @@ int main(int argc, char *argv[]) {
       << " | rudder = " << packets[4].data()
     ); 
   });
+  controllers.push_back(std::move(serial_controller));
 
+  // Initialize
   network_controller->init();
-  network_controller->start();
+  for (auto &c : controllers) {
+    if (!c->init()) {
+      return EXIT_FAILURE;
+    }
+  }
 
-  serial_controller->read_serial();
+  // Start the controllers
+  network_controller->start();
+  for (auto &c : controllers) {
+    c->start();
+  }
 
   {
     std::unique_lock<std::mutex> lock(main_lock);
@@ -68,6 +74,10 @@ int main(int argc, char *argv[]) {
     main_cv.wait(lock, [&]{ return !running; });
   }
 
+  // Stop the controllers
+  for (auto &c : controllers) {
+    c->terminate();
+  }
   network_controller->terminate();
 
   return EXIT_SUCCESS;

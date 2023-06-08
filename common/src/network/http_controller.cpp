@@ -1,3 +1,4 @@
+#include "rcplane/common/io/journal.hpp"
 #include "rcplane/common/network/http_controller.hpp"
 
 namespace rcplane {
@@ -5,7 +6,7 @@ namespace common {
 namespace network {
 
 http_controller::http_controller(std::function<void(int)> termination_handler)
-  : ::rcplane::common::interface::network_interface(termination_handler) {
+  : interface::network_interface(termination_handler) {
 }
 
 http_controller::~http_controller() {

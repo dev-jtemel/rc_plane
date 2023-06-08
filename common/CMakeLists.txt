@@ -5,3 +5,11 @@ add_library(rcplane_common_io
   src/io/packet.cpp
   src/io/serial.cpp
 )
+
+add_library(rcplane_common_network
+  src/network/http_controller.cpp
+)
+
+target_link_libraries(rcplane_common_network
+  rcplane_common_io
+)

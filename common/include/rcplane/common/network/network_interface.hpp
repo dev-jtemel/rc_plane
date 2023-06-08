@@ -22,17 +22,7 @@ class network_interface : public ::rcplane::common::interface::base_controller {
   virtual void start() = 0;
   virtual void terminate() = 0;
 
-  virtual void register_start_handler(std::function<void()> start_handler) {
-    _start_handler = start_handler;
-  }
-
-  virtual void register_stop_handler(std::function<void()> stop_handler) {
-    _stop_handler = stop_handler;
-  }
-
  protected:
-  std::function<void()> _stop_handler;
-  std::function<void()> _start_handler;
   std::function<void(int)> _termination_handler;
 };
 
