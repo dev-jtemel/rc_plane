@@ -20,7 +20,13 @@ namespace rcplane {
 namespace common {
 namespace io {
 
-serial::serial() {
+serial::serial() : ::rcplane::common::interface::base_controller("serial") {
+}
+
+serial::~serial() {
+}
+
+bool serial::init() {
   _packets[0] = packet(packet::type::state, 0U);
   _packets[1] = packet(packet::type::motor, 0U);
   _packets[2] = packet(packet::type::aileron, 0U);
@@ -30,8 +36,8 @@ serial::serial() {
 #ifndef SIMULATION
   _fd = open(_tty.c_str(), O_RDWR | O_NOCTTY);
   if (_fd < 0) {
-    RCPLANE_LOG(error, TAG, "Failed to open " << _tty);
-    throw std::runtime_error("");
+    RCPLANE_LOG(error, _tag, "Failed to open " << _tty);
+    return false;
   }
 
   std::stringstream ss;
@@ -75,9 +81,37 @@ serial::serial() {
   tcflush(_fd, TCIFLUSH);
   tcsetattr(_fd, TCSANOW, &_ntio);
 #endif
+
+  return true;
 }
 
-serial::~serial() {
+
+void serial::register_cb(std::function<void(uint32_t, std::array<packet, 5U> &)> cb) {
+  _cb = cb;
+}
+
+void serial::start() {
+  {
+    std::lock_guard<std::mutex> lk(_lk);
+    _running = true;
+  }
+
+  _worker = std::thread([&](){
+#ifdef SIMULATION
+    p_read_log();
+#else
+    p_read_serial();
+#endif
+  });
+}
+
+void serial::terminate() {
+  {
+    std::lock_guard<std::mutex> lk(_lk);
+    _running = false;
+  }
+  _worker.join();
+
 #ifndef SIMULATION
   // Restore old values
   tcsetattr(_fd, TCSANOW, &_otio);
@@ -85,21 +119,16 @@ serial::~serial() {
 #endif
 }
 
-void serial::register_cb(std::function<void(uint32_t, std::array<packet, 5U> &)> cb) {
-  _cb = cb;
-}
-
-void serial::read_serial() {
-#ifdef SIMULATION
-  p_read_log();
-#else
-  p_read_serial();
-#endif
-}
-
 void serial::p_read_serial() {
 #ifndef SIMULATION
-  while (1) { 
+  while (true) { 
+    {
+      std::lock_guard<std::mutex> lk(_lk);
+      if (!_running) {
+        break;
+      }
+    }
+
     _res = read(_fd, _buf, MAX_LEN - 1); 
     _buf[_res]='\0'; 
 
@@ -123,6 +152,12 @@ void serial::p_read_log() {
   std::string line;
   uint32_t lastSeenTime = 0U;
   while (_log >> line) {
+    {
+      std::lock_guard<std::mutex> lk(_lk);
+      if (!_running) {
+        break;
+      }
+    }
     try {
       _buffer = std::stoul(line.c_str(), nullptr, 16);
       auto timestamp = static_cast<uint32_t>(_buffer >> 40);
@@ -133,7 +168,7 @@ void serial::p_read_log() {
 
       lastSeenTime = timestamp;
     } catch (...) {
-      RCPLANE_LOG(error, TAG, "failed to convert line: " << line);
+      RCPLANE_LOG(error, _tag, "failed to convert line: " << line);
     }
   }
 #endif
@@ -148,7 +183,7 @@ void serial::p_handle_buffer() {
   if (_cb) {
     _cb(static_cast<uint32_t>(_buffer >> 40), _packets);
   } else {
-    RCPLANE_LOG(warn, TAG, "no cb regisetered");
+    RCPLANE_LOG(warn, _tag, "no cb regisetered");
   }
 }
 

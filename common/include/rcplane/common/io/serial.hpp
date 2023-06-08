@@ -10,6 +10,7 @@
 
 #include "rcplane/common/io/journal.hpp"
 #include "rcplane/common/io/packet.hpp"
+#include "rcplane/common/base_controller.hpp"
 
 #define _POSIX_SOURCE 1
 
@@ -17,12 +18,14 @@ namespace rcplane {
 namespace common {
 namespace io {
 
-class serial {
+class serial : public ::rcplane::common::interface::base_controller {
  public:
   serial();
   ~serial();
 
-  void read_serial();
+  bool init() override;
+  void start() override;
+  void terminate() override;
 
   void register_cb(std::function<void(uint32_t timestamp, std::array<packet, 5U> &)> cb);
 
@@ -31,8 +34,6 @@ class serial {
   void p_read_log();
 
   void p_handle_buffer();
-
-  const std::string TAG = "serial";
 
 #ifdef SIMULATION
   std::ifstream _log = std::ifstream("./logs/test.log");

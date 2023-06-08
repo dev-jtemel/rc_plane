@@ -2,6 +2,8 @@
 #define __RCPLANE__COMMON__BASE_CONTROLLER_HPP__
 
 #include <string>
+#include <mutex>
+#include <condition_variable>
 #include <thread>
 
 namespace rcplane {
@@ -34,6 +36,9 @@ class base_controller {
  protected:
   std::string _tag;
   state _state;
+  std::mutex _lk;
+  std::condition_variable _cv;
+  volatile bool _running = false;
   std::thread _worker;
 };
 
