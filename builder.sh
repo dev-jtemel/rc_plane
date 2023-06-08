@@ -70,7 +70,7 @@ do
       break
     elif [ "$opt" = "Compile-SOM" ];
     then
-      bash scripts/compile-som.sh "$ROOT_DIR" 
+      ssh pi@${SOMIP} 'cd rc_plane && ./scripts/compile-som.sh /home/pi/rc_plane'
       break
     elif [ "$opt" = "Compile-PC" ];
     then
@@ -82,11 +82,11 @@ do
       break
     elif [ "$opt" = "Flash-SOM" ];
     then
-      scp "$ROOT_DIR"/build_som/som/som-controller pi@${SOMIP}:~/bin
+      ssh pi@${SOMIP} 'cp ~/rc_plane/build_som/som/som-controller ~/bin'
       break
     elif [ "$opt" = "Run-SOM" ];
     then
-      ssh pi@${SOMIP} '~/bin/som-controller'
+      ssh -t pi@${SOMIP} '~/bin/som-controller'
       break
     elif [ "$opt" = "Run-PC" ];
     then
