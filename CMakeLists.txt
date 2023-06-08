@@ -11,7 +11,10 @@ if(SIMULATION)
   add_definitions(-DSIMULATION)
 endif()
 
-include_directories(common/include)
+include_directories(
+  common/include
+  third_party
+)
 add_subdirectory(common)
 
 if(PC_BUILD)
