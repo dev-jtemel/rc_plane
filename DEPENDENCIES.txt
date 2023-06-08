@@ -4,3 +4,6 @@ curl
 python3-matplotlib
 g++-aarch64-linux-gnu
 libboost-all-dev
+gpsd
+gpsd-clients
+libgps-dev
