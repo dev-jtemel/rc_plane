@@ -12,7 +12,7 @@
 #include <thread>
 #include <sstream>
 
-#include "rcplane/common/io/serial.hpp"
+#include "rcplane/common/io/serial_controller.hpp"
 #include "rcplane/common/io/journal.hpp"
 #include "rcplane/common/io/packet.hpp"
 
@@ -20,13 +20,13 @@ namespace rcplane {
 namespace common {
 namespace io {
 
-serial::serial() : ::rcplane::common::interface::base_controller("serial") {
+serial_controller::serial_controller() : ::rcplane::common::interface::base_controller("serial") {
 }
 
-serial::~serial() {
+serial_controller::~serial_controller() {
 }
 
-bool serial::init() {
+bool serial_controller::init() {
   _packets[0] = packet(packet::type::state, 0U);
   _packets[1] = packet(packet::type::motor, 0U);
   _packets[2] = packet(packet::type::aileron, 0U);
@@ -87,11 +87,11 @@ bool serial::init() {
 }
 
 
-void serial::register_cb(std::function<void(uint32_t, std::array<packet, 5U> &)> cb) {
+void serial_controller::register_cb(std::function<void(uint32_t, std::array<packet, 5U> &)> cb) {
   _cb = cb;
 }
 
-void serial::start() {
+void serial_controller::start() {
   {
     std::lock_guard<std::mutex> lk(_lk);
     _running = true;
@@ -108,7 +108,7 @@ void serial::start() {
   RCPLANE_LOG(info, _tag, "started");
 }
 
-void serial::terminate() {
+void serial_controller::terminate() {
   {
     std::lock_guard<std::mutex> lk(_lk);
     _running = false;
@@ -124,7 +124,7 @@ void serial::terminate() {
   RCPLANE_LOG(info, _tag, "terminated");
 }
 
-void serial::p_read_serial() {
+void serial_controller::p_read_serial() {
 #ifndef SIMULATION
   while (true) { 
     {
@@ -152,7 +152,7 @@ void serial::p_read_serial() {
 #endif
 }
 
-void serial::p_read_log() {
+void serial_controller::p_read_log() {
 #ifdef SIMULATION
   std::string line;
   uint32_t lastSeenTime = 0U;
@@ -179,7 +179,7 @@ void serial::p_read_log() {
 #endif
 }
 
-void serial::p_handle_buffer() {
+void serial_controller::p_handle_buffer() {
   auto timestamp = static_cast<uint32_t>(_buffer >> 40);
   _packets[0].set(_buffer);
   _packets[1].set(_buffer >> 8);

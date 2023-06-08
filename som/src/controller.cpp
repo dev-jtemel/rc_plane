@@ -6,7 +6,7 @@
 #include <memory>
 
 #include "rcplane/common/io/journal.hpp"
-#include "rcplane/common/io/serial.hpp"
+#include "rcplane/common/io/serial_controller.hpp"
 #include "rcplane/common/network/http_controller.hpp"
 
 std::string TAG = "som-controller";
@@ -16,7 +16,7 @@ std::condition_variable main_cv;
 volatile bool running = false;
 
 void termination_handler(int signum) {
-  RCPLANE_LOG(warn, TAG, "\ntermination signal received");
+  RCPLANE_LOG(warn, TAG, "termination signal received");
 
   std::lock_guard<std::mutex> lock(main_lock);
   running = false;
@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
   // Create and link controllers
   std::vector<std::unique_ptr<rcplane::common::interface::base_controller>> controllers;
 
-  auto serial_controller = std::make_unique<rcplane::common::io::serial>();
+  auto serial_controller = std::make_unique<rcplane::common::io::serial_controller>();
   serial_controller->register_cb([&](auto timestamp, auto &packets){
     RCPLANE_LOG(debug, TAG, "serial_controller cb fired!");
   });

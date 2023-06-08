@@ -2,3 +2,4 @@ arduino-cli
 picocom
 curl
 python3-matplotlib
+g++-aarch64-linux-gnu

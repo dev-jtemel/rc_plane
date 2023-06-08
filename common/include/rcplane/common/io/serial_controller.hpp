@@ -1,5 +1,5 @@
-#ifndef __RCPLANE__COMMON__IO__SERIAL_HPP__
-#define __RCPLANE__COMMON__IO__SERIAL_HPP__
+#ifndef __RCPLANE__COMMON__IO__SERIAL_CONTROLLER_HPP__
+#define __RCPLANE__COMMON__IO__SERIAL_CONTROLLER_HPP__
 
 #include <termios.h>
 
@@ -18,10 +18,10 @@ namespace rcplane {
 namespace common {
 namespace io {
 
-class serial : public ::rcplane::common::interface::base_controller {
+class serial_controller : public ::rcplane::common::interface::base_controller {
  public:
-  serial();
-  ~serial();
+  serial_controller();
+  ~serial_controller();
 
   bool init() override;
   void start() override;
@@ -57,4 +57,4 @@ class serial : public ::rcplane::common::interface::base_controller {
 } // namesapce common
 } // namesapce rcplane
 
-#endif //__RCPLANE__COMMON__IO__SERIAL_HPP__
+#endif //__RCPLANE__COMMON__IO__SERIAL_CONTROLLER_HPP__

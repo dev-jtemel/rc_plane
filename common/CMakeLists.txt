@@ -3,7 +3,7 @@
 add_library(rcplane_common_io
   src/io/journal_impl.cpp
   src/io/packet.cpp
-  src/io/serial.cpp
+  src/io/serial_controller.cpp
 )
 
 add_library(rcplane_common_network
