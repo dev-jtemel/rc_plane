@@ -82,7 +82,7 @@ do
       break
     elif [ "$opt" = "Flash-SOM" ];
     then
-      ssh pi@${SOMIP} 'mkdir -p /var/log/rcplane && cp ~/rc_plane/build_som/som/som-controller ~/bin'
+      ssh pi@${SOMIP} 'cp ~/rc_plane/build_som/som/som-controller ~/bin'
       break
     elif [ "$opt" = "Run-SOM" ];
     then
