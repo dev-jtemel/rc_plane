@@ -24,7 +24,7 @@ void termination_handler(int signum) {
 }
 
 int main(int argc, char *argv[]) {
-  RCPLANE_SEVERITY(info);
+  RCPLANE_SEVERITY(trace);
   RCPLANE_LOG(info, TAG, "starting");
 
   signal(SIGINT, termination_handler);
