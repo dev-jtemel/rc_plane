@@ -32,7 +32,7 @@ bool http_controller::init() {
     os << std::setprecision(10);
     {
       std::lock_guard<std::mutex> lk(_gps_lk);
-      os << "{\"latitude\":" << _gps.first << ",\"longitude\":" << _gps.second << "}";
+      os << "{\"latitude\":" << std::get<0>(_gps) << ",\"longitude\":" << std::get<1>(_gps) << ",\"track\":" << std::get<2>(_gps) << "}";
     }
 
     res.set_content(os.str(), "application/json");

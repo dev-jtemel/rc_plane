@@ -44,7 +44,7 @@ void gps_controller::terminate() {
   RCPLANE_LOG(info, _tag, "terminated");
 }
 
-void gps_controller::register_cb(std::function<void(float, float)> cb) {
+void gps_controller::register_cb(std::function<void(float, float, float)> cb) {
   _cbs.push_back(cb);
 }
 
@@ -66,20 +66,18 @@ void gps_controller::p_read_gps() {
     std::ostringstream os;
     os << "fix: " << MODE_STR[_gps_data.fix.mode];
 
-    if (std::isfinite(_gps_data.fix.latitude) && std::isfinite(_gps_data.fix.longitude)) {
+    if (std::isfinite(_gps_data.fix.latitude)
+        && std::isfinite(_gps_data.fix.longitude)
+        && std::isfinite(_gps_data.fix.track)) {
+
       auto latitude = _gps_data.fix.latitude;
       auto longitude = _gps_data.fix.longitude;
-      os << " lat: " << latitude << " lon: " << longitude;
+      auto track = _gps_data.fix.track;
+      os << " lat: " << latitude << " lon: " << longitude << " track: " << track;
 
       for (auto cb : _cbs) {
-        cb(latitude, longitude);
+        cb(latitude, longitude, track);
       }
-    } else {
-      os << " lat: n/a lon: n/a";
-    }
-
-    if (std::isfinite(_gps_data.log.heading)) {
-      os << " heading: " << _gps_data.log.heading;
     }
 
     RCPLANE_LOG(trace, _tag, os.str());

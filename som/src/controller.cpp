@@ -52,7 +52,8 @@ int main(int argc, char *argv[]) {
       &rcplane::common::network::interface::network_interface::gps_cb,
       network_controller.get(),
       std::placeholders::_1,
-      std::placeholders::_2
+      std::placeholders::_2,
+      std::placeholders::_3
     )
   );
   controllers.push_back(std::move(gps_controller));

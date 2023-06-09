@@ -3,7 +3,7 @@
 
 #include <functional>
 #include <mutex>
-#include <utility>
+#include <tuple>
 
 #include "rcplane/common/base_controller.hpp"
 
@@ -24,16 +24,16 @@ class network_interface : public ::rcplane::common::interface::base_controller {
   virtual void start() = 0;
   virtual void terminate() = 0;
 
-  void gps_cb(float lt, float ln) {
+  void gps_cb(float lt, float ln, float track) {
     std::lock_guard<std::mutex> lk(_gps_lk);
-    _gps = std::make_pair(lt, ln);
+    _gps = std::make_tuple(lt, ln, track);
   }
 
  protected:
   std::function<void(int)> _termination_handler;
 
   std::mutex _gps_lk;
-  std::pair<float, float> _gps;
+  std::tuple<float, float, float> _gps;
 };
 
 } // namespace interface
