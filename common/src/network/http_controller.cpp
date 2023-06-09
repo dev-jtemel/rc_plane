@@ -1,4 +1,5 @@
 #include <sstream>
+#include <iomanip>
 #include "rcplane/common/io/journal.hpp"
 #include "rcplane/common/network/http_controller.hpp"
 
@@ -22,6 +23,7 @@ bool http_controller::init() {
     RCPLANE_LOG(info, _tag, "path: /gps");
 
     std::ostringstream os;
+    os << std::setprecision(10);
     {
       std::lock_guard<std::mutex> lk(_gps_lk);
       os << "{\"latitude\":" << _gps.first << ",\"longitude\":" << _gps.second << "}";
