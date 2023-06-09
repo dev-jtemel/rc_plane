@@ -67,7 +67,13 @@ void gps_controller::p_read_gps() {
     os << "fix: " << MODE_STR[_gps_data.fix.mode];
 
     if (std::isfinite(_gps_data.fix.latitude) && std::isfinite(_gps_data.fix.longitude)) {
-      os << " lat: " << _gps_data.fix.latitude << " lon: " << _gps_data.fix.longitude;
+      auto latitude = _gps_data.fix.latitude;
+      auto longitude = _gps_data.fix.longitude;
+      os << " lat: " << latitude << " lon: " << longitude;
+
+      for (auto cb : _cbs) {
+        cb(latitude, longitude);
+      }
     } else {
       os << " lat: n/a lon: n/a";
     }
