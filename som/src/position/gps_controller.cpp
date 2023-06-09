@@ -38,35 +38,35 @@ void gps_controller::terminate() {
   RCPLANE_LOG(info, _tag, "terminated");
 }
 
-void gps_controller::register_cb(std::function<void()> cb) {
+void gps_controller::register_cb(std::function<void(float, float)> cb) {
   _cbs.push_back(cb);
 }
 
 void gps_controller::p_read_gps() {
   while (_running && gps_waiting(&_gps_data, GPS_DELAY)) {
-      if (0 > gps_read(&_gps_data, NULL, 0)) {
-        RCPLANE_LOG(error, _tag, "invalid read");
-        break;
-      }
-      if (MODE_SET != (MODE_SET & _gps_data.set)) {
-          continue;
-      }
-      if (0 > _gps_data.fix.mode ||
-          MODE_STR_NUM <= _gps_data.fix.mode) {
-          _gps_data.fix.mode = 0;
-      }
+    if (0 > gps_read(&_gps_data, NULL, 0)) {
+      RCPLANE_LOG(error, _tag, "invalid read");
+      break;
+    }
+    if (MODE_SET != (MODE_SET & _gps_data.set)) {
+        continue;
+    }
+    if (0 > _gps_data.fix.mode ||
+        MODE_STR_NUM <= _gps_data.fix.mode) {
+        _gps_data.fix.mode = 0;
+    }
 
 
-      std::ostringstream os;
-      os << "fix: " << MODE_STR[_gps_data.fix.mode];
+    std::ostringstream os;
+    os << "fix: " << MODE_STR[_gps_data.fix.mode];
 
-      if (isfinite(_gps_data.fix.latitude) && isfinite(_gps_data.fix.longitude)) {
-        os << " lat: " << _gps_data.fix.latitude << " lon: " << _gps_data.fix.longitude;
-      } else {
-        os << " lat: n/a lon: n/a";
-      }
+    if (isfinite(_gps_data.fix.latitude) && isfinite(_gps_data.fix.longitude)) {
+      os << " lat: " << _gps_data.fix.latitude << " lon: " << _gps_data.fix.longitude;
+    } else {
+      os << " lat: n/a lon: n/a";
+    }
 
-      RCPLANE_LOG(trace, _tag, os.str());
+    RCPLANE_LOG(trace, _tag, os.str());
   }
 }
 

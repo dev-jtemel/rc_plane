@@ -4,6 +4,7 @@ add_library(som-position
 
 target_link_libraries(som-position
   rcplane_common_io
+  gps
 )
 
 #############

@@ -13,6 +13,7 @@ OPTIONS="\
   Flash-SOM \
   Run-SOM \
   Run-PC \
+  GPS-Fake \
   Read-Serial-MCU \
   Install-Dependencies \
   Help \
@@ -82,7 +83,7 @@ do
       break
     elif [ "$opt" = "Flash-SOM" ];
     then
-      ssh pi@${SOMIP} 'cp ~/rc_plane/build_som/som/som-controller ~/bin'
+      ssh pi@${SOMIP} 'cp rc_plane/build_som/som/som-controller bin'
       break
     elif [ "$opt" = "Run-SOM" ];
     then
@@ -95,6 +96,10 @@ do
     elif [ "$opt" = "Read-Serial-MCU" ];
     then
       bash scripts/read-serial-mcu.sh "$ROOT_DIR" "$DEV"
+      break
+    elif [ "$opt" = "GPS-Fake" ];
+    then
+      ssh pi@${SOMIP} 'gpsfake -P 2000 -S rc_plane/logs/gps.nmea'
       break
     elif [ "$opt" = "Install-Dependencies" ];
     then
