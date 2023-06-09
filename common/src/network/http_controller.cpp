@@ -15,6 +15,12 @@ http_controller::~http_controller() {
 }
 
 bool http_controller::init() {
+  _svr->set_post_routing_handler([](const auto&, auto& res) {
+    res.set_header("Access-Control-Allow-Origin", "*");
+    res.set_header("Access-Control-Allow-Methods", "HEAD,GET,PUT,POST,DELETE,OPTIONS");
+    res.set_header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  });
+
   _svr->Get("/", [&](const httplib::Request &, httplib::Response &) {
     RCPLANE_LOG(info, _tag, "path: /");
   });
