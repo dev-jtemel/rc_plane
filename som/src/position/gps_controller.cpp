@@ -78,6 +78,10 @@ void gps_controller::p_read_gps() {
       os << " lat: n/a lon: n/a";
     }
 
+    if (std::isfinite(_gps_data.log.heading)) {
+      os << " heading: " << _gps_data.log.heading;
+    }
+
     RCPLANE_LOG(trace, _tag, os.str());
   }
 }
