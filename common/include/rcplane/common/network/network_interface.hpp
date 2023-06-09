@@ -2,6 +2,8 @@
 #define __RCPLANE__COMMON__NETWORK__NETWORK_INTERFACE_HPP__
 
 #include <functional>
+#include <mutex>
+#include <utility>
 
 #include "rcplane/common/base_controller.hpp"
 
@@ -22,8 +24,16 @@ class network_interface : public ::rcplane::common::interface::base_controller {
   virtual void start() = 0;
   virtual void terminate() = 0;
 
+  void gps_cb(float lt, float ln) {
+    std::lock_guard<std::mutex> lk(_gps_lk);
+    _gps = std::make_pair(lt, ln);
+  }
+
  protected:
   std::function<void(int)> _termination_handler;
+
+  std::mutex _gps_lk;
+  std::pair<float, float> _gps;
 };
 
 } // namespace interface

@@ -25,6 +25,7 @@ bool gps_controller::init() {
 void gps_controller::start() {
   (void)gps_stream(&_gps_data, WATCH_ENABLE | WATCH_JSON, NULL);
 
+  _running = true;
   _worker = std::thread([&]() {
       p_read_gps();
   });

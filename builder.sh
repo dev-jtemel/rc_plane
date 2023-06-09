@@ -100,7 +100,7 @@ do
       break
     elif [ "$opt" = "GPS-Fake" ];
     then
-      ssh pi@${SOMIP} 'killall gpsfake && gpsfake -P 2000 -S rc_plane/logs/gps.nmea'
+      ssh pi@${SOMIP} 'killall gpsfake ; gpsfake -P 2000 -S rc_plane/logs/gps.nmea'
       break
     elif [ "$opt" = "Install-Dependencies" ];
     then

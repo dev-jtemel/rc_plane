@@ -1,3 +1,4 @@
+#include <sstream>
 #include "rcplane/common/io/journal.hpp"
 #include "rcplane/common/network/http_controller.hpp"
 
@@ -15,6 +16,19 @@ http_controller::~http_controller() {
 bool http_controller::init() {
   _svr->Get("/", [&](const httplib::Request &, httplib::Response &) {
     RCPLANE_LOG(info, _tag, "path: /");
+  });
+
+  _svr->Get("/gps", [&](const httplib::Request &, httplib::Response &res) {
+    RCPLANE_LOG(info, _tag, "path: /gps");
+
+    std::ostringstream os;
+    {
+      std::lock_guard<std::mutex> lk(_gps_lk);
+      os << "{\"latitude\":" << _gps.first << ",\"longitude\":" << _gps.second << "}";
+    }
+
+    res.set_content(os.str(), "application/json");
+    res.status = 200;
   });
 
   RCPLANE_LOG(info, _tag, "initialized");
