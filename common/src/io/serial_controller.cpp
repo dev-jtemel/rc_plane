@@ -46,7 +46,7 @@ bool serial_controller::init() {
     std::chrono::system_clock::now()
   );
 
-  ss << "~/rcplane/" << std::put_time(std::localtime(&now_t), "%F-%T") << ".blackbox";
+  ss << "/home/pi/logs/" << std::put_time(std::localtime(&now_t), "%F-%T") << ".blackbox";
 
   _blackbox = std::ofstream(ss.str());
 
