@@ -19,10 +19,16 @@ const config = {
 function App() {
   const windowHeight = React.useRef(window.innerHeight);
   const [plane, setPlane] = React.useState(config.defaultPlane);
+  const [cs, setCS] = React.useState({
+    state: 0,
+    motor: 0,
+    aileron: 0,
+    rudder: 0,
+    elevator: 0
+  });
   const [history, setHistory] = React.useState([]);
   const [running, setRunning] = React.useState(false);
 
-  console.log(history);
    React.useEffect(() => {
     const id = setInterval(() => {
       if (!running) {
@@ -45,7 +51,31 @@ function App() {
       })
       .catch(err => console.error(err));
         // Do nothing on error
-      }, config.pollingMs);
+      }, 500);
+
+     return _ => clearInterval(id);
+  }, [running]);
+
+   React.useEffect(() => {
+    const id = setInterval(() => {
+      if (!running) {
+        return;
+      }
+      fetch('http://192.168.0.13:8080/cs', {
+        crossDomain: true,
+        method: 'GET',
+      })
+      .then(async response => {
+        try {
+          let json = await response.json();
+          setCS(json);
+        } catch (err) {
+          // Do nothing on error
+        }
+      })
+      .catch(err => console.error(err));
+        // Do nothing on error
+      }, 300);
 
      return _ => clearInterval(id);
   }, [running]);
@@ -80,6 +110,20 @@ function App() {
             redTo: 4,
             yellowFrom: 2.5,
             yellowTo: 3.5,
+            minorTicks: 5,
+          }}
+        />
+        <Chart
+          chartType="Gauge"
+          data={[['Label', 'Value'], ["motor", cs.motor || 0]]}
+          options={{
+            max: 255,
+            width: 210,
+            height: 210,
+            redFrom: 240,
+            redTo: 255,
+            yellowFrom: 200,
+            yellowTo: 240,
             minorTicks: 5,
           }}
         />
