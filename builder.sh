@@ -71,6 +71,7 @@ do
       break
     elif [ "$opt" = "Compile-SOM" ];
     then
+      bash scripts/compile-som.sh "$ROOT_DIR" "$SIMULATION"
       ssh pi@${SOMIP} 'cd rc_plane && git pull && ./scripts/compile-som.sh /home/pi/rc_plane'
       break
     elif [ "$opt" = "Compile-PC" ];

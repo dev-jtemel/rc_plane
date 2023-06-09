@@ -14,7 +14,7 @@ gps_controller::~gps_controller() {
 }
 
 bool gps_controller::init() {
-  if (gps_open("localhost", "2000", &_gps_data)) {
+  if (gps_open("localhost", GPSD_PORT.c_str(), &_gps_data)) {
     RCPLANE_LOG(error, _tag, "failed to open gpsd");
     return false;
   }
@@ -61,7 +61,7 @@ void gps_controller::p_read_gps() {
     std::ostringstream os;
     os << "fix: " << MODE_STR[_gps_data.fix.mode];
 
-    if (isfinite(_gps_data.fix.latitude) && isfinite(_gps_data.fix.longitude)) {
+    if (std::isfinite(_gps_data.fix.latitude) && std::isfinite(_gps_data.fix.longitude)) {
       os << " lat: " << _gps_data.fix.latitude << " lon: " << _gps_data.fix.longitude;
     } else {
       os << " lat: n/a lon: n/a";
