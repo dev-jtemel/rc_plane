@@ -63,11 +63,28 @@ function App() {
     ]
   };
 
-  console.log(plane.track);
-
   return (
     <div className="App">
       <div onClick={_ => setRunning(!running)}><p>{running ? "STOP" : "START"}</p></div>
+      <div
+        style={{
+          display: 'flex',
+          height: '200px',
+          width: '200px',
+          transform: `rotate(${plane.track}deg)`,
+          backgroundImage: 'url(/compass.png)',
+          backgroundRepeat: 'no-repeat',
+          backgroundSize: '200px 200px',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <img src='/compass_plane.png' width={80} height={80} alt='' 
+          style={{
+            transform: `rotate(-${plane.track}deg)`,
+           }}
+        />
+      </div>
       <Map height={windowHeight.current} defaultCenter={config.defaultMapCenter} defaultZoom={17}>
         {/*<Marker width={30} anchor={[plane.latitude, plane.longitude]} color='black' />*/}
         <GeoJson
