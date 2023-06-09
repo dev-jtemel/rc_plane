@@ -47,7 +47,14 @@ int main(int argc, char *argv[]) {
   controllers.push_back(std::move(serial_controller));
 
   auto gps_controller = std::make_unique<rcplane::som::position::gps_controller>();
-  gps_controller->register_cb(std::bind(&rcplane::common::network::interface::network_interface::gps_cb, network_controller.get(), std::placeholders::_1, std::placeholders::_2));
+  gps_controller->register_cb(
+    std::bind(
+      &rcplane::common::network::interface::network_interface::gps_cb,
+      network_controller.get(),
+      std::placeholders::_1,
+      std::placeholders::_2
+    )
+  );
   controllers.push_back(std::move(gps_controller));
 
   // Initialize
