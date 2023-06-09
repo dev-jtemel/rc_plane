@@ -44,7 +44,7 @@ void gps_controller::terminate() {
   RCPLANE_LOG(info, _tag, "terminated");
 }
 
-void gps_controller::register_cb(std::function<void(float, float, float)> cb) {
+void gps_controller::register_cb(std::function<void(float, float, float, float)> cb) {
   _cbs.push_back(cb);
 }
 
@@ -73,10 +73,11 @@ void gps_controller::p_read_gps() {
       auto latitude = _gps_data.fix.latitude;
       auto longitude = _gps_data.fix.longitude;
       auto track = _gps_data.fix.track;
-      os << " lat: " << latitude << " lon: " << longitude << " track: " << track;
+      auto speed = _gps_data.fix.speed;
+      os << " lat: " << latitude << " lon: " << longitude << " track: " << track << " speed: " << speed;
 
       for (auto cb : _cbs) {
-        cb(latitude, longitude, track);
+        cb(latitude, longitude, track, speed);
       }
     }
 
