@@ -24,8 +24,9 @@ class gps_controller : public ::rcplane::common::interface::base_controller {
  private:
   void p_read_gps();
 
+  char *GPSD_PORT = "2000";
   size_t GPS_DELAY = 5000000;
-  size_t MODE_STR_NUM = 4;
+  static size_t MODE_STR_NUM = 4;
   std::string MODE_STR[MODE_STR_NUM] = {"n/a", "None", "2D", "3D" };
   std::vector<std::function<void(float, float)>> _cbs;
   struct gps_data_t _gps_data;

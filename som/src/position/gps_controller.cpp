@@ -1,3 +1,4 @@
+#include <cmath>
 #include <sstream>
 #include "rcplane/som/position/gps_controller.hpp"
 #include "rcplane/common/io/journal.hpp"
