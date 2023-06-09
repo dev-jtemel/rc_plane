@@ -1,6 +1,7 @@
 import React from 'react';
 import './App.css';
 import { Overlay, GeoJson, Map, Marker } from 'pigeon-maps';
+import { Chart } from "react-google-charts";
 
 const config = {
   defaultMapCenter: [
@@ -66,26 +67,42 @@ function App() {
   return (
     <div className="App">
       <div onClick={_ => setRunning(!running)}><p>{running ? "STOP" : "START"}</p></div>
-      <div
-        style={{
-          display: 'flex',
-          height: '200px',
-          width: '200px',
-          transform: `rotate(${plane.track}deg)`,
-          backgroundImage: 'url(/compass.png)',
-          backgroundRepeat: 'no-repeat',
-          backgroundSize: '200px 200px',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <img src='/compass_plane.png' width={80} height={80} alt='' 
-          style={{
-            transform: `rotate(-${plane.track}deg)`,
-           }}
-        />
-      </div>
       <Map height={windowHeight.current} defaultCenter={config.defaultMapCenter} defaultZoom={17}>
+        <div style={{ display: 'inline-flex', position: 'absolute' }}>
+        <Chart
+          chartType="Gauge"
+          data={[['Label', 'Value'], ["m/s", plane.speed || 0]]}
+          options={{
+            max: 4,
+            width: 210,
+            height: 210,
+            redFrom: 3.5,
+            redTo: 4,
+            yellowFrom: 2.5,
+            yellowTo: 3.5,
+            minorTicks: 5,
+          }}
+        />
+        <div
+          style={{
+            display: 'flex',
+            height: '200px',
+            width: '200px',
+            transform: `rotate(${plane.track}deg)`,
+            backgroundImage: 'url(/compass.png)',
+            backgroundRepeat: 'no-repeat',
+            backgroundSize: '200px 200px',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <img src='/compass_plane.png' width={80} height={80} alt='' 
+            style={{
+              transform: `rotate(-${plane.track}deg)`,
+             }}
+          />
+        </div>
+      </div>
         {/*<Marker width={30} anchor={[plane.latitude, plane.longitude]} color='black' />*/}
         <GeoJson
           data={geoJson}
