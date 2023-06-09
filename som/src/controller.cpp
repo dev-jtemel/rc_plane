@@ -42,7 +42,14 @@ int main(int argc, char *argv[]) {
 
   auto serial_controller = std::make_unique<rcplane::common::io::serial_controller>();
   serial_controller->register_cb([&](auto timestamp, auto &packets){
-    RCPLANE_LOG(debug, TAG, "serial_controller cb fired!");
+    // TODO: Bind this
+    network_controller->cs_cb(
+      packets[0].data(),
+      packets[1].data(),
+      packets[2].data(),
+      packets[3].data(),
+      packets[4].data()
+    );
   });
   controllers.push_back(std::move(serial_controller));
 

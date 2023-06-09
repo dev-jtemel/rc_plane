@@ -39,6 +39,25 @@ bool http_controller::init() {
     res.status = 200;
   });
 
+  _svr->Get("/cs", [&](const httplib::Request &, httplib::Response &res) {
+    RCPLANE_LOG(info, _tag, "path: /cs");
+
+    std::ostringstream os;
+    os << std::setprecision(10);
+    {
+      std::lock_guard<std::mutex> lk(_cs_lk);
+      os << "{\"state\":" << std::get<0>(_cs)
+        << ",\"motor\":" << std::get<1>(_cs)
+        << ",\"aileron\":" << std::get<2>(_cs)
+        << ",\"elevator\":" << std::get<3>(_cs)
+        << ",\"rudder\":" << std::get<4>(_cs)
+        << "}";
+    }
+
+    res.set_content(os.str(), "application/json");
+    res.status = 200;
+  });
+
   RCPLANE_LOG(info, _tag, "initialized");
   set_state(state::initialized);
   return true;

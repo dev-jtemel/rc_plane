@@ -29,11 +29,19 @@ class network_interface : public ::rcplane::common::interface::base_controller {
     _gps = std::make_tuple(lt, ln, track, speed);
   }
 
+  void cs_cb(uint8_t state, uint8_t motor, int8_t aileron, int8_t elevator, int8_t rudder) {
+    std::lock_guard<std::mutex> lk(_cs_lk);
+    _cs = std::make_tuple(state, motor, aileron, elevator, rudder);
+  }
+
  protected:
   std::function<void(int)> _termination_handler;
 
   std::mutex _gps_lk;
   std::tuple<float, float, float, float> _gps;
+
+  std::mutex _cs_lk;
+  std::tuple<uint8_t, uint8_t, int8_t, int8_t, int8_t> _cs;
 };
 
 } // namespace interface
