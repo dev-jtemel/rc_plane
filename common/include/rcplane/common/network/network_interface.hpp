@@ -24,16 +24,16 @@ class network_interface : public ::rcplane::common::interface::base_controller {
   virtual void start() = 0;
   virtual void terminate() = 0;
 
-  void gps_cb(float lt, float ln, float track) {
+  void gps_cb(float lt, float ln, float track, float speed) {
     std::lock_guard<std::mutex> lk(_gps_lk);
-    _gps = std::make_tuple(lt, ln, track);
+    _gps = std::make_tuple(lt, ln, track, speed);
   }
 
  protected:
   std::function<void(int)> _termination_handler;
 
   std::mutex _gps_lk;
-  std::tuple<float, float, float> _gps;
+  std::tuple<float, float, float, float> _gps;
 };
 
 } // namespace interface
