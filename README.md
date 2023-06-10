@@ -40,15 +40,7 @@ Communication from the MCU to the SoM follows a 64-bit packet format defined as 
 
 ![packet](resources/packet.png)
 
-where:
-| **Bits** | **Type**  | **Two's Compliment** |
-|----------|-----------|----------------------|
-| 0-7      | State     | False                |
-| 8-15     | Motor     | False                |
-| 16-23    | Aileron   | True                 |
-| 24-31    | Elevator  | True                 |
-| 32-39    | Rudder    | True                 |
-| 40-63    | Timestamp | False                |
+**Note**: Packets are always recevied in this order.
 
 Timestamp buffer overflows at 16777215 milliseconds (16777.215 seconds; 279.62025 minutes; 4.66 hours), well exceeding any possible flight times. Note that the timestamp resets upon an initial read of the serial port from the MCU since the microcontroller resets on an initial read.
 
@@ -84,10 +76,6 @@ The Dimensions were calculated as follows:
 | Angle of Attack (AoA) | | 3deg |
 | Dihedral (D) | | 2deg |
 | Center of Gravity (CoG) | 25% of C | 5cm |
-
-
-
-
 
 ## Build
 To compile the entire project, use the `full_build.sh` script. The following sections layout how to
