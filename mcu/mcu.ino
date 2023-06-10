@@ -4,6 +4,7 @@
 #include "./lib/controllers/motor.hpp"
 #include "./lib/controllers/test_switch.hpp"
 #include "./lib/controllers/flight_switch.hpp"
+#include "./lib/controllers/imu.hpp"
 #include "./lib/flag.hpp"
 
 const uint8_t CONTROLLERS_COUNT = 4U;
@@ -14,6 +15,8 @@ mcu::lib::motor motor;
 mcu::lib::aileron aileron;
 mcu::lib::elevator elevator;
 mcu::lib::rudder rudder;
+
+mcu::lib::imu imu;
 
 mcu::lib::interface::controller *controllers[CONTROLLERS_COUNT];
 
@@ -36,7 +39,6 @@ void write_state() {
 void setup() {
   Serial.begin(115200);
 
-  test_switch.setup();
   flight_switch.setup();
 
   controllers[0] = &motor;
@@ -48,30 +50,25 @@ void setup() {
     ctr->setup();
   }
 
+  imu.setup();
+
   delay(2000);
 
   uint8_t i = 0;
   write_state();
   for (auto ctr : controllers) {
-    ctr->test();
+    //ctr->test();
     STATE |= mcu::lib::flag::TEST_FLAGS[i++];
     write_state();
   }
   delay(1000);
+  STATE |= mcu::lib::flag::FLIGHT_MODE;
 }
 
 void loop() {
-  if (flight_switch.state()) {
-    STATE |= mcu::lib::flag::FLIGHT_MODE;
-    for (auto ctr : controllers) {
-      ctr->step();
-    }
-  } else {
-    STATE &= ~mcu::lib::flag::FLIGHT_MODE;
-    for (auto ctr : controllers) {
-      ctr->stop();
-    }
-    delay(500);
+  imu.step();
+  for (auto ctr : controllers) {
+    ctr->step();
   }
   write_state();
 }
