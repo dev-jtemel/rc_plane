@@ -28,12 +28,18 @@ class serial_controller : public ::rcplane::common::interface::base_controller {
   void terminate() override;
 
   void register_cb(std::function<void(uint32_t timestamp, std::array<packet, 5U> &)> cb);
+  void register_gyro_cb(std::function<void(float, float, float)> cb);
 
  private:
   void p_read_serial();
   void p_read_log();
 
   void p_handle_buffer();
+
+  // Should appear 4 times in a row on a new connection.
+  const uint64_t START_INDICATOR = 0xFFFFFFFFFFFFFFFF;
+  uint8_t _startcount = 0;
+  uint8_t _line = 0;
 
 #ifdef SIMULATION
   std::ifstream _log = std::ifstream("./logs/test.log");
@@ -49,6 +55,12 @@ class serial_controller : public ::rcplane::common::interface::base_controller {
 #endif
 
   uint64_t _buffer;
+  float _pitch;
+  float _roll;
+  float _yaw;
+  float _accx;
+  float _accy;
+  float _accz;
   std::array<packet, 5U> _packets;
   std::function<void(uint32_t timestamp, std::array<packet, 5U> &)> _cb;
 };

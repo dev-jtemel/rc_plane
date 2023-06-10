@@ -4,6 +4,7 @@ ROOT_DIR="$PWD"
 DEV="/dev/ttyACM0"
 SOMIP="192.168.0.13"
 SIMULATION="OFF"
+SOM=OFF
 
 OPTIONS="\
   Compile-MCU \
@@ -44,8 +45,10 @@ usage() {
   echo "  12) Quit                : Exit the builder script."
 }
 
-while getopts "sd:i:h" opt; do
+while getopts "zsd:i:h" opt; do
     case "$opt" in
+        z) SOM="ON";
+          ;;
         d) DEV="$OPTARG";
             ;;
         s) SIMULATION="ON";
@@ -61,7 +64,7 @@ done
 
 while true;
 do
-  echo "DEV = ${DEV} | SIMULATION = ${SIMULATION} | SOMIP = ${SOMIP}"
+  echo "DEV = ${DEV} | SIMULATION = ${SIMULATION} | SOMIP = ${SOMIP} | SOM = ${SOM}"
 
   select opt in ${OPTIONS};
   do
@@ -71,8 +74,12 @@ do
       break
     elif [ "$opt" = "Compile-SOM" ];
     then
-      bash scripts/compile-som.sh "$ROOT_DIR" "$SIMULATION"
-      ssh pi@${SOMIP} 'cd rc_plane && git pull && ./scripts/compile-som.sh /home/pi/rc_plane'
+      if [ "$SOM" == "ON" ];
+      then
+        ssh pi@${SOMIP} 'cd rc_plane && git pull && ./scripts/compile-som.sh /home/pi/rc_plane'
+      else
+        bash scripts/compile-som.sh "$ROOT_DIR" "$SIMULATION"
+      fi
       break
     elif [ "$opt" = "Compile-PC" ];
     then
@@ -88,7 +95,12 @@ do
       break
     elif [ "$opt" = "Run-SOM" ];
     then
-      ssh -t pi@${SOMIP} '~/bin/som-controller'
+      if [ "$SOM" == "ON" ];
+      then
+        ssh -t pi@${SOMIP} '~/bin/som-controller'
+      else
+        ./build_som/som/som-controller
+      fi
       break
     elif [ "$opt" = "Run-PC" ];
     then
@@ -100,7 +112,13 @@ do
       break
     elif [ "$opt" = "GPS-Fake" ];
     then
-      ssh pi@${SOMIP} 'killall gpsfake ; gpsfake -P 2000 -S rc_plane/logs/gps.nmea'
+      if [ "$SOM" == "ON" ];
+      then
+        ssh pi@${SOMIP} 'killall gpsfake ; gpsfake -P 2000 -S rc_plane/logs/gps.nmea'
+      else
+        killall gpsfake ; gpsfake -P 2000 -S ./logs/gps.nmea
+      fi
+
       break
     elif [ "$opt" = "Install-Dependencies" ];
     then

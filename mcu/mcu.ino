@@ -9,6 +9,8 @@
 
 const uint8_t CONTROLLERS_COUNT = 4U;
 const String PADDING = "000000000000000000000000";
+const String START = "FFFFFFFFFFFFFFFF";
+const String IMU_BLANK = "0000000000000000";
 uint8_t STATE = 0U;
 
 mcu::lib::motor motor;
@@ -38,6 +40,12 @@ void write_state() {
 
 void setup() {
   Serial.begin(115200);
+  delay(2000);
+
+  Serial.println(START);
+  Serial.println(START);
+  Serial.println(START);
+  Serial.println(START);
 
   flight_switch.setup();
 
@@ -56,19 +64,26 @@ void setup() {
 
   uint8_t i = 0;
   write_state();
+  Serial.println(IMU_BLANK);
+  Serial.println(IMU_BLANK);
+  Serial.println(IMU_BLANK);
+
   for (auto ctr : controllers) {
-    //ctr->test();
+    ctr->test();
     STATE |= mcu::lib::flag::TEST_FLAGS[i++];
     write_state();
+    Serial.println(IMU_BLANK);
+    Serial.println(IMU_BLANK);
+    Serial.println(IMU_BLANK);
   }
   delay(1000);
   STATE |= mcu::lib::flag::FLIGHT_MODE;
 }
 
 void loop() {
-  imu.step();
   for (auto ctr : controllers) {
     ctr->step();
   }
   write_state();
+  imu.step();
 }

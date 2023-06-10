@@ -11,10 +11,6 @@ if(SIMULATION)
   add_definitions(-DSIMULATION)
 endif()
 
-if (SOM_BUILD)
-  set(CMAKE_CXX_COMPILER  aarch64-linux-gnu-g++)
-endif()
-
 include_directories(
   common/include
   third_party

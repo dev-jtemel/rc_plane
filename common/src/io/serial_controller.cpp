@@ -46,7 +46,7 @@ bool serial_controller::init() {
     std::chrono::system_clock::now()
   );
 
-  ss << "/home/pi/logs/" << std::put_time(std::localtime(&now_t), "%F-%T") << ".blackbox";
+  ss << "./logs/" << std::put_time(std::localtime(&now_t), "%F-%T") << ".blackbox";
 
   _blackbox = std::ofstream(ss.str());
 
@@ -143,8 +143,32 @@ void serial_controller::p_read_serial() {
 
     try {
       _buffer = std::stoul(_buf, nullptr, 16);
-      p_handle_buffer();
+
+      RCPLANE_LOG(error, _tag, std::bitset<64>(_buffer));
+      if ((START_INDICATOR == _buffer) && _startcount < 4U) {
+        ++_startcount;
+        continue;
+      }
+
+      if (_startcount < 4U) {
+        continue;
+      }
+
+      if (_line == 0U) {
+        p_handle_buffer();
+      } else if (_line == 1U) {
+        _pitch = static_cast<float>(_buffer >> 32U);
+        _roll = static_cast<float>(0xFFFFFFFF & _buffer);
+      } else if (_line == 2U) {
+        _yaw = static_cast<float>(_buffer >> 32U);
+        _accx = static_cast<float>(0xFFFFFFFF & _buffer);
+      } else if (_line == 3U) {
+        _accy = static_cast<float>(_buffer >> 32U);
+        _accz = static_cast<float>(0xFFFFFFFF & _buffer);
+      }
+
       _blackbox << _buf << std::endl;
+      _line = (_line + 1U) % 4U;
     } catch (...) {
       // Do nothing
     }
