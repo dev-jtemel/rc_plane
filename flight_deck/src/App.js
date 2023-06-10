@@ -1,7 +1,12 @@
+import 'bootstrap/dist/css/bootstrap.min.css';
 import React from 'react';
 import './App.css';
-import { Overlay, GeoJson, Map, Marker } from 'pigeon-maps';
 import { Chart } from "react-google-charts";
+import RCPlaneMap from './components/RCPlaneMap';
+import RCStateIndicator from './components/RCStateIndicator';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 
 const config = {
   defaultMapCenter: [
@@ -17,7 +22,6 @@ const config = {
 };
 
 function App() {
-  const windowHeight = React.useRef(window.innerHeight);
   const [plane, setPlane] = React.useState(config.defaultPlane);
   const [cs, setCS] = React.useState({
     state: 0,
@@ -80,93 +84,190 @@ function App() {
      return _ => clearInterval(id);
   }, [running]);
 
-  const geoJson = {
-    type: "FeatureCollection",
-    features: [{
-      "type": "Feature",
-      "color": "#FF00FF",
-      "properties": {},
-        "geometry": {
-          "coordinates": history.slice(-100),
-          "type": "LineString"
-        }
-      }
-    ]
-  };
-
   return (
     <div className="App">
-      <div onClick={_ => setRunning(!running)}><p>{running ? "STOP" : "START"}</p></div>
-      <Map height={windowHeight.current} defaultCenter={config.defaultMapCenter} defaultZoom={17}>
-        <div style={{ display: 'inline-flex', position: 'absolute' }}>
-        <Chart
-          chartType="Gauge"
-          data={[['Label', 'Value'], ["m/s", plane.speed || 0]]}
-          options={{
-            max: 4,
-            width: 210,
-            height: 210,
-            redFrom: 3.5,
-            redTo: 4,
-            yellowFrom: 2.5,
-            yellowTo: 3.5,
-            minorTicks: 5,
-          }}
-        />
-        <Chart
-          chartType="Gauge"
-          data={[['Label', 'Value'], ["motor", cs.motor || 0]]}
-          options={{
-            max: 255,
-            width: 210,
-            height: 210,
-            redFrom: 240,
-            redTo: 255,
-            yellowFrom: 200,
-            yellowTo: 240,
-            minorTicks: 5,
-          }}
-        />
-        <div
-          style={{
-            display: 'flex',
-            height: '200px',
-            width: '200px',
-            transform: `rotate(${plane.track}deg)`,
-            backgroundImage: 'url(/compass.png)',
-            backgroundRepeat: 'no-repeat',
-            backgroundSize: '200px 200px',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <img src='/compass_plane.png' width={80} height={80} alt='' 
-            style={{
-              transform: `rotate(-${plane.track}deg)`,
-             }}
-          />
-        </div>
-      </div>
-        {/*<Marker width={30} anchor={[plane.latitude, plane.longitude]} color='black' />*/}
-        <GeoJson
-          data={geoJson}
-          styleCallback={(feature, hover) => {
-            return {
-              stroke: `${feature.color}DD`,
-              strokeWidth: '3'
-            };
-          }}
-        />
-        <Overlay anchor={[plane.latitude, plane.longitude]} offset={[25, 23]}>
-          <img src='/plane.png' width={50} height={45} alt='' 
-            style={{
-               transform: `rotate(${plane.track}deg)`,
-             }}
-          />
-        </Overlay>
-      </Map>
+        <Container fluid>
+          <Row>
+            <Col>
+              <RCPlaneMap plane={plane} history={history} />
+            </Col>
+            <Col>
+              <Row xs={5} style={{ height: 150 }}>
+                <Col>
+                  <RCStateIndicator 
+                    flightEnabled={Boolean(cs.state & 1)}
+                    motorTest={Boolean(cs.state & 2)}
+                    aileronTest={Boolean(cs.state & 4)}
+                    elevatorTest={Boolean(cs.state & 8)}
+                    rudderTest={Boolean(cs.state & 16)}
+                  />
+                </Col>
+                <Col>
+                  <Chart
+                    chartType="Gauge"
+                    data={[['Label', 'Value'], ["motor", cs.motor || 0]]}
+                    options={{
+                      animation: {
+                        duration: 200,
+                      },
+                      max: 255,
+                      width: 150,
+                      height: 150,
+                      redFrom: 240,
+                      redTo: 255,
+                      yellowFrom: 200,
+                      yellowTo: 240,
+                      minorTicks: 5,
+                    }}
+                  />
+                </Col>
+                <Col>
+                  <Chart
+                    chartType="Gauge"
+                    data={[['Label', 'Value'], ["aileron", cs.aileron || 0]]}
+                    options={{
+                      animation: {
+                        duration: 200,
+                      },
+                      min: -50,
+                      max: 50,
+                      width: 150,
+                      height: 150,
+                      minorTicks: 5,
+                    }}
+                  />
+                </Col>
+                <Col>
+                  <Chart
+                    chartType="Gauge"
+                    data={[['Label', 'Value'], ["elevator", cs.elevator || 0]]}
+                    options={{
+                      animation: {
+                        duration: 200,
+                      },
+                      min: -30,
+                      max: 30,
+                      width: 150,
+                      height: 150,
+                      minorTicks: 5,
+                    }}
+                  />
+                </Col>
+                <Col>
+                  <Chart
+                    chartType="Gauge"
+                    data={[['Label', 'Value'], ["rudder", cs.rudder || 0]]}
+                    options={{
+                      animation: {
+                        duration: 200,
+                      },
+                      min: -50,
+                      max: 50,
+                      width: 150,
+                      height: 150,
+                      minorTicks: 5,
+                    }}
+                  />
+                </Col>
+              </Row>
+              <Row xs={5} style={{ height: 150 }}>
+                <Col>
+                </Col>
+                <Col>
+                  <Chart
+                    chartType="Gauge"
+                    data={[['Label', 'Value'], ["m/s", plane.speed || 0]]}
+                    options={{
+                      max: 4,
+                      width: 150,
+                      height: 150,
+                      redFrom: 3.5,
+                      redTo: 4,
+                      yellowFrom: 2.5,
+                      yellowTo: 3.5,
+                      minorTicks: 5,
+                    }}
+                  />
+                </Col>
+                <Col>
+                  <div
+                    style={{
+                      display: 'flex',
+                      height: '140px',
+                      width: '140px',
+                      margin: '5px',
+                      transform: `rotate(${plane.track}deg)`,
+                      backgroundImage: 'url(/compass.png)',
+                      backgroundRepeat: 'no-repeat',
+                      backgroundSize: '140px 140px',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <img src='/compass_plane.png' width={60} height={60} alt='' 
+                      style={{
+                        transform: `rotate(-${plane.track}deg)`,
+                       }}
+                    />
+                  </div>
+                </Col>
+                <Col>
+                  <Chart
+                    chartType="Gauge"
+                    data={[['Label', 'Value'], ["v/cell", cs.elevator || 0]]}
+                    options={{
+                      min: 3.2,
+                      max: 4.2,
+                      width: 150,
+                      height: 150,
+                      redFrom: 3.2,
+                      redTo: 3.5,
+                      yellowFrom: 3.5,
+                      yellowTo: 3.8,
+                      minorTicks: 5,
+                    }}
+                  />
+                </Col>
+                <Col>
+                  <Chart
+                    chartType="Gauge"
+                    data={[['Label', 'Value'], ["rudder", cs.rudder || 0]]}
+                    options={{
+                      min: -50,
+                      max: 50,
+                      width: 150,
+                      height: 150,
+                      minorTicks: 5,
+                    }}
+                  />
+                </Col>
+              </Row>
+            </Col>
+
+            <div onClick={_ => setRunning(!running)}><p>{running ? "STOP" : "START"}</p></div>
+        </Row>
+      </Container>
     </div>
   );
 }
 
 export default App;
+
+/*
+                <Col>
+                  <Chart
+                    chartType="Gauge"
+                    data={[['Label', 'Value'], ["m/s", plane.speed || 0]]}
+                    options={{
+                      max: 4,
+                      redFrom: 3.5,
+                      redTo: 4,
+                      yellowFrom: 2.5,
+                      yellowTo: 3.5,
+                      minorTicks: 5,
+                    }}
+                  />
+                </Col>
+                <Col>
+                </Col>
+                */

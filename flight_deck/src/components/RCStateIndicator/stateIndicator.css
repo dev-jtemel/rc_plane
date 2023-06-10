@@ -1,0 +1,31 @@
+.indicator_false {
+  width: 25px;
+  height: 25px;
+  border-radius: 25px;
+  background-color: red;
+}
+
+.indicator_true {
+  width: 25px;
+  height: 25px;
+  border-radius: 25px;
+  background-color: green;
+}
+
+.flight_status {
+  text-align: center;
+  width: 150px;
+  margin: 25px auto;
+  height: 100px;
+}
+
+.flight_name {
+}
+
+.flight_status_false {
+  color: red;
+}
+
+.flight_status_true {
+  color: white;
+}
