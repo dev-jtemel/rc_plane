@@ -7,6 +7,14 @@ import RCStateIndicator from './components/RCStateIndicator';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import {
+  Airspeed,
+  Altimeter,
+  AttitudeIndicator,
+  HeadingIndicator,
+  TurnCoordinator,
+  Variometer
+} from 'react-typescript-flight-indicators'
 
 const config = {
   defaultMapCenter: [
@@ -79,7 +87,7 @@ function App() {
       })
       .catch(err => console.error(err));
         // Do nothing on error
-      }, 300);
+      }, 100);
 
      return _ => clearInterval(id);
   }, [running]);
@@ -170,76 +178,15 @@ function App() {
                   />
                 </Col>
               </Row>
-              <Row xs={5} style={{ height: 150 }}>
+              <Row xs={3} style={{ height: 150 }}>
                 <Col>
+                  <Airspeed speed={plane.speed * 50} showBox={false} />
                 </Col>
                 <Col>
-                  <Chart
-                    chartType="Gauge"
-                    data={[['Label', 'Value'], ["m/s", plane.speed || 0]]}
-                    options={{
-                      max: 4,
-                      width: 150,
-                      height: 150,
-                      redFrom: 3.5,
-                      redTo: 4,
-                      yellowFrom: 2.5,
-                      yellowTo: 3.5,
-                      minorTicks: 5,
-                    }}
-                  />
+                  <HeadingIndicator heading={plane.track} showBox={false} />
                 </Col>
                 <Col>
-                  <div
-                    style={{
-                      display: 'flex',
-                      height: '140px',
-                      width: '140px',
-                      margin: '5px',
-                      transform: `rotate(${plane.track}deg)`,
-                      backgroundImage: 'url(/compass.png)',
-                      backgroundRepeat: 'no-repeat',
-                      backgroundSize: '140px 140px',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <img src='/compass_plane.png' width={60} height={60} alt='' 
-                      style={{
-                        transform: `rotate(-${plane.track}deg)`,
-                       }}
-                    />
-                  </div>
-                </Col>
-                <Col>
-                  <Chart
-                    chartType="Gauge"
-                    data={[['Label', 'Value'], ["v/cell", cs.elevator || 0]]}
-                    options={{
-                      min: 3.2,
-                      max: 4.2,
-                      width: 150,
-                      height: 150,
-                      redFrom: 3.2,
-                      redTo: 3.5,
-                      yellowFrom: 3.5,
-                      yellowTo: 3.8,
-                      minorTicks: 5,
-                    }}
-                  />
-                </Col>
-                <Col>
-                  <Chart
-                    chartType="Gauge"
-                    data={[['Label', 'Value'], ["rudder", cs.rudder || 0]]}
-                    options={{
-                      min: -50,
-                      max: 50,
-                      width: 150,
-                      height: 150,
-                      minorTicks: 5,
-                    }}
-                  />
+                  <AttitudeIndicator roll={cs.aileron} pitch={-1 * cs.elevator} showBox={false} />
                 </Col>
               </Row>
             </Col>
