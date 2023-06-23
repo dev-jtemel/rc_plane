@@ -8,16 +8,9 @@ find_package(Threads REQUIRED)
 
 include_directories(
   common/include
+  som/include
   third_party
 )
-add_subdirectory(common)
 
-if(PC_BUILD)
-  include_directories(pc/include)
-  add_subdirectory(pc)
-elseif(SOM_BUILD)
-  include_directories(som/include)
-  add_subdirectory(som)
-else()
-  message(FATAL_ERROR "Please specifiy build type: PC_BUILD or SOM_BUILD")
-endif()
+add_subdirectory(common)
+add_subdirectory(som)
