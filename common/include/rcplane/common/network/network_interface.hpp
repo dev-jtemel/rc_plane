@@ -49,7 +49,7 @@ class network_interface : public ::rcplane::common::interface::base_controller {
   std::tuple<float, float, float> _gyro;
 
   std::mutex _cs_lk;
-  std::tuple<uint8_t, uint8_t, int8_t, int8_t, int8_t> _cs;
+  std::tuple<int, int, int, int, int> _cs;
 };
 
 } // namespace interface
