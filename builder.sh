@@ -86,14 +86,11 @@ do
         ssh pi@${SOMIP} 'cp rc_plane/build_som/som/som-controller bin'
         break
       }
-      [ $MODE == "PC" ] && {
-        echo "Nothing to do on PC...."
-        break
-      }
       [ $MODE == "MCU" ] && {
         bash scripts/flash-mcu.sh "$ROOT_DIR" "$DEV"
         break
       }
+      echo "Nothing to do on PC...."
     elif [ "$opt" = "Run" ];
     then
       [ $MODE == "SOM" ] && {
@@ -104,10 +101,7 @@ do
         ./build_som/som/som-controller
         break
       }
-      [ $MODE == "MCU" ] && {
-        echo "Nothing to do on $MODE..."
-        break
-      }
+      echo "Nothing to do on $MODE..."
     elif [ "$opt" = "Run-Test" ];
     then
       [ $MODE == "PC" ] && {

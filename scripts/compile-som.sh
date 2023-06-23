@@ -3,7 +3,7 @@
 # DO NOT CALL DIRECTLY
 
 ROOT_DIR="$1"
-BUILD_DIR="$ROOT_DIR/build_som"
+BUILD_DIR="$ROOT_DIR/build"
 
 compile_som() {
   [ ! -d $BUILD_DIR ] && mkdir $BUILD_DIR
