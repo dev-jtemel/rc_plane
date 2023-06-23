@@ -41,16 +41,17 @@ int main(int argc, char *argv[]) {
   std::vector<std::unique_ptr<rcplane::common::interface::base_controller>> controllers;
 
   auto serial_controller = std::make_unique<rcplane::common::io::serial_controller>();
-  serial_controller->register_cs_cb([&](auto timestamp, auto &packets){
-    // TODO: Bind this
-    network_controller->cs_cb(
-      packets[0].data(),
-      packets[1].data(),
-      packets[2].data(),
-      packets[3].data(),
-      packets[4].data()
-    );
-  });
+  serial_controller->register_cs_cb(
+    std::bind(
+      &rcplane::common::network::interface::network_interface::cs_cb,
+      network_controller.get(),
+      std::placeholders::_1,
+      std::placeholders::_2,
+      std::placeholders::_3,
+      std::placeholders::_4,
+      std::placeholders::_5
+    )
+  );
   serial_controller->register_gyro_cb([&](auto pitch, auto roll, auto yaw){
       RCPLANE_LOG(info, TAG, 
           "pitch: " << pitch << " roll: " << roll << " yaw: " << yaw

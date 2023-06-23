@@ -88,7 +88,7 @@ bool serial_controller::init() {
 }
 
 
-void serial_controller::register_cs_cb(std::function<void(uint32_t, std::array<packet, 5U> &)> cb) {
+void serial_controller::register_cs_cb(std::function<void(uint8_t, uint8_t, int8_t, int8_t, int8_t)> cb) {
   _cs_cb = cb;
 }
 
@@ -228,7 +228,7 @@ void serial_controller::p_handle_buffer() {
   ); 
 
   if (_cs_cb) {
-    _cs_cb(timestamp, _packets);
+    _cs_cb(_packets[0].data(), _packets[1].data(), _packets[2].data(), _packets[3].data(), _packets[4].data());
   } else {
     RCPLANE_LOG(warn, _tag, "no cb regisetered");
   }

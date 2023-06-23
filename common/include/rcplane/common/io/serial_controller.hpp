@@ -27,7 +27,7 @@ class serial_controller : public ::rcplane::common::interface::base_controller {
   void start() override;
   void terminate() override;
 
-  void register_cs_cb(std::function<void(uint32_t timestamp, std::array<packet, 5U> &)> cb);
+  void register_cs_cb(std::function<void(uint8_t, uint8_t, int8_t, int8_t, int8_t)> cb);
   void register_gyro_cb(std::function<void(float, float, float)> cb);
 
  private:
@@ -67,7 +67,7 @@ class serial_controller : public ::rcplane::common::interface::base_controller {
   binary_float _accy;
   binary_float _accz;
   std::array<packet, 5U> _packets;
-  std::function<void(uint32_t timestamp, std::array<packet, 5U> &)> _cs_cb;
+  std::function<void(uint8_t, uint8_t, int8_t, int8_t, int8_t)> _cs_cb;
   std::function<void(float, float, float)> _gyro_cb;
 };
 
