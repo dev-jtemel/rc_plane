@@ -28,13 +28,7 @@ serial_controller::~serial_controller() {
 
 bool serial_controller::init() {
   static_assert(sizeof(float) == 4U);
-  _packets[0] = packet(packet::type::state, 0U);
-  _packets[1] = packet(packet::type::motor, 0U);
-  _packets[2] = packet(packet::type::aileron, 0U);
-  _packets[3] = packet(packet::type::elevator, 0U);
-  _packets[4] = packet(packet::type::rudder, 0U);
 
-#ifndef SIMULATION
   _fd = open(_tty.c_str(), O_RDWR | O_NOCTTY);
   if (_fd < 0) {
     RCPLANE_LOG(error, _tag, "Failed to open " << _tty);
@@ -59,29 +53,12 @@ bool serial_controller::init() {
   // Config the serial port
   _ntio.c_cflag = B115200 | CRTSCTS | CS8 | CLOCAL | CREAD;
   _ntio.c_iflag = IGNPAR | ICRNL;
-  _ntio.c_oflag = 0;
   _ntio.c_lflag = ICANON;
-  _ntio.c_cc[VINTR] = 0;
-  _ntio.c_cc[VQUIT] = 0;
-  _ntio.c_cc[VERASE] = 0;
-  _ntio.c_cc[VKILL] = 0;
   _ntio.c_cc[VEOF] = 4;
-  _ntio.c_cc[VTIME] = 0;
   _ntio.c_cc[VMIN] = 1;
-  _ntio.c_cc[VSWTC] = 0;
-  _ntio.c_cc[VSTART] = 0;
-  _ntio.c_cc[VSTOP] = 0;
-  _ntio.c_cc[VSUSP] = 0;
-  _ntio.c_cc[VEOL] = 0;
-  _ntio.c_cc[VREPRINT] = 0;
-  _ntio.c_cc[VDISCARD] = 0;
-  _ntio.c_cc[VWERASE] = 0;
-  _ntio.c_cc[VLNEXT] = 0;
-  _ntio.c_cc[VEOL2] = 0;
 
   tcflush(_fd, TCIFLUSH);
   tcsetattr(_fd, TCSANOW, &_ntio);
-#endif
 
   RCPLANE_LOG(info, _tag, "initialized");
   return true;
@@ -103,11 +80,7 @@ void serial_controller::start() {
   }
 
   _worker = std::thread([&](){
-#ifdef SIMULATION
-    p_read_log();
-#else
     p_read_serial();
-#endif
   });
 
   RCPLANE_LOG(info, _tag, "started");
@@ -120,17 +93,14 @@ void serial_controller::terminate() {
   }
   _worker.join();
 
-#ifndef SIMULATION
   // Restore old values
   tcsetattr(_fd, TCSANOW, &_otio);
   _blackbox.close();
-#endif
 
   RCPLANE_LOG(info, _tag, "terminated");
 }
 
 void serial_controller::p_read_serial() {
-#ifndef SIMULATION
   while (true) { 
     {
       std::lock_guard<std::mutex> lk(_lk);
@@ -161,15 +131,12 @@ void serial_controller::p_read_serial() {
       if (_line == 0U) {
         p_handle_buffer();
       } else if (_line == 1U) {
-        _pitch.value = static_cast<uint32_t>(_buffer >> 32U);
-        _roll.value = static_cast<uint32_t>(0xFFFFFFFF & _buffer);
+        _pitch.set(static_cast<uint32_t>(_buffer >> 32U));
+        _roll.set(static_cast<uint32_t>(0xFFFFFFFF & _buffer));
       } else if (_line == 2U) {
-        _yaw.value = static_cast<uint32_t>(_buffer >> 32U);
-        _gyro_cb(_pitch.data, _roll.data, _yaw.data);
-        _accx.value  = static_cast<uint32_t>(0xFFFFFFFF & _buffer);
+        _yaw.set(static_cast<uint32_t>(_buffer >> 32U));
+        _gyro_cb(_pitch.data(), _roll.data(), _yaw.data());
       } else if (_line == 3U) {
-        _accy.value = static_cast<uint32_t>(_buffer >> 32U);
-        _accz.value = static_cast<uint32_t>(0xFFFFFFFF & _buffer);
       }
 
       _blackbox << _buf << std::endl;
@@ -178,57 +145,29 @@ void serial_controller::p_read_serial() {
       // Do nothing
     }
   }
-#endif
-}
-
-void serial_controller::p_read_log() {
-#ifdef SIMULATION
-  std::string line;
-  uint32_t lastSeenTime = 0U;
-  while (_log >> line) {
-    {
-      std::lock_guard<std::mutex> lk(_lk);
-      if (!_running) {
-        break;
-      }
-    }
-    try {
-      _buffer = std::stoul(line.c_str(), nullptr, 16);
-      auto timestamp = static_cast<uint32_t>(_buffer >> 40);
-
-      std::this_thread::sleep_for(std::chrono::milliseconds(timestamp - lastSeenTime));
-
-      p_handle_buffer();
-
-      lastSeenTime = timestamp;
-    } catch (...) {
-      RCPLANE_LOG(error, _tag, "failed to convert line: " << line);
-    }
-  }
-#endif
 }
 
 void serial_controller::p_handle_buffer() {
-  auto timestamp = static_cast<uint32_t>(_buffer >> 40);
-  _packets[0].set(_buffer);
-  _packets[1].set(_buffer >> 8);
-  _packets[2].set(_buffer >> 16);
-  _packets[3].set(_buffer >> 24);
-  _packets[4].set(_buffer >> 32);
+  _timestamp.set(static_cast<uint32_t>(_buffer >> 40));
+  _state.set(_buffer);
+  _motor.set(_buffer >> 8);
+  _aileron.set(_buffer >> 16);
+  _elevator.set(_buffer >> 24);
+  _rudder.set(_buffer >> 32);
 
   RCPLANE_LOG(
     trace,
     _tag,
     "[" << timestamp << "]"
-    << " state = " << std::bitset<8>(_packets[0].data())
-    << " | motor = " << _packets[1].data()
-    << " | aileron = " << _packets[2].data()
-    << " | elevator = " << _packets[3].data()
-    << " | rudder = " << _packets[4].data()
+    << " state = " << std::bitset<8>(_state.data())
+    << " | motor = " << _motor.data()
+    << " | aileron = " << _aileron.data()
+    << " | elevator = " << _elevator.data()
+    << " | rudder = " << _rudder.data()
   ); 
 
   if (_cs_cb) {
-    _cs_cb(_packets[0].data(), _packets[1].data(), _packets[2].data(), _packets[3].data(), _packets[4].data());
+    _cs_cb(_state.data(), _motor.data(), _aileron.data(), _elevator.data(), _rudder.data());
   } else {
     RCPLANE_LOG(warn, _tag, "no cb regisetered");
   }

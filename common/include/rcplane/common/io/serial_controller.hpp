@@ -41,14 +41,6 @@ class serial_controller : public ::rcplane::common::interface::base_controller {
   uint8_t _startcount = 0;
   uint8_t _line = 0;
 
-  union binary_float {
-    uint32_t value;
-    float data;
-  };
-
-#ifdef SIMULATION
-  std::ifstream _log = std::ifstream("./logs/test.log");
-#else
   static const uint32_t MAX_LEN = 17U;
   const std::string _tty = "/dev/ttyACM0";
   int _fd;
@@ -57,16 +49,13 @@ class serial_controller : public ::rcplane::common::interface::base_controller {
   termios _ntio;
   char _buf[MAX_LEN];
   std::ofstream _blackbox;
-#endif
 
   uint64_t _buffer;
-  binary_float _pitch;
-  binary_float _roll;
-  binary_float _yaw;
-  binary_float _accx;
-  binary_float _accy;
-  binary_float _accz;
-  std::array<packet, 5U> _packets;
+  packet<uint32_t, uint32_t> _timestamp;
+  packet<uint8_t, uint8_t> _state, _motor;
+  packet<uint8_t, int8_t> _aileron, _elevator, _rudder;
+  packet<uint32_t, float> _pitch, _roll, _yaw;
+
   std::function<void(uint8_t, uint8_t, int8_t, int8_t, int8_t)> _cs_cb;
   std::function<void(float, float, float)> _gyro_cb;
 };

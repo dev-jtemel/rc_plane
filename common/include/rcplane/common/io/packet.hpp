@@ -7,33 +7,81 @@ namespace rcplane {
 namespace common {
 namespace io {
 
+enum packet_type {
+  state = 0,
+  motor = 1,
+
+  // Control surfaces
+  aileron = 2,
+  elevator = 3,
+  rudder = 4,
+
+  // Gyroscope
+  pitch = 5,
+  roll = 6,
+  yaw = 7, 
+
+  timestamp = 100,
+
+  invalid = 255,
+};
+
+template <typename BUFFER_SIZE, typename RETURN_TYPE>
 class packet {
  public:
-  enum type {
-    state = 0,
-    motor = 1,
-    aileron = 2,
-    elevator = 3,
-    rudder = 4,
-    invalid = 255,
-  };
+  packet() : packet(packet_type::invalid) {
+  }
 
-  packet();
-  explicit packet(enum type type, uint8_t buffer);
-  void set(uint8_t buffer);
+  explicit packet(packet_type type) {
+    // Ensure that conversions will be perserved
+    static_assert(sizeof(BUFFER_SIZE) <= sizeof(RETURN_TYPE));
+    _type = type; 
+  }
 
-  type type();
-  int data();
+  ~packet() = default;
 
-  std::string type_to_str();
+  void set(BUFFER_SIZE buffer) {
+    _converter.raw = buffer; 
+  }
+
+  BUFFER_SIZE raw() {
+    return _converter.raw;
+  }
+
+  RETURN_TYPE data() {
+    return _converter.data;
+  }
+
+  packet_type type() {
+    return _type;
+  }
+
+  std::string type_to_str() {
+    switch (_type) {
+      case packet_type::state:    return "state";
+      case packet_type::motor:    return "motor";
+      case packet_type::aileron:  return "aileron";
+      case packet_type::elevator: return "elevator";
+      case packet_type::rudder:   return "rudder";
+      case packet_type::pitch:    return "pitch";
+      case packet_type::roll:     return "roll";
+      case packet_type::yaw:      return "yaw";
+      default:             return "invalid";
+    }
+    return "";
+  }
+
  private:
-  uint8_t NEGATIVE = 0b10000000;
-  void convert_buffer();
-  bool is_twos_compliment();
+  packet_type _type;
 
-  enum type _type;
-  int _data; 
-  uint8_t _buffer;
+  // Trick to fast conversion. Set the buffer here and pull 
+  // the data to get the value in it's expected return type
+  // since they share the same memory region.
+  union conversion {
+    BUFFER_SIZE raw;
+    RETURN_TYPE data; 
+  };
+  conversion _converter;
 };
 
 } // namesapce io
