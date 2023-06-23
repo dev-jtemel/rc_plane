@@ -2,56 +2,48 @@
 
 ROOT_DIR="$PWD"
 DEV="/dev/ttyACM0"
-SOMIP="192.168.0.13"
+SOMIP="192.168.0.30"
 SIMULATION="OFF"
-SOM=OFF
+MODE="SOM"
 
 OPTIONS="\
-  Compile-MCU \
-  Compile-SOM \
-  Compile-PC \
-  Flash-MCU \
-  Flash-SOM \
-  Run-SOM \
-  Run-PC \
+  Change-Mode \
+  Compile \
+  Flash \
+  Run \
+  Run-Test \
   GPS-Fake \
-  Read-Serial-MCU \
+  Read-Serial \
   Install-Dependencies \
   Help \
   Quit\
 "
 usage() {
   echo "Usage:"
-  echo "  ./builder.sh -d [dev] -s"
+  echo "  ./builder.sh -d [dev] -i [IP]"
   echo ""
   echo "  where:"
   echo "    -d [dev] : The tty port the microcontroller is connected to."
   echo "               Default: /dev/ttyACM0"
-  echo "    -s       : Use simulated communication."
   echo "    -i       : SoM IP address."
   echo "               Default: 192.168.0.13"
   echo ""
   echo "COMMANDS:"
-  echo "  1) Compile-MCU          : Compile the MCU code."
-  echo "  2) Compile-SOM          : Compile the SOM code."
-  echo "  3) Compile-PC           : Compile the flight deck for the PC."
-  echo "  4) Flash-MCU            : Flash the MCU code to the connected microcontroller."
-  echo "  5) Flash-SOM            : Flash the SOM code to the connected SoM."
-  echo "  6) Run-SOM              : Run the controller on the SOM."
-  echo "  7) Run-PC               : Run the flight deck on the PC."
-  echo "  8) Read-Serial-MCU      : Read the serial output of the microcontroller."
-  echo "  9) Install-Dependencies : Install the required dependencies."
-  echo "  10) Help                : Display this message."
-  echo "  12) Quit                : Exit the builder script."
+  echo "  1) Change-Mode          : Cycle between MCU, SOM and PC (default: SOM)."
+  echo "  2) Compile              : Compile the mode's code."
+  echo "  3) Flash                : Flash the modes code (via serial for MCU or ssh for SOM)."
+  echo "  4) Run                  : Run the desired code on the appropiate device."
+  echo "  5) Run-Test             : Run the tests for the appropiate device."
+  echo "  6) GPS-Fake             : Start a simulated GPSd instance."
+  echo "  7) Read-Serial          : Read the serial output of the microcontroller."
+  echo "  8) Install-Dependencies : Install the required dependencies."
+  echo "  9) Help                 : Display this message."
+  echo "  10) Quit                : Exit the builder script."
 }
 
-while getopts "zsd:i:h" opt; do
+while getopts "d:i:h" opt; do
     case "$opt" in
-        z) SOM="ON";
-          ;;
         d) DEV="$OPTARG";
-            ;;
-        s) SIMULATION="ON";
             ;;
         i) SOMIP="$OPTARG";
             ;;
@@ -64,61 +56,83 @@ done
 
 while true;
 do
-  echo "DEV = ${DEV} | SIMULATION = ${SIMULATION} | SOMIP = ${SOMIP} | SOM = ${SOM}"
+  echo "MODE = ${MODE} | DEV = ${DEV} | SOMIP = ${SOMIP}"
 
   select opt in ${OPTIONS};
   do
-    if [ "$opt" = "Compile-MCU" ];
+    if [ "$opt" = "Change-Mode" ];
     then
-      bash scripts/compile-mcu.sh "$ROOT_DIR"
-      break
-    elif [ "$opt" = "Compile-SOM" ];
+      [ $MODE == "SOM" ] && MODE="PC" && break
+      [ $MODE == "PC" ] && MODE="MCU" && break
+      [ $MODE == "MCU" ] && MODE="SOM" && break
+    elif [ "$opt" = "Compile" ];
     then
-      if [ "$SOM" == "ON" ];
-      then
+      [ $MODE == "SOM" ] && {
         ssh pi@${SOMIP} 'cd rc_plane && git pull && ./scripts/compile-som.sh /home/pi/rc_plane'
-      else
-        bash scripts/compile-som.sh "$ROOT_DIR" "$SIMULATION"
-      fi
-      break
-    elif [ "$opt" = "Compile-PC" ];
+        break
+      }
+      [ $MODE == "PC" ] && {
+        bash scripts/compile-som.sh "$ROOT_DIR"
+        break
+      }
+      [ $MODE == "MCU" ] && {
+        bash scripts/compile-mcu.sh "$ROOT_DIR"
+        break
+      }
+    elif [ "$opt" = "Flash" ];
     then
-      bash scripts/compile-pc.sh "$ROOT_DIR" "$SIMULATION"
-      break
-    elif [ "$opt" = "Flash-MCU" ];
+      [ $MODE == "SOM" ] && {
+        echo "Copying to bin..."
+        ssh pi@${SOMIP} 'cp rc_plane/build_som/som/som-controller bin'
+        break
+      }
+      [ $MODE == "PC" ] && {
+        echo "Nothing to do on PC...."
+        break
+      }
+      [ $MODE == "MCU" ] && {
+        bash scripts/flash-mcu.sh "$ROOT_DIR" "$DEV"
+        break
+      }
+    elif [ "$opt" = "Run" ];
     then
-      bash scripts/flash-mcu.sh "$ROOT_DIR" "$DEV"
-      break
-    elif [ "$opt" = "Flash-SOM" ];
-    then
-      ssh pi@${SOMIP} 'cp rc_plane/build_som/som/som-controller bin'
-      break
-    elif [ "$opt" = "Run-SOM" ];
-    then
-      if [ "$SOM" == "ON" ];
-      then
+      [ $MODE == "SOM" ] && {
         ssh -t pi@${SOMIP} '~/bin/som-controller'
-      else
+        break
+      }
+      [ $MODE == "PC" ] && {
         ./build_som/som/som-controller
-      fi
-      break
-    elif [ "$opt" = "Run-PC" ];
+        break
+      }
+      [ $MODE == "MCU" ] && {
+        echo "Nothing to do on $MODE..."
+        break
+      }
+    elif [ "$opt" = "Run-Test" ];
     then
-      bash scripts/run-pc.sh "$ROOT_DIR"
-      break
-    elif [ "$opt" = "Read-Serial-MCU" ];
-    then
-      bash scripts/read-serial-mcu.sh "$ROOT_DIR" "$DEV"
+      [ $MODE == "PC" ] && {
+        ./build_som/common/test/rcplane_common_tests
+        break
+      }
+      echo "Nothing to do on $MODE..."
       break
     elif [ "$opt" = "GPS-Fake" ];
     then
-      if [ "$SOM" == "ON" ];
-      then
+      [ $MODE == "SOM" ] && {
         ssh pi@${SOMIP} 'killall gpsfake ; gpsfake -P 2000 -S rc_plane/logs/gps.nmea'
-      else
+        break
+      }
+      [ $MODE == "PC" ] && {
         killall gpsfake ; sudo gpsfake -P 2000 -S ./logs/gps.nmea
-      fi
-
+        break
+      }
+      [ $MODE == "MCU" ] && {
+        echo "Nothing to do on $MODE..."
+        break
+      }
+    elif [ "$opt" = "Read-Serial" ];
+    then
+      bash scripts/read-serial-mcu.sh "$ROOT_DIR" "$DEV"
       break
     elif [ "$opt" = "Install-Dependencies" ];
     then

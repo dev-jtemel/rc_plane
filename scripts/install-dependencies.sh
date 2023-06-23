@@ -13,6 +13,9 @@ arduino_cli() {
   $ARDUINO_CLI core update-index
   $ARDUINO_CLI core install arduino:avr
   $ARDUINO_CLI core list
+
+  list=`cat $ROOT_DIR/ARDUINO_DEPENDENCIES.txt`
+  $ARDUINO_CLI lib install --git-url $list
 }
 
 setup_permissions() {
@@ -21,7 +24,8 @@ setup_permissions() {
 }
 
 install_apt() {
-  sudo apt install picocom curl python3-matplotlib g++-aarch64-linux-gnu libboost-all-dev gpsd gpsd-clients libgps-dev
+  list=`cat $ROOT_DIR/APT_DEPENDENCIES.txt`
+  sudo apt install $list
 }
 
 echo "**************************************"

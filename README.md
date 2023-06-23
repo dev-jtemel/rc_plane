@@ -86,19 +86,23 @@ Using the `builder.sh` script, deploy the following commands *after* the microco
 
 ```shell
 ./builder.sh
-6 # Install dependencies
-1 # Compile the MCU library
-4 # Flash the microcontroller
-8 # Optional to view serial data output (CTRL+A CTRL+X to exit).
+10 # Install dependencies (only needed on first clone)
+1 # Cycle to MCU
+2 # Compile the MCU library
+3 # Flash the microcontroller
+7 # Optional to view serial data output (CTRL+A CTRL+X to exit).
 ```
 
 ### SoM
-SSH into the SoM, and clone/pull the latest changes of the repo. Using the `builder.sh` script, deploy the following commands:
+Provide the IP of the SOM to the builder and execute the following commands:
 
 ```shell
-./builder.sh
+./builder.sh -i IP
 6 # Install dependencies
-2 # Compile the SoM library
+1 # Cycle to SOM
+2 # Compile the SOM library
+3 # Flash SOM
+4 # Run SOM
 ```
 
 ### PC
@@ -106,21 +110,18 @@ Using the `builder.sh` script, deploy the following commands:
 
 ```shell
 ./builder.sh
-6 # Install dependencies
-3 # Compile the PC library
+1 # Cycle to PC
+2 # Compile the PC library
+3 # Flash PC
+4 # Run PC
 ```
 
 ### Running
 Turn on all power supplies and connect the MCU to the SoM via a serial connection. Then start the SoM controller followed by the PC controller:
 ```
-# On the SoM
 ./builder.sh
-6 # Run the SoM controller
-```
-```
-# On the PC
-./builder.sh
-7 # Run the PC controller
+1 # Cycle to SOM
+4 # Run the SOM controller
 ```
 ## Requirements
 This section lays out the requirements, both virtual and physical, needed for the rc plane.

@@ -2,7 +2,6 @@
 #define __RCPLANE__COMMON__IO__SERIAL_CONTROLLER_HPP__
 
 #include <termios.h>
-
 #include <functional>
 #include <fstream>
 #include <array>
