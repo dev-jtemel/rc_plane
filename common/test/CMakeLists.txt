@@ -8,4 +8,5 @@ add_executable(rcplane_common_tests
 target_link_libraries(rcplane_common_tests
   PUBLIC
     gtest
+    pthread
 )
