@@ -52,11 +52,15 @@ int main(int argc, char *argv[]) {
       std::placeholders::_5
     )
   );
-  serial_controller->register_gyro_cb([&](auto pitch, auto roll, auto yaw){
-      RCPLANE_LOG(info, TAG, 
-          "pitch: " << pitch << " roll: " << roll << " yaw: " << yaw
-      );
-  });
+  serial_controller->register_gyro_cb(
+    std::bind(
+      &rcplane::common::network::interface::network_interface::gyro_cb,
+      network_controller.get(),
+      std::placeholders::_1,
+      std::placeholders::_2,
+      std::placeholders::_3
+    )
+  );
   controllers.push_back(std::move(serial_controller));
 
   auto gps_controller = std::make_unique<rcplane::som::position::gps_controller>();

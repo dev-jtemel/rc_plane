@@ -46,11 +46,28 @@ bool http_controller::init() {
     os << std::setprecision(10);
     {
       std::lock_guard<std::mutex> lk(_cs_lk);
-      os << "{\"state\":" << std::get<0>(_cs)
-        << ",\"motor\":" << std::get<1>(_cs)
-        << ",\"aileron\":" << std::get<2>(_cs)
-        << ",\"elevator\":" << std::get<3>(_cs)
-        << ",\"rudder\":" << std::get<4>(_cs)
+      os << "{\"state\":" << +std::get<0>(_cs)
+        << ",\"motor\":" << +std::get<1>(_cs)
+        << ",\"aileron\":" << +std::get<2>(_cs)
+        << ",\"elevator\":" <<+ std::get<3>(_cs)
+        << ",\"rudder\":" << +std::get<4>(_cs)
+        << "}";
+    }
+
+    res.set_content(os.str(), "application/json");
+    res.status = 200;
+  });
+
+  _svr->Get("/gyro", [&](const httplib::Request &, httplib::Response &res) {
+    RCPLANE_LOG(info, _tag, "path: /gyro");
+
+    std::ostringstream os;
+    os << std::setprecision(10);
+    {
+      std::lock_guard<std::mutex> lk(_gyro_lk);
+      os << "{\"pitch\":" << +std::get<0>(_gyro)
+        << ",\"roll\":" << +std::get<1>(_gyro)
+        << ",\"yaw\":" << +std::get<2>(_gyro)
         << "}";
     }
 

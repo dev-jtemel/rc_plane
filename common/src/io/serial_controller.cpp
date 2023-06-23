@@ -160,10 +160,10 @@ void serial_controller::p_handle_buffer() {
     _tag,
     "[" << timestamp << "]"
     << " state = " << std::bitset<8>(_state.data())
-    << " | motor = " << _motor.data()
-    << " | aileron = " << _aileron.data()
-    << " | elevator = " << _elevator.data()
-    << " | rudder = " << _rudder.data()
+    << " | motor = " << +_motor.data()
+    << " | aileron = " << +_aileron.data()
+    << " | elevator = " << +_elevator.data()
+    << " | rudder = " << +_rudder.data()
   ); 
 
   if (_cs_cb) {

@@ -116,7 +116,7 @@ do
       then
         ssh pi@${SOMIP} 'killall gpsfake ; gpsfake -P 2000 -S rc_plane/logs/gps.nmea'
       else
-        killall gpsfake ; gpsfake -P 2000 -S ./logs/gps.nmea
+        killall gpsfake ; sudo gpsfake -P 2000 -S ./logs/gps.nmea
       fi
 
       break

@@ -31,6 +31,11 @@ const config = {
 
 function App() {
   const [plane, setPlane] = React.useState(config.defaultPlane);
+  const [gyro, setGyro] = React.useState({
+    pitch: 0,
+    roll: 0,
+    yaw: 0
+  });
   const [cs, setCS] = React.useState({
     state: 0,
     motor: 0,
@@ -46,7 +51,7 @@ function App() {
       if (!running) {
         return;
       }
-      fetch('http://192.168.0.13:8080/gps', {
+      fetch('http://192.168.0.22:8080/gps', {
         crossDomain: true,
         method: 'GET',
       })
@@ -73,7 +78,31 @@ function App() {
       if (!running) {
         return;
       }
-      fetch('http://192.168.0.13:8080/cs', {
+      fetch('http://192.168.0.22:8080/gyro', {
+        crossDomain: true,
+        method: 'GET',
+      })
+      .then(async response => {
+        try {
+          let json = await response.json();
+          setGyro(json);
+        } catch (err) {
+          // Do nothing on error
+        }
+      })
+      .catch(err => console.error(err));
+        // Do nothing on error
+      }, 100);
+
+     return _ => clearInterval(id);
+  }, [running]);
+
+   React.useEffect(() => {
+    const id = setInterval(() => {
+      if (!running) {
+        return;
+      }
+      fetch('http://192.168.0.22:8080/cs', {
         crossDomain: true,
         method: 'GET',
       })
@@ -186,7 +215,7 @@ function App() {
                   <HeadingIndicator heading={plane.track} showBox={false} />
                 </Col>
                 <Col>
-                  <AttitudeIndicator roll={cs.aileron} pitch={-1 * cs.elevator} showBox={false} />
+                  <AttitudeIndicator roll={-1 *gyro.roll} pitch={gyro.pitch} showBox={false} />
                 </Col>
               </Row>
             </Col>
