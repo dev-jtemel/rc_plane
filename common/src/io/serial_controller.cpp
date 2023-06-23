@@ -27,6 +27,7 @@ serial_controller::~serial_controller() {
 }
 
 bool serial_controller::init() {
+  static_assert(sizeof(float) == 4U);
   _packets[0] = packet(packet::type::state, 0U);
   _packets[1] = packet(packet::type::motor, 0U);
   _packets[2] = packet(packet::type::aileron, 0U);
@@ -87,8 +88,12 @@ bool serial_controller::init() {
 }
 
 
-void serial_controller::register_cb(std::function<void(uint32_t, std::array<packet, 5U> &)> cb) {
-  _cb = cb;
+void serial_controller::register_cs_cb(std::function<void(uint32_t, std::array<packet, 5U> &)> cb) {
+  _cs_cb = cb;
+}
+
+void serial_controller::register_gyro_cb(std::function<void(float, float, float)> cb) {
+  _gyro_cb = cb;
 }
 
 void serial_controller::start() {
@@ -144,7 +149,6 @@ void serial_controller::p_read_serial() {
     try {
       _buffer = std::stoul(_buf, nullptr, 16);
 
-      RCPLANE_LOG(error, _tag, std::bitset<64>(_buffer));
       if ((START_INDICATOR == _buffer) && _startcount < 4U) {
         ++_startcount;
         continue;
@@ -157,14 +161,15 @@ void serial_controller::p_read_serial() {
       if (_line == 0U) {
         p_handle_buffer();
       } else if (_line == 1U) {
-        _pitch = static_cast<float>(_buffer >> 32U);
-        _roll = static_cast<float>(0xFFFFFFFF & _buffer);
+        _pitch.value = static_cast<uint32_t>(_buffer >> 32U);
+        _roll.value = static_cast<uint32_t>(0xFFFFFFFF & _buffer);
       } else if (_line == 2U) {
-        _yaw = static_cast<float>(_buffer >> 32U);
-        _accx = static_cast<float>(0xFFFFFFFF & _buffer);
+        _yaw.value = static_cast<uint32_t>(_buffer >> 32U);
+        _gyro_cb(_pitch.data, _roll.data, _yaw.data);
+        _accx.value  = static_cast<uint32_t>(0xFFFFFFFF & _buffer);
       } else if (_line == 3U) {
-        _accy = static_cast<float>(_buffer >> 32U);
-        _accz = static_cast<float>(0xFFFFFFFF & _buffer);
+        _accy.value = static_cast<uint32_t>(_buffer >> 32U);
+        _accz.value = static_cast<uint32_t>(0xFFFFFFFF & _buffer);
       }
 
       _blackbox << _buf << std::endl;
@@ -222,8 +227,8 @@ void serial_controller::p_handle_buffer() {
     << " | rudder = " << _packets[4].data()
   ); 
 
-  if (_cb) {
-    _cb(timestamp, _packets);
+  if (_cs_cb) {
+    _cs_cb(timestamp, _packets);
   } else {
     RCPLANE_LOG(warn, _tag, "no cb regisetered");
   }

@@ -27,7 +27,7 @@ class serial_controller : public ::rcplane::common::interface::base_controller {
   void start() override;
   void terminate() override;
 
-  void register_cb(std::function<void(uint32_t timestamp, std::array<packet, 5U> &)> cb);
+  void register_cs_cb(std::function<void(uint32_t timestamp, std::array<packet, 5U> &)> cb);
   void register_gyro_cb(std::function<void(float, float, float)> cb);
 
  private:
@@ -40,6 +40,11 @@ class serial_controller : public ::rcplane::common::interface::base_controller {
   const uint64_t START_INDICATOR = 0xFFFFFFFFFFFFFFFF;
   uint8_t _startcount = 0;
   uint8_t _line = 0;
+
+  union binary_float {
+    uint32_t value;
+    float data;
+  };
 
 #ifdef SIMULATION
   std::ifstream _log = std::ifstream("./logs/test.log");
@@ -55,14 +60,15 @@ class serial_controller : public ::rcplane::common::interface::base_controller {
 #endif
 
   uint64_t _buffer;
-  float _pitch;
-  float _roll;
-  float _yaw;
-  float _accx;
-  float _accy;
-  float _accz;
+  binary_float _pitch;
+  binary_float _roll;
+  binary_float _yaw;
+  binary_float _accx;
+  binary_float _accy;
+  binary_float _accz;
   std::array<packet, 5U> _packets;
-  std::function<void(uint32_t timestamp, std::array<packet, 5U> &)> _cb;
+  std::function<void(uint32_t timestamp, std::array<packet, 5U> &)> _cs_cb;
+  std::function<void(float, float, float)> _gyro_cb;
 };
 
 } // namesapce io

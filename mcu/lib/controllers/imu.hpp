@@ -2,7 +2,7 @@
 #define __MCU__LIB__IMU_HPP__
 
 #include <Wire.h>
-#include <MPU6050.h>
+#include <MPU6050_tockn.h>
 #include <Arduino.h>
 #include "../pins.hpp"
 #include "../interface/controller.hpp"
@@ -17,32 +17,30 @@ typedef union {
 
 class imu : public interface::controller {
  public:
-  imu() : interface::controller(115, 30, -30) {
+  imu() : interface::controller(115, 30, -30), _mpu(Wire) {
   }
 
   ~imu() = default;
 
   virtual bool setup() {
-    while(!_mpu.begin(MPU6050_SCALE_2000DPS, MPU6050_RANGE_2G)) {
-      delay(500);
-    }
-    _mpu.calibrateGyro();
-    _mpu.setThreshold(3);
+    Wire.begin();
+
+    _mpu.begin();
+    _mpu.calcGyroOffsets();
   }
 
   virtual void test() {
   }
 
   virtual void step() {
-    Vector gyro = _mpu.readNormalizeGyro();
-    _pitch.value += gyro.YAxis * timeStep;
-    _roll.value += gyro.XAxis * timeStep;
-    _yaw.value += gyro.ZAxis * timeStep;
+    _mpu.update();
+    _pitch.value = _mpu.getAngleX();
+    _roll.value = _mpu.getAngleY();
+    _yaw.value = _mpu.getAngleZ();
 
-    Vector acc = _mpu.readNormalizeAccel();
-    _accx.value = acc.XAxis;
-    _accy.value = acc.YAxis;
-    _accz.value = acc.ZAxis;
+    _accx.value = _mpu.getAccX();
+    _accy.value = _mpu.getAccY();
+    _accz.value = _mpu.getAccZ();
 
     for (int i = 3; i >= 0; --i) {
       Serial.print(_pitch.binary[i] >> 4, HEX);
