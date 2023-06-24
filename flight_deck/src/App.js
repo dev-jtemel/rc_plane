@@ -51,7 +51,7 @@ function App() {
       if (!running) {
         return;
       }
-      fetch('http://192.168.0.22:8080/gps', {
+      fetch('http://192.168.0.30:8080/gps', {
         crossDomain: true,
         method: 'GET',
       })
@@ -78,7 +78,7 @@ function App() {
       if (!running) {
         return;
       }
-      fetch('http://192.168.0.22:8080/gyro', {
+      fetch('http://192.168.0.30:8080/gyro', {
         crossDomain: true,
         method: 'GET',
       })
@@ -102,7 +102,7 @@ function App() {
       if (!running) {
         return;
       }
-      fetch('http://192.168.0.22:8080/cs', {
+      fetch('http://192.168.0.30:8080/cs', {
         crossDomain: true,
         method: 'GET',
       })
