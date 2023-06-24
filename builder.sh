@@ -105,11 +105,11 @@ do
     elif [ "$opt" = "Run-Test" ];
     then
       [ $MODE == "SOM" ] && {
-        ssh pi@${SOMIP} 'rc_plane/build_som/common/test/rcplane_common_tests'
+        ssh pi@${SOMIP} 'rc_plane/build/common/test/rcplane_common_tests'
         break
       }
       [ $MODE == "PC" ] && {
-        ./build_som/common/test/rcplane_common_tests
+        ./build/common/test/rcplane_common_tests
         break
       }
       echo "Nothing to do on $MODE..."
