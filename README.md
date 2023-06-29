@@ -1,4 +1,3 @@
-
 # RC Plane
 DIY RC Plane built and designed from scratch.
 
@@ -7,6 +6,7 @@ DIY RC Plane built and designed from scratch.
    - [RC Controller](#rc-controller)
    - [Schematic](#schematic)
   - [Software](#software)
+	- [MCU Architecture](#mcu-architecture)
     - [Serial Communication](#serial-communication)
   - [Plane Dimensions](#plane-dimensions)
 - [Build](#build)
@@ -27,6 +27,16 @@ The following schematic lays out the control mapping of transmitter.
 
 ![controller](resources/controller.png)
 
+
+| **Channel** | **Functionality**  |
+|---------------|------------------|
+| CH1 | Roll |
+| CH2 | Pitch |
+| CH3 | Motor Speed |
+| CH4 | Yaw |
+| CH5 | Unassigned |
+| CH6 | Unassigned |
+
 #### Schematic
 The following schematic lays out the hardware design of the plane.
 
@@ -35,6 +45,10 @@ The following schematic lays out the hardware design of the plane.
 For direct access to pin mapping, see the `pins.hpp` file in the `mcu` library.
 
 ### Software
+#### MCU Architecture
+
+![mcu_uml](resources/mcu_uml.png)
+
 #### Serial Communication
 Communication from the MCU to the SoM follows a 64-bit packet format defined as follows.
 
@@ -43,6 +57,10 @@ Communication from the MCU to the SoM follows a 64-bit packet format defined as 
 **Note**: Packets are always recevied in this order.
 
 Timestamp buffer overflows at 16777215 milliseconds (16777.215 seconds; 279.62025 minutes; 4.66 hours), well exceeding any possible flight times. Note that the timestamp resets upon an initial read of the serial port from the MCU since the microcontroller resets on an initial read.
+
+Packets are written to the serial port in HEX, with each line containing exactly 8 bytes of data. 
+
+When the serial connection is opened on the SOM, there is a chance of buffered data to be read before the microcontroller resets. To ensure the serial reader gets the packets in the order expected, all packets are discarded on the SOM until four "start" packets are read consecutively. A start packet is defined as: `0xFFFFFFFFFFFFFFFF`.
 
 ### Plane Dimensions
 The dimensions of the plane are laid out in the following sketch.
@@ -86,7 +104,7 @@ Using the `builder.sh` script, deploy the following commands *after* the microco
 
 ```shell
 ./builder.sh
-10 # Install dependencies (only needed on first clone)
+8 # Install dependencies (only needed on first clone)
 1 # Cycle to MCU
 2 # Compile the MCU library
 3 # Flash the microcontroller
@@ -97,8 +115,8 @@ Using the `builder.sh` script, deploy the following commands *after* the microco
 Provide the IP of the SOM to the builder and execute the following commands:
 
 ```shell
-./builder.sh -i IP
-6 # Install dependencies
+./builder.sh -i <IP>
+8 # Install dependencies
 1 # Cycle to SOM
 2 # Compile the SOM library
 3 # Flash SOM
@@ -123,19 +141,28 @@ Turn on all power supplies and connect the MCU to the SoM via a serial connectio
 1 # Cycle to SOM
 4 # Run the SOM controller
 ```
+
+If the GNSS recevier is **not** connected to the SOM, simulate GNSS flow with GPSFake. Failure to parse GPS data will abort the SOM controller.
+```
+./builder.sh
+1 # Cycle to SOM
+6 # Run GPSFake
+```
 ## Requirements
 This section lays out the requirements, both virtual and physical, needed for the rc plane.
 
 ### Physical
 The following components are used in the build:
-- (1x) Arduino Mega 2560 Rev3
-- (1x) 9V DC breadboard power supply (+9V battery)
-- (1x) FS-IA10B 2.4GHz 10 Channel DC receiver
+- (1x) Raspberry PI 4B+ (or similar)
+- (1x) Arduino Mega 2560 Rev3 (or similar)
+- (1x) FS-IA10B 2.4GHz 10 Channel DC Receiver
+- (1x) Skynet FS 2.4GHz Transmitter
 - (5x) Tower Pro 9G micro servos
-- (1x) L293D motor controller
-- (2x) Brushed DC motor
+- (1x) 40A ESC
+- (1x) 3S 6000mAh LiPo (or similar)
+- (1x) Brushless DC Motor
+- (1x) USB-A GNSS Receiver
 - (3x) 220 Ohm resistors
 - (1) Green LED
 - (1) Red LED
 - (1) Blue LED
-
