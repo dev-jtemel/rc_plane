@@ -6,7 +6,8 @@ DIY RC Plane built and designed from scratch.
    - [RC Controller](#rc-controller)
    - [Schematic](#schematic)
   - [Software](#software)
-	- [MCU Architecture](#mcu-architecture)
+    - [SOM Architecture](#som-architecture)
+    - [MCU Architecture](#mcu-architecture)
     - [Serial Communication](#serial-communication)
   - [Plane Dimensions](#plane-dimensions)
 - [Build](#build)
@@ -45,6 +46,10 @@ The following schematic lays out the hardware design of the plane.
 For direct access to pin mapping, see the `pins.hpp` file in the `mcu` library.
 
 ### Software
+#### SOM Architecture
+
+![som_uml](resources/som_uml.png)
+
 #### MCU Architecture
 
 ![mcu_uml](resources/mcu_uml.png)
