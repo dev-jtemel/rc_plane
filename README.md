@@ -2,13 +2,13 @@
 DIY RC Plane built and designed from scratch.
 
 - [Design](#design)
- - [Hardware](#hardware)
-   - [RC Controller](#rc-controller)
-   - [Schematic](#schematic)
   - [Software](#software)
     - [SOM Architecture](#som-architecture)
     - [MCU Architecture](#mcu-architecture)
     - [Serial Communication](#serial-communication)
+ - [Hardware](#hardware)
+   - [Schematic](#schematic)
+   - [RC Controller](#rc-controller)
   - [Plane Dimensions](#plane-dimensions)
 - [Build](#build)
  - [Microcontroller](#microcontroller)
@@ -20,30 +20,6 @@ DIY RC Plane built and designed from scratch.
 ## Design
 This sections lays out the schematic of the hardware and the relation of the controls
 of the flight controller to the plane.
-
-### Hardware
-
-#### RC Controller
-The following schematic lays out the control mapping of transmitter.
-
-![controller](resources/controller.png)
-
-
-| **Channel** | **Functionality**  |
-|---------------|------------------|
-| CH1 | Roll |
-| CH2 | Pitch |
-| CH3 | Motor Speed |
-| CH4 | Yaw |
-| CH5 | Unassigned |
-| CH6 | Unassigned |
-
-#### Schematic
-The following schematic lays out the hardware design of the plane.
-
-![schematic](resources/schematic.png)
-
-For direct access to pin mapping, see the `pins.hpp` file in the `mcu` library.
 
 ### Software
 #### SOM Architecture
@@ -66,6 +42,31 @@ Timestamp buffer overflows at 16777215 milliseconds (16777.215 seconds; 279.6202
 Packets are written to the serial port in HEX, with each line containing exactly 8 bytes of data. 
 
 When the serial connection is opened on the SOM, there is a chance of buffered data to be read before the microcontroller resets. To ensure the serial reader gets the packets in the order expected, all packets are discarded on the SOM until four "start" packets are read consecutively. A start packet is defined as: `0xFFFFFFFFFFFFFFFF`.
+
+### Hardware
+
+#### Schematic
+The following schematic lays out the hardware design of the plane.
+
+![schematic](resources/schematic.png)
+
+For direct access to pin mapping, see the `pins.hpp` file in the `mcu` library.
+
+#### RC Controller
+The following schematic lays out the control mapping of transmitter.
+
+![controller](resources/controller.png)
+
+
+| **Channel** | **Functionality**  |
+|---------------|------------------|
+| CH1 | Roll |
+| CH2 | Pitch |
+| CH3 | Motor Speed |
+| CH4 | Yaw |
+| CH5 | Unassigned |
+| CH6 | Unassigned |
+
 
 ### Plane Dimensions
 The dimensions of the plane are laid out in the following sketch.
