@@ -1,15 +1,15 @@
 #ifndef __RCPLANE__COMMON__IO__SERIAL_CONTROLLER_HPP__
 #define __RCPLANE__COMMON__IO__SERIAL_CONTROLLER_HPP__
 
-#include <termios.h>
-#include <functional>
-#include <fstream>
 #include <array>
+#include <fstream>
+#include <functional>
 #include <string>
+#include <termios.h>
 
+#include "rcplane/common/base_controller.hpp"
 #include "rcplane/common/io/journal.hpp"
 #include "rcplane/common/io/packet.hpp"
-#include "rcplane/common/base_controller.hpp"
 
 #define _POSIX_SOURCE 1
 
@@ -18,7 +18,7 @@ namespace common {
 namespace io {
 
 class serial_controller : public ::rcplane::common::interface::base_controller {
- public:
+public:
   serial_controller();
   ~serial_controller();
 
@@ -26,10 +26,11 @@ class serial_controller : public ::rcplane::common::interface::base_controller {
   void start() override;
   void terminate() override;
 
-  void register_cs_cb(std::function<void(uint8_t, uint8_t, int8_t, int8_t, int8_t)> cb);
+  void register_cs_cb(
+      std::function<void(uint8_t, uint8_t, int8_t, int8_t, int8_t)> cb);
   void register_gyro_cb(std::function<void(float, float, float)> cb);
 
- private:
+private:
   void p_read_serial();
   void p_read_log();
 
@@ -59,8 +60,8 @@ class serial_controller : public ::rcplane::common::interface::base_controller {
   std::function<void(float, float, float)> _gyro_cb;
 };
 
-} // namesapce io
-} // namesapce common
-} // namesapce rcplane
+}  // namespace io
+}  // namespace common
+}  // namespace rcplane
 
-#endif //__RCPLANE__COMMON__IO__SERIAL_CONTROLLER_HPP__
+#endif  //__RCPLANE__COMMON__IO__SERIAL_CONTROLLER_HPP__

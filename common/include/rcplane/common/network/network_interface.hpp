@@ -13,10 +13,10 @@ namespace network {
 namespace interface {
 
 class network_interface : public ::rcplane::common::interface::base_controller {
- public:
-  explicit network_interface(std::function<void(int)> termination_handler) 
-    : base_controller("network_interface"), _termination_handler(termination_handler) {
-  }
+public:
+  explicit network_interface(std::function<void(int)> termination_handler)
+    : base_controller("network_interface"),
+      _termination_handler(termination_handler) {}
 
   virtual ~network_interface() = default;
 
@@ -34,12 +34,16 @@ class network_interface : public ::rcplane::common::interface::base_controller {
     _gyro = std::make_tuple(pitch, roll, yaw);
   }
 
-  void cs_cb(uint8_t state, uint8_t motor, int8_t aileron, int8_t elevator, int8_t rudder) {
+  void cs_cb(uint8_t state,
+             uint8_t motor,
+             int8_t aileron,
+             int8_t elevator,
+             int8_t rudder) {
     std::lock_guard<std::mutex> lk(_cs_lk);
     _cs = std::make_tuple(state, motor, aileron, elevator, rudder);
   }
 
- protected:
+protected:
   std::function<void(int)> _termination_handler;
 
   std::mutex _gps_lk;
@@ -52,10 +56,9 @@ class network_interface : public ::rcplane::common::interface::base_controller {
   std::tuple<int, int, int, int, int> _cs;
 };
 
-} // namespace interface
-} // namespace network
-} // namespace common
-} // namespace rcplane
+}  // namespace interface
+}  // namespace network
+}  // namespace common
+}  // namespace rcplane
 
-#endif //__RCPLANE__COMMON__NETWORK__NETWORK_INTERFACE_HPP__
-
+#endif  //__RCPLANE__COMMON__NETWORK__NETWORK_INTERFACE_HPP__

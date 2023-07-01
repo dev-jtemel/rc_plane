@@ -1,30 +1,29 @@
-#include <strings.h>
-#include <string.h>
-#include <termios.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <stdio.h>
-#include <unistd.h>
 #include <bitset>
 #include <chrono>
+#include <fcntl.h>
 #include <iomanip>
-#include <thread>
 #include <sstream>
+#include <stdio.h>
+#include <string.h>
+#include <strings.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <termios.h>
+#include <thread>
+#include <unistd.h>
 
-#include "rcplane/common/io/serial_controller.hpp"
 #include "rcplane/common/io/journal.hpp"
 #include "rcplane/common/io/packet.hpp"
+#include "rcplane/common/io/serial_controller.hpp"
 
 namespace rcplane {
 namespace common {
 namespace io {
 
-serial_controller::serial_controller() : ::rcplane::common::interface::base_controller("serial") {
-}
+serial_controller::serial_controller()
+  : ::rcplane::common::interface::base_controller("serial") {}
 
-serial_controller::~serial_controller() {
-}
+serial_controller::~serial_controller() {}
 
 bool serial_controller::init() {
   static_assert(sizeof(float) == 4U);
@@ -37,11 +36,11 @@ bool serial_controller::init() {
 
   std::stringstream ss;
 
-  std::time_t now_t = std::chrono::system_clock::to_time_t(
-    std::chrono::system_clock::now()
-  );
+  std::time_t now_t =
+      std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
-  ss << "./logs/" << std::put_time(std::localtime(&now_t), "%F-%T") << ".blackbox";
+  ss << "./logs/" << std::put_time(std::localtime(&now_t), "%F-%T")
+     << ".blackbox";
 
   _blackbox = std::ofstream(ss.str());
 
@@ -64,12 +63,13 @@ bool serial_controller::init() {
   return true;
 }
 
-
-void serial_controller::register_cs_cb(std::function<void(uint8_t, uint8_t, int8_t, int8_t, int8_t)> cb) {
+void serial_controller::register_cs_cb(
+    std::function<void(uint8_t, uint8_t, int8_t, int8_t, int8_t)> cb) {
   _cs_cb = cb;
 }
 
-void serial_controller::register_gyro_cb(std::function<void(float, float, float)> cb) {
+void serial_controller::register_gyro_cb(
+    std::function<void(float, float, float)> cb) {
   _gyro_cb = cb;
 }
 
@@ -79,9 +79,7 @@ void serial_controller::start() {
     _running = true;
   }
 
-  _worker = std::thread([&](){
-    p_read_serial();
-  });
+  _worker = std::thread([&]() { p_read_serial(); });
 
   RCPLANE_LOG(info, _tag, "started");
 }
@@ -101,20 +99,16 @@ void serial_controller::terminate() {
 }
 
 void serial_controller::p_read_serial() {
-  while (true) { 
+  while (true) {
     {
       std::lock_guard<std::mutex> lk(_lk);
-      if (!_running) {
-        break;
-      }
+      if (!_running) { break; }
     }
 
-    _res = read(_fd, _buf, MAX_LEN - 1); 
-    _buf[_res]='\0'; 
+    _res = read(_fd, _buf, MAX_LEN - 1);
+    _buf[_res] = '\0';
 
-    if (_res <= 1) {
-      continue;
-    }
+    if (_res <= 1) { continue; }
 
     try {
       _buffer = std::stoul(_buf, nullptr, 16);
@@ -124,9 +118,7 @@ void serial_controller::p_read_serial() {
         continue;
       }
 
-      if (_startcount < 4U) {
-        continue;
-      }
+      if (_startcount < 4U) { continue; }
 
       if (_line == 0U) {
         p_handle_buffer();
@@ -155,24 +147,25 @@ void serial_controller::p_handle_buffer() {
   _elevator.set(_buffer >> 24);
   _rudder.set(_buffer >> 32);
 
-  RCPLANE_LOG(
-    trace,
-    _tag,
-    "[" << timestamp << "]"
-    << " state = " << std::bitset<8>(_state.data())
-    << " | motor = " << +_motor.data()
-    << " | aileron = " << +_aileron.data()
-    << " | elevator = " << +_elevator.data()
-    << " | rudder = " << +_rudder.data()
-  ); 
+  RCPLANE_LOG(trace,
+              _tag,
+              "[" << timestamp << "]"
+                  << " state = " << std::bitset<8>(_state.data())
+                  << " | motor = " << +_motor.data() << " | aileron = "
+                  << +_aileron.data() << " | elevator = " << +_elevator.data()
+                  << " | rudder = " << +_rudder.data());
 
   if (_cs_cb) {
-    _cs_cb(_state.data(), _motor.data(), _aileron.data(), _elevator.data(), _rudder.data());
+    _cs_cb(_state.data(),
+           _motor.data(),
+           _aileron.data(),
+           _elevator.data(),
+           _rudder.data());
   } else {
     RCPLANE_LOG(warn, _tag, "no cb regisetered");
   }
 }
 
-} // namesapce io
-} // namesapce common
-} // namesapce rcplane
+}  // namespace io
+}  // namespace common
+}  // namespace rcplane

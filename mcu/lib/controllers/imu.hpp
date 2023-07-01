@@ -1,11 +1,11 @@
 #ifndef __MCU__LIB__IMU_HPP__
 #define __MCU__LIB__IMU_HPP__
 
-#include <Wire.h>
-#include <MPU6050_tockn.h>
-#include <Arduino.h>
-#include "../pins.hpp"
 #include "../interface/controller.hpp"
+#include "../pins.hpp"
+#include <Arduino.h>
+#include <MPU6050_tockn.h>
+#include <Wire.h>
 
 namespace mcu {
 namespace lib {
@@ -16,9 +16,8 @@ typedef union {
 } binary_float;
 
 class imu : public interface::controller {
- public:
-  imu() : interface::controller(115, 30, -30), _mpu(Wire) {
-  }
+public:
+  imu() : interface::controller(115, 30, -30), _mpu(Wire) {}
 
   ~imu() = default;
 
@@ -29,8 +28,7 @@ class imu : public interface::controller {
     _mpu.calcGyroOffsets();
   }
 
-  virtual void test() {
-  }
+  virtual void test() {}
 
   virtual void step() {
     _mpu.update();
@@ -73,10 +71,9 @@ class imu : public interface::controller {
     Serial.println();
   }
 
-  virtual void stop() {
-  }
+  virtual void stop() {}
 
- private:
+private:
   MPU6050 _mpu;
   uint64_t timer = 0;
   float timeStep = 0.012;
@@ -86,10 +83,9 @@ class imu : public interface::controller {
   binary_float _accx;
   binary_float _accy;
   binary_float _accz;
-
 };
 
-} // namespace lib
-} // namespace mcu
+}  // namespace lib
+}  // namespace mcu
 
-#endif //__MCU__LIB__IMU_HPP__
+#endif  //__MCU__LIB__IMU_HPP__

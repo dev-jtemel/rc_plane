@@ -8,24 +8,20 @@ namespace lib {
 namespace interface {
 
 class servo {
- public:
+public:
   servo() = default;
   ~servo() = default;
 
-  void bind(uint8_t pin) {
-    _pin = pin;
-  }
+  void bind(uint8_t pin) { _pin = pin; }
 
-  void write(int value) {
-    analogWrite(_pin, value);
-  }
+  void write(int value) { analogWrite(_pin, value); }
 
- private:
+private:
   uint8_t _pin;
 };
 
-} // namespace interface
-} // namespace lib
-} // namespace mcu
+}  // namespace interface
+}  // namespace lib
+}  // namespace mcu
 
-#endif //__MCU__LIB__INTERFACE__SERVO_HPP__
+#endif  //__MCU__LIB__INTERFACE__SERVO_HPP__

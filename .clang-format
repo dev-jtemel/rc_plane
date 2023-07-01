@@ -29,6 +29,7 @@ ConstructorInitializerIndentWidth: '2'
 FixNamespaceComments: 'true'
 IndentPPDirectives: AfterHash
 IndentWidth: '2'
+IndentCaseLabels: 'true'
 KeepEmptyLinesAtTheStartOfBlocks: 'false'
 Language: Cpp
 NamespaceIndentation: None

@@ -1,24 +1,24 @@
-#include <sstream>
-#include <iomanip>
-#include "rcplane/common/io/journal.hpp"
 #include "rcplane/common/network/http_controller.hpp"
+#include "rcplane/common/io/journal.hpp"
+#include <iomanip>
+#include <sstream>
 
 namespace rcplane {
 namespace common {
 namespace network {
 
 http_controller::http_controller(std::function<void(int)> termination_handler)
-  : interface::network_interface(termination_handler) {
-}
+  : interface::network_interface(termination_handler) {}
 
-http_controller::~http_controller() {
-}
+http_controller::~http_controller() {}
 
 bool http_controller::init() {
-  _svr->set_post_routing_handler([](const auto&, auto& res) {
+  _svr->set_post_routing_handler([](const auto &, auto &res) {
     res.set_header("Access-Control-Allow-Origin", "*");
-    res.set_header("Access-Control-Allow-Methods", "HEAD,GET,PUT,POST,DELETE,OPTIONS");
-    res.set_header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.set_header("Access-Control-Allow-Methods",
+                   "HEAD,GET,PUT,POST,DELETE,OPTIONS");
+    res.set_header("Access-Control-Allow-Headers",
+                   "Origin, X-Requested-With, Content-Type, Accept");
   });
 
   _svr->Get("/", [&](const httplib::Request &, httplib::Response &) {
@@ -32,7 +32,10 @@ bool http_controller::init() {
     os << std::setprecision(10);
     {
       std::lock_guard<std::mutex> lk(_gps_lk);
-      os << "{\"latitude\":" << std::get<0>(_gps) << ",\"longitude\":" << std::get<1>(_gps) << ",\"track\":" << std::get<2>(_gps) << ",\"speed\":" << std::get<3>(_gps) << "}";
+      os << "{\"latitude\":" << std::get<0>(_gps)
+         << ",\"longitude\":" << std::get<1>(_gps)
+         << ",\"track\":" << std::get<2>(_gps)
+         << ",\"speed\":" << std::get<3>(_gps) << "}";
     }
 
     res.set_content(os.str(), "application/json");
@@ -47,11 +50,10 @@ bool http_controller::init() {
     {
       std::lock_guard<std::mutex> lk(_cs_lk);
       os << "{\"state\":" << +std::get<0>(_cs)
-        << ",\"motor\":" << +std::get<1>(_cs)
-        << ",\"aileron\":" << +std::get<2>(_cs)
-        << ",\"elevator\":" <<+ std::get<3>(_cs)
-        << ",\"rudder\":" << +std::get<4>(_cs)
-        << "}";
+         << ",\"motor\":" << +std::get<1>(_cs)
+         << ",\"aileron\":" << +std::get<2>(_cs)
+         << ",\"elevator\":" << +std::get<3>(_cs)
+         << ",\"rudder\":" << +std::get<4>(_cs) << "}";
     }
 
     res.set_content(os.str(), "application/json");
@@ -66,9 +68,8 @@ bool http_controller::init() {
     {
       std::lock_guard<std::mutex> lk(_gyro_lk);
       os << "{\"pitch\":" << +std::get<0>(_gyro)
-        << ",\"roll\":" << +std::get<1>(_gyro)
-        << ",\"yaw\":" << +std::get<2>(_gyro)
-        << "}";
+         << ",\"roll\":" << +std::get<1>(_gyro)
+         << ",\"yaw\":" << +std::get<2>(_gyro) << "}";
     }
 
     res.set_content(os.str(), "application/json");
@@ -98,6 +99,6 @@ void http_controller::terminate() {
   set_state(state::terminated);
 }
 
-} // namesapce network
-} // namesapce common
-} // namesapce rcplane
+}  // namespace network
+}  // namespace common
+}  // namespace rcplane

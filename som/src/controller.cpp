@@ -1,9 +1,9 @@
-#include <csignal>
 #include <bitset>
-#include <mutex>
 #include <condition_variable>
-#include <string>
+#include <csignal>
 #include <memory>
+#include <mutex>
+#include <string>
 
 #include "rcplane/common/io/journal.hpp"
 #include "rcplane/common/io/serial_controller.hpp"
@@ -32,74 +32,62 @@ int main(int argc, char *argv[]) {
   RCPLANE_LOG(info, TAG, "termination handler set");
 
   // Create network controller
-  std::unique_ptr<rcplane::common::network::interface::network_interface> network_controller
-    = std::make_unique<rcplane::common::network::http_controller>(
-        termination_handler
-      );
+  std::unique_ptr<rcplane::common::network::interface::network_interface>
+      network_controller =
+          std::make_unique<rcplane::common::network::http_controller>(
+              termination_handler);
 
   // Create and link controllers
-  std::vector<std::unique_ptr<rcplane::common::interface::base_controller>> controllers;
+  std::vector<std::unique_ptr<rcplane::common::interface::base_controller>>
+      controllers;
 
-  auto serial_controller = std::make_unique<rcplane::common::io::serial_controller>();
+  auto serial_controller =
+      std::make_unique<rcplane::common::io::serial_controller>();
   serial_controller->register_cs_cb(
-    std::bind(
-      &rcplane::common::network::interface::network_interface::cs_cb,
-      network_controller.get(),
-      std::placeholders::_1,
-      std::placeholders::_2,
-      std::placeholders::_3,
-      std::placeholders::_4,
-      std::placeholders::_5
-    )
-  );
-  serial_controller->register_gyro_cb(
-    std::bind(
+      std::bind(&rcplane::common::network::interface::network_interface::cs_cb,
+                network_controller.get(),
+                std::placeholders::_1,
+                std::placeholders::_2,
+                std::placeholders::_3,
+                std::placeholders::_4,
+                std::placeholders::_5));
+  serial_controller->register_gyro_cb(std::bind(
       &rcplane::common::network::interface::network_interface::gyro_cb,
       network_controller.get(),
       std::placeholders::_1,
       std::placeholders::_2,
-      std::placeholders::_3
-    )
-  );
+      std::placeholders::_3));
   controllers.push_back(std::move(serial_controller));
 
-  auto gps_controller = std::make_unique<rcplane::som::position::gps_controller>();
+  auto gps_controller =
+      std::make_unique<rcplane::som::position::gps_controller>();
   gps_controller->register_cb(
-    std::bind(
-      &rcplane::common::network::interface::network_interface::gps_cb,
-      network_controller.get(),
-      std::placeholders::_1,
-      std::placeholders::_2,
-      std::placeholders::_3,
-      std::placeholders::_4
-    )
-  );
+      std::bind(&rcplane::common::network::interface::network_interface::gps_cb,
+                network_controller.get(),
+                std::placeholders::_1,
+                std::placeholders::_2,
+                std::placeholders::_3,
+                std::placeholders::_4));
   controllers.push_back(std::move(gps_controller));
 
   // Initialize
   network_controller->init();
   for (auto &c : controllers) {
-    if (!c->init()) {
-      return EXIT_FAILURE;
-    }
+    if (!c->init()) { return EXIT_FAILURE; }
   }
 
   // Start the controllers
   network_controller->start();
-  for (auto &c : controllers) {
-    c->start();
-  }
+  for (auto &c : controllers) { c->start(); }
 
   {
     std::unique_lock<std::mutex> lock(main_lock);
     running = true;
-    main_cv.wait(lock, [&]{ return !running; });
+    main_cv.wait(lock, [&] { return !running; });
   }
 
   // Stop the controllers
-  for (auto &c : controllers) {
-    c->terminate();
-  }
+  for (auto &c : controllers) { c->terminate(); }
   network_controller->terminate();
 
   return EXIT_SUCCESS;

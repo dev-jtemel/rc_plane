@@ -1,17 +1,16 @@
 #ifndef __MCU__LIB__MOTOR_HPP__
 #define __MCU__LIB__MOTOR_HPP__
 
-#include <Arduino.h>
-#include "../pins.hpp"
 #include "../interface/controller.hpp"
+#include "../pins.hpp"
+#include <Arduino.h>
 
 namespace mcu {
 namespace lib {
 
 class motor : public interface::controller {
- public:
-  motor() : interface::controller(0, 255, 0) {
-  }
+public:
+  motor() : interface::controller(0, 255, 0) {}
 
   ~motor() = default;
 
@@ -27,14 +26,14 @@ class motor : public interface::controller {
   }
 
   virtual void test() {
-    for (double i = 0; i <= MAX_OFFSET/3; ++i) {
+    for (double i = 0; i <= MAX_OFFSET / 3; ++i) {
       analogWrite(pins::motor::ENABLE_PIN, i);
       delay(10);
     }
 
     delay(200);
 
-    for (double i = MAX_OFFSET/3; i >= 0; --i) {
+    for (double i = MAX_OFFSET / 3; i >= 0; --i) {
       analogWrite(pins::motor::ENABLE_PIN, i);
       delay(10);
     }
@@ -43,24 +42,17 @@ class motor : public interface::controller {
   virtual void step() {
     _pulse = toRange(pulseIn(pins::motor::IN_PIN, HIGH));
 
-    if (_pulse > MAX_OFFSET - 10) {
-      _pulse = MAX_OFFSET;
-    }
-    if (_pulse < 10) {
-      _pulse = MIN_OFFSET;
-    }
+    if (_pulse > MAX_OFFSET - 10) { _pulse = MAX_OFFSET; }
+    if (_pulse < 10) { _pulse = MIN_OFFSET; }
     analogWrite(pins::motor::ENABLE_PIN, _pulse);
 
-    _state = static_cast<uint8_t>(_pulse); 
+    _state = static_cast<uint8_t>(_pulse);
   }
 
-  virtual void stop() {
-    analogWrite(pins::motor::ENABLE_PIN, NEUTRAL);
-  }
-
+  virtual void stop() { analogWrite(pins::motor::ENABLE_PIN, NEUTRAL); }
 };
 
-} // namespace lib
-} // namespace mcu
+}  // namespace lib
+}  // namespace mcu
 
-#endif //__MCU__LIB__MOTOR_HPP__
+#endif  //__MCU__LIB__MOTOR_HPP__

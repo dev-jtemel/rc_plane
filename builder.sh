@@ -15,6 +15,7 @@ OPTIONS="\
   GPS-Fake \
   Read-Serial \
   Install-Dependencies \
+  Run-Clang-Format \
   Help \
   Quit\
 "
@@ -37,8 +38,9 @@ usage() {
   echo "  6) GPS-Fake             : Start a simulated GPSd instance."
   echo "  7) Read-Serial          : Read the serial output of the microcontroller."
   echo "  8) Install-Dependencies : Install the required dependencies."
-  echo "  9) Help                 : Display this message."
-  echo "  10) Quit                : Exit the builder script."
+  echo "  9) Run-Clang-Format     : Run clang-format on the project."
+  echo "  10) Help                : Display this message."
+  echo "  11) Quit                : Exit the builder script."
 }
 
 while getopts "d:i:h" opt; do
@@ -124,10 +126,8 @@ do
         killall gpsfake ; sudo gpsfake -P 2000 -S ./logs/gps.nmea
         break
       }
-      [ $MODE == "MCU" ] && {
-        echo "Nothing to do on $MODE..."
-        break
-      }
+      echo "Nothing to do on $MODE..."
+      break
     elif [ "$opt" = "Read-Serial" ];
     then
       bash scripts/read-serial-mcu.sh "$ROOT_DIR" "$DEV"
@@ -135,6 +135,14 @@ do
     elif [ "$opt" = "Install-Dependencies" ];
     then
       bash scripts/install-dependencies.sh "$ROOT_DIR"
+      break
+    elif [ "$opt" = "Run-Clang-Format" ];
+    then
+      [ $MODE == "PC" ] && {
+        find "$ROOT_DIR" -iname *.hpp -o -iname *.cpp | xargs clang-format -i -style=file
+        break
+      }
+      echo "Nothing to do on $MODE..."
       break
     elif [ "$opt" = "Help" ];
     then

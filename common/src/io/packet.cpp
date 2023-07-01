@@ -4,8 +4,7 @@ namespace rcplane {
 namespace common {
 namespace io {
 
-packet::packet() : _type(type::invalid), _data(0), _buffer(0U) {
-}
+packet::packet() : _type(type::invalid), _data(0), _buffer(0U) {}
 
 packet::packet(enum type type, uint8_t buffer) : _type(type), _buffer(buffer) {
   convert_buffer();
@@ -16,22 +15,18 @@ void packet::set(uint8_t buffer) {
   convert_buffer();
 }
 
-enum packet::type packet::type() {
-  return _type;
-}
+enum packet::type packet::type() { return _type; }
 
-int packet::data() {
-  return _data;
-} 
+int packet::data() { return _data; }
 
 std::string packet::type_to_str() {
   switch (_type) {
-    case type::state:    return "state";
-    case type::motor:    return "motor";
-    case type::aileron:  return "aileron";
+    case type::state: return "state";
+    case type::motor: return "motor";
+    case type::aileron: return "aileron";
     case type::elevator: return "elevator";
-    case type::rudder:   return "rudder";
-    default:             return "invalid";
+    case type::rudder: return "rudder";
+    default: return "invalid";
   }
   return "";
 }
@@ -48,16 +43,14 @@ bool packet::is_twos_compliment() {
   switch (_type) {
     case type::aileron:
     case type::elevator:
-    case type::rudder:
-      return true;
+    case type::rudder: return true;
     case type::state:
     case type::motor:
-    default:
-      return false;
+    default: return false;
   }
   return false;
 }
 
-} // namesapce io
-} // namesapce common
-} // namesapce rcplane
+}  // namespace io
+}  // namespace common
+}  // namespace rcplane

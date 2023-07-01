@@ -3,8 +3,8 @@
 
 #define MODE_STR_NUM 4
 
-#include <gps.h>
 #include <functional>
+#include <gps.h>
 
 #include "rcplane/common/base_controller.hpp"
 
@@ -13,7 +13,7 @@ namespace som {
 namespace position {
 
 class gps_controller : public ::rcplane::common::interface::base_controller {
- public:
+public:
   gps_controller();
   ~gps_controller();
 
@@ -22,19 +22,19 @@ class gps_controller : public ::rcplane::common::interface::base_controller {
   void terminate() override;
 
   void register_cb(std::function<void(float, float, float, float)> cb);
- 
- private:
+
+private:
   void p_read_gps();
 
   std::string GPSD_PORT = "2000";
   size_t GPS_DELAY = 5000000;
-  std::string MODE_STR[MODE_STR_NUM] = {"n/a", "None", "2D", "3D" };
+  std::string MODE_STR[MODE_STR_NUM] = {"n/a", "None", "2D", "3D"};
   std::vector<std::function<void(float, float, float, float)>> _cbs;
   struct gps_data_t _gps_data;
 };
 
-} // namesapce position
-} // namesapce som
-} // namesapce rcplane
+}  // namespace position
+}  // namespace som
+}  // namespace rcplane
 
-#endif //__RCPLANE__SOM__POSITION__GPS_CONTROLLER_HPP__
+#endif  //__RCPLANE__SOM__POSITION__GPS_CONTROLLER_HPP__

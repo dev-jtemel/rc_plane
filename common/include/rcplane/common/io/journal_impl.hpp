@@ -1,12 +1,13 @@
 #ifndef __RCPLANE__COMMON__IO__JOURNAL_HPP__
-#error "Do not include this file directly, instead include rcplane/common/io/journal.hpp"
+#  error                                                                       \
+      "Do not include this file directly, instead include rcplane/common/io/journal.hpp"
 #endif
 
 #ifndef __RCPLANE__COMMON__IO__JOURNAL_IMPL_HPP__
-#define __RCPLANE__COMMON__IO__JOURNAL_IMPL_HPP__
+#  define __RCPLANE__COMMON__IO__JOURNAL_IMPL_HPP__
 
-#include <sstream>
-#include <mutex>
+#  include <mutex>
+#  include <sstream>
 
 namespace rcplane {
 namespace common {
@@ -18,7 +19,7 @@ namespace io {
  * TODO: Log to file aswell.
  */
 class journal {
- public:
+public:
   /**
    * The possible severities to log to.
    */
@@ -52,7 +53,6 @@ class journal {
   journal(const journal &) = delete;
   journal(journal &&) = delete;
 
-
   /**
    * Verify the severity and log the contents in the internal stream to
    * the console under stderr.
@@ -65,22 +65,23 @@ class journal {
 
   void lock();
   void unlock();
- 
+
   std::stringstream &stream();
- private:
+
+private:
   journal();
 
   uint64_t now();
   std::string severity_to_str(severity slvl);
   colors severity_to_color(severity slvl);
- 
-  severity _slvl; // default is info
+
+  severity _slvl;  // default is info
   std::stringstream _ss;
   std::mutex _lock;
 };
 
-} // namespace io
-} // namespace common
-} // namespace rcplane
+}  // namespace io
+}  // namespace common
+}  // namespace rcplane
 
-#endif //__RCPLANE__COMMON__COMMON__IO__JOURNAL_IMPL_HPP__
+#endif  //__RCPLANE__COMMON__COMMON__IO__JOURNAL_IMPL_HPP__
