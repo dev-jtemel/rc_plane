@@ -2,6 +2,7 @@
 DIY RC Plane built and designed from scratch.
 
 - [Design](#design)
+  - [Control Flow](#control-flow)
   - [Software](#software)
     - [SOM Architecture](#som-architecture)
     - [MCU Architecture](#mcu-architecture)
@@ -11,15 +12,18 @@ DIY RC Plane built and designed from scratch.
     - [RC Controller](#rc-controller)
   - [Plane Dimensions](#plane-dimensions)
 - [Build](#build)
- - [Microcontroller](#microcontroller)
- - [SoM](#som)
- - [PC](#pc)
+  - [Microcontroller](#microcontroller)
+  - [SoM](#som)
+  - [PC](#pc)
 - [Requirements](#requirements)
   - [Physical](#physical)
 
 ## Design
 This sections lays out the schematic of the hardware and the relation of the controls
 of the flight controller to the plane.
+### Control Flow
+
+![control_flow](resources/control_flow.png)
 
 ### Software
 #### SOM Architecture
