@@ -139,7 +139,7 @@ do
     elif [ "$opt" = "Run-Clang-Format" ];
     then
       [ $MODE == "PC" ] && {
-        find "$ROOT_DIR" -iname "./*.hpp" -o -iname "./*.cpp" | xargs clang-format -i -style=file
+        find "$ROOT_DIR" -iname "*.hpp" -o -iname "*.cpp" -exec clang-format -i -style=file {} +
         break
       }
       echo "Nothing to do on $MODE..."
