@@ -21,7 +21,7 @@ size_t curl_write(void *contents, size_t size, size_t nmemb, std::string *s) {
 CURL *init_curl() {
   CURL *curl = curl_easy_init();
   if (!curl) { return nullptr; }
-  std::this_thread::sleep_for(std::chrono::seconds(1U));
+  std::this_thread::sleep_for(std::chrono::milliseconds(500U));
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curl_write);
   return curl;
 }
@@ -182,6 +182,36 @@ TEST(http_controller, gyro_cb_skip_first) {
   curl_easy_perform(curl);
 
   ASSERT_EQ(res, "{\"pitch\":4,\"roll\":5,\"yaw\":6}");
+
+  kill_server(curl);
+
+  ctrl->terminate();
+}
+
+TEST(http_controller, cs_cb) {
+  std::unique_ptr<http_controller> ctrl =
+      std::make_unique<http_controller>([](int) {});
+  ASSERT_TRUE(ctrl->init());
+  ctrl->start();
+
+  uint8_t state = 1U;
+  uint8_t motor = 1U;
+  int8_t aileron = 1;
+  int8_t elevator = 1;
+  int8_t yaw = 1;
+
+  ctrl->cs_cb(state, motor, aileron, elevator, yaw);
+
+  auto curl = init_curl();
+
+  std::string res;
+  curl_easy_setopt(curl, CURLOPT_WRITEDATA, &res);
+  curl_easy_setopt(curl, CURLOPT_URL, "http://localhost:8080/cs");
+  curl_easy_perform(curl);
+
+  ASSERT_EQ(
+      res,
+      "{\"state\":1,\"motor\":1,\"aileron\":1,\"elevator\":1,\"rudder\":1}");
 
   kill_server(curl);
 
