@@ -1,5 +1,6 @@
 #include "rcplane/common/network/http_controller.hpp"
 #include "rcplane/common/io/journal.hpp"
+#include <csignal>
 #include <iomanip>
 #include <sstream>
 
@@ -23,6 +24,11 @@ bool http_controller::init() {
 
   _svr->Get("/", [&](const httplib::Request &, httplib::Response &) {
     RCPLANE_LOG(info, _tag, "path: /");
+  });
+
+  _svr->Get("/stop", [&](const httplib::Request &, httplib::Response &) {
+    RCPLANE_LOG(info, _tag, "path: /stop");
+    _svr->stop();
   });
 
   _svr->Get("/gps", [&](const httplib::Request &, httplib::Response &res) {
@@ -86,14 +92,13 @@ void http_controller::start() {
     RCPLANE_LOG(info, _tag, IP << ":" << PORT);
     _svr->listen(IP, PORT);
   });
-  _worker.detach();
 
   RCPLANE_LOG(info, _tag, "started");
   set_state(state::running);
 }
 
 void http_controller::terminate() {
-  _svr->stop();
+  _worker.join();
 
   RCPLANE_LOG(info, _tag, "terminated");
   set_state(state::terminated);

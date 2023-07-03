@@ -23,10 +23,11 @@ public:
   virtual void terminate() = 0;
 
   void set_state(state s) { _state = s; }
+  base_controller::state state() { return _state; }
 
 protected:
   std::string _tag;
-  state _state;
+  enum state _state;
   std::mutex _lk;
   std::condition_variable _cv;
   volatile bool _running = false;

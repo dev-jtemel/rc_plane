@@ -18,7 +18,11 @@ public:
   void terminate() override;
 
 private:
-  const std::string IP = "192.168.0.30";
+#ifdef GTEST
+  const std::string IP = "192.168.0.20";
+#else
+  const std::string IP = "localhost";
+#endif
   const uint16_t PORT = 8080U;
   const std::unique_ptr<httplib::Server> _svr =
       std::make_unique<httplib::Server>();
