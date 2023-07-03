@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 ROOT_DIR="$PWD"
-DEV="/dev/ttyACM0"
 
 echo "*** COMPILING ***"
 bash scripts/install-dependencies.sh "$ROOT_DIR"

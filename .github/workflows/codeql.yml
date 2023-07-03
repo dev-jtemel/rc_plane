@@ -69,7 +69,7 @@ jobs:
 
     - run: |
         echo "Run, Building application manually..."
-        sudo apt-get install libgps-dev libgtest-dev && mkdir build && cd build && cmake .. && make 
+        ./full_build.sh
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
