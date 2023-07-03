@@ -2,6 +2,7 @@
 DIY RC Plane built and designed from scratch.
 
 [![CMake](https://github.com/dev-jtemel/rc_plane/actions/workflows/cmake.yml/badge.svg)](https://github.com/dev-jtemel/rc_plane/actions/workflows/cmake.yml)
+[![CodeQL](https://github.com/dev-jtemel/rc_plane/actions/workflows/codeql.yml/badge.svg)](https://github.com/dev-jtemel/rc_plane/actions/workflows/codeql.yml)
 
 - [Design](#design)
   - [Control Flow](#control-flow)
