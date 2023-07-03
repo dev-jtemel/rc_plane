@@ -7,3 +7,4 @@ gpsd
 gpsd-clients
 libgps-dev
 libgtest-dev
+libcurl4-openssl-dev
