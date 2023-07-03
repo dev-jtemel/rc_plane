@@ -20,8 +20,8 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
-    - name: Install GTEST
-      run: sudo apt-get install libgtest-dev
+    - name: Install GTEST and GPSD
+      run: sudo apt-get install libgtest-dev libgps-dev
       
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
