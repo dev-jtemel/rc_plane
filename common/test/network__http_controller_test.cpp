@@ -3,28 +3,24 @@
 #include "rcplane/common/network/http_controller.hpp"
 
 #include <chrono>
-#include <thread>
-#include <memory>
 #include <curl/curl.h>
 #include <gtest/gtest.h>
+#include <memory>
+#include <thread>
 
 using namespace rcplane::common::network;
 
 size_t curl_write(void *contents, size_t size, size_t nmemb, std::string *s) {
-  size_t newLength = size*nmemb;
+  size_t newLength = size * nmemb;
   try {
-      s->append((char*)contents, newLength);
-  } catch(std::bad_alloc &e) {
-      return 0;
-  }
+    s->append((char *)contents, newLength);
+  } catch (std::bad_alloc &e) { return 0; }
   return newLength;
 }
 
 CURL *init_curl() {
-  CURL* curl = curl_easy_init();
-  if (!curl) {
-    return nullptr;
-  }
+  CURL *curl = curl_easy_init();
+  if (!curl) { return nullptr; }
   std::this_thread::sleep_for(std::chrono::seconds(1U));
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curl_write);
   return curl;
@@ -38,7 +34,8 @@ void kill_server(CURL *curl) {
 }
 
 TEST(http_controller, state) {
-  std::unique_ptr<http_controller> ctrl = std::make_unique<http_controller>([](int){});
+  std::unique_ptr<http_controller> ctrl =
+      std::make_unique<http_controller>([](int) {});
   ASSERT_EQ(ctrl->state(), http_controller::state::uninitialized);
 
   ASSERT_TRUE(ctrl->init());
@@ -55,7 +52,8 @@ TEST(http_controller, state) {
 }
 
 TEST(http_controller, gps_cb) {
-  std::unique_ptr<http_controller> ctrl = std::make_unique<http_controller>([](int){});
+  std::unique_ptr<http_controller> ctrl =
+      std::make_unique<http_controller>([](int) {});
   ASSERT_TRUE(ctrl->init());
   ctrl->start();
 
@@ -93,7 +91,8 @@ TEST(http_controller, gps_cb) {
 }
 
 TEST(http_controller, gps_cb_skip_first) {
-  std::unique_ptr<http_controller> ctrl = std::make_unique<http_controller>([](int){});
+  std::unique_ptr<http_controller> ctrl =
+      std::make_unique<http_controller>([](int) {});
   ASSERT_TRUE(ctrl->init());
   ctrl->start();
 
@@ -123,7 +122,8 @@ TEST(http_controller, gps_cb_skip_first) {
 }
 
 TEST(http_controller, gyro_cb) {
-  std::unique_ptr<http_controller> ctrl = std::make_unique<http_controller>([](int){});
+  std::unique_ptr<http_controller> ctrl =
+      std::make_unique<http_controller>([](int) {});
   ASSERT_TRUE(ctrl->init());
   ctrl->start();
 
@@ -159,7 +159,8 @@ TEST(http_controller, gyro_cb) {
 }
 
 TEST(http_controller, gyro_cb_skip_first) {
-  std::unique_ptr<http_controller> ctrl = std::make_unique<http_controller>([](int){});
+  std::unique_ptr<http_controller> ctrl =
+      std::make_unique<http_controller>([](int) {});
   ASSERT_TRUE(ctrl->init());
   ctrl->start();
 
