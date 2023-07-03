@@ -3,6 +3,7 @@ DIY RC Plane built and designed from scratch.
 
 [![CMake](https://github.com/dev-jtemel/rc_plane/actions/workflows/cmake.yml/badge.svg)](https://github.com/dev-jtemel/rc_plane/actions/workflows/cmake.yml)
 [![CodeQL](https://github.com/dev-jtemel/rc_plane/actions/workflows/codeql.yml/badge.svg)](https://github.com/dev-jtemel/rc_plane/actions/workflows/codeql.yml)
+[![CodeFactor](https://www.codefactor.io/repository/github/dev-jtemel/rc_plane/badge/main)](https://www.codefactor.io/repository/github/dev-jtemel/rc_plane/overview/main)
 
 ![Arduino](https://img.shields.io/badge/-Arduino-00979D?style=for-the-badge&logo=Arduino&logoColor=white)
 ![Raspberry Pi](https://img.shields.io/badge/-RaspberryPi-C51A4A?style=for-the-badge&logo=Raspberry-Pi)
