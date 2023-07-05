@@ -112,6 +112,10 @@ do
       }
       [ $MODE == "PC" ] && {
         ./build/common/test/rcplane_common_tests
+        [ -d coverage ] && rm -rf coverage
+        mkdir coverage && pushd coverage
+        gcovr -r .. -e "../common/test/" -e "../third_party"  --html-details -o coverage.html
+        popd
         break
       }
       echo "Nothing to do on $MODE..."

@@ -45,6 +45,8 @@ TEST(http_controller, state) {
   ASSERT_EQ(ctrl->state(), http_controller::state::running);
 
   auto curl = init_curl();
+  curl_easy_setopt(curl, CURLOPT_URL, "http://localhost:8080/");
+  curl_easy_perform(curl);
   kill_server(curl);
 
   ctrl->terminate();
