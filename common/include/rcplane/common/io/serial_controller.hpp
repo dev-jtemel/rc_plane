@@ -20,7 +20,7 @@ namespace io {
 class serial_controller : public ::rcplane::common::interface::base_controller {
 public:
   serial_controller();
-  ~serial_controller();
+  virtual ~serial_controller();
 
   bool init() override;
   void start() override;
@@ -31,7 +31,7 @@ public:
   void register_gyro_cb(std::function<void(float, float, float)> cb);
 
 private:
-  void p_read_serial();
+  virtual void p_read_serial();
   void p_read_log();
 
   void p_handle_buffer();
