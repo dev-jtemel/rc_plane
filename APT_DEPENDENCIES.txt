@@ -5,4 +5,5 @@ gpsd
 gpsd-clients
 libgps-dev
 libgtest-dev
+libgmock-dev
 libcurl4-openssl-dev

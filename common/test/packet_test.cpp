@@ -4,6 +4,11 @@
 using namespace rcplane::common::io;
 using type = packet<int, int>;
 
+TEST(packet_test, empty_packet) {
+  packet<uint8_t, uint8_t> p;
+  ASSERT_EQ(p.type(), packet_type::invalid);
+}
+
 TEST(packet_test, uint8_to_uint8_zero) {
   packet<uint8_t, uint8_t> p(packet_type::state);
   ASSERT_EQ(p.type(), packet_type::state);

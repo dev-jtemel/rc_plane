@@ -92,8 +92,10 @@ void serial_controller::terminate() {
   _worker.join();
 
   // Restore old values
-  tcsetattr(_fd, TCSANOW, &_otio);
-  _blackbox.close();
+  if (_fd >= 0) {
+    tcsetattr(_fd, TCSANOW, &_otio);
+    _blackbox.close();
+  }
 
   RCPLANE_LOG(info, _tag, "terminated");
 }
