@@ -113,7 +113,7 @@ do
       break
     elif [ "$opt" = "Install-Dependencies" ];
     then
-      bash scripts/install-dependencies.sh "$ROOT_DIR"
+      bash scripts/install-dependencies.sh "$ROOT_DIR" "True"
       break
     elif [ "$opt" = "Run-Clang-Format" ];
     then

@@ -4,6 +4,7 @@
 
 ROOT_DIR="$1"
 ARDUINO_CLI="$ROOT_DIR/bin/arduino-cli"
+APT="$2"
 
 arduino_cli() {
   # Installs into rc-plane/bin
@@ -26,13 +27,19 @@ setup_permissions() {
 
 install_apt() {
   list=$(cat $ROOT_DIR/APT_DEPENDENCIES.txt)
-  sudo apt --ignore-missing install "$list"
+  sudo apt install $list
+}
+
+install_apt_dev() {
+  list=$(cat $ROOT_DIR/APT_DEV_DEPENDENCIES.txt)
+  sudo apt-get --ignore-missing install $list
 }
 
 echo "**************************************"
 echo "Installing apt dependencies"
 echo "**************************************"
-install_apt
+install_apt_dev
+[ "$APT" == "True" ] && install_apt 
 echo "**************************************"
 echo "Adding permissions"
 echo "**************************************"
