@@ -94,12 +94,7 @@ do
     elif [ "$opt" = "Test" ];
     then
       [ $MODE == "PC" ] && {
-        bash scripts/compile-som.sh "$ROOT_DIR" "True"
-        ./build/common/test/rcplane_common_tests
-        [ -d coverage ] && rm -rf coverage
-        mkdir coverage && pushd coverage
-        gcovr -r .. -e "../som" -e "../common/test/" -e "../third_party"  --html-details -o coverage.html
-        popd
+        bash scripts/run_tests.sh "$ROOT_DIR"
         break
       }
       echo "Nothing to do on $MODE..."
