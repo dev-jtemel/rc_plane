@@ -12,10 +12,13 @@ include_directories(
   third_party
 )
 
-enable_testing()
-SET( CMAKE_BUILD_TYPE Debug )
-SET(CMAKE_CXX_FLAGS "-g -O0 --coverage -fprofile-arcs -ftest-coverage")
-SET(CMAKE_C_FLAGS "-g -O0 --coverage -fprofile-arcs -ftest-coverage")
+if (BUILD_TESTS)
+  MESSAGE("Building with tests")
+  enable_testing()
+  SET(CMAKE_BUILD_TYPE Debug)
+  SET(CMAKE_CXX_FLAGS "-g -O0 --coverage -fprofile-arcs -ftest-coverage")
+  SET(CMAKE_C_FLAGS "-g -O0 --coverage -fprofile-arcs -ftest-coverage")
+endif()
 
 add_subdirectory(common)
 add_subdirectory(som)

@@ -13,4 +13,6 @@ target_link_libraries(rcplane_common_network
   rcplane_common_io
 )
 
-add_subdirectory(test)
+if (BUILD_TESTS)
+  add_subdirectory(test)
+endif()
