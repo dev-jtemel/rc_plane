@@ -15,7 +15,7 @@ run_tests() {
 echo "***************************"
 echo "Compiling and running tests"
 echo "***************************"
-bash $ROOT_DIR/scripts/compile_som.sh "$ROOT_DIR" "True"
+bash $ROOT_DIR/scripts/compile-som.sh "$ROOT_DIR" "True"
 run_tests
 echo "****"
 echo "Done"

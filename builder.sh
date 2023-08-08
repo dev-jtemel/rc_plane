@@ -94,7 +94,7 @@ do
     elif [ "$opt" = "Test" ];
     then
       [ $MODE == "PC" ] && {
-        bash scripts/run_tests.sh "$ROOT_DIR"
+        bash scripts/run-tests.sh "$ROOT_DIR"
         break
       }
       echo "Nothing to do on $MODE..."
