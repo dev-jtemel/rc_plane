@@ -14,8 +14,8 @@ arduino_cli() {
   $ARDUINO_CLI core install arduino:avr
   $ARDUINO_CLI core list
 
-  export ARDUINO_LIBRARY_ENABLE_UNSAFE_INSTALL=true
   list=$(cat $ROOT_DIR/ARDUINO_DEPENDENCIES.txt)
+  export ARDUINO_LIBRARY_ENABLE_UNSAFE_INSTALL=true
   $ARDUINO_CLI lib install --git-url $list
 }
 
@@ -26,7 +26,7 @@ setup_permissions() {
 
 install_apt() {
   list=$(cat $ROOT_DIR/APT_DEPENDENCIES.txt)
-  sudo apt install $list
+  sudo apt install "$list"
 }
 
 echo "**************************************"
