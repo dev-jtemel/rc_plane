@@ -26,7 +26,7 @@ setup_permissions() {
 
 install_apt() {
   list=$(cat $ROOT_DIR/APT_DEPENDENCIES.txt)
-  sudo apt-get --ignore-missing install "$list"
+  sudo apt --ignore-missing install "$list"
 }
 
 echo "**************************************"
