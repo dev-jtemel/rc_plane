@@ -22,12 +22,10 @@ namespace io {
 
 serial_controller::serial_controller()
   : ::rcplane::common::interface::base_controller("serial") {
-    RCPLANE_ENTER(_tag);
-  }
-
-serial_controller::~serial_controller() { 
-    RCPLANE_ENTER(_tag);
+  RCPLANE_ENTER(_tag);
 }
+
+serial_controller::~serial_controller() { RCPLANE_ENTER(_tag); }
 
 bool serial_controller::init() {
   RCPLANE_ENTER(_tag);
@@ -131,7 +129,6 @@ void serial_controller::p_read_serial() {
 
     try {
       _buffer = std::stoul(_buf, nullptr, 16);
-      RCPLANE_LOG(trace, _tag, std::hex << _buffer << std::dec);
 
       if ((START_INDICATOR == _buffer) && _startcount < 4U) {
         ++_startcount;
@@ -169,7 +166,7 @@ void serial_controller::p_handle_buffer() {
   _elevator.set(_buffer >> 24);
   _rudder.set(_buffer >> 32);
 
-  RCPLANE_LOG(trace,
+  RCPLANE_LOG(debug,
               _tag,
               "[" << timestamp << "]"
                   << " state = " << std::bitset<8>(_state.data())

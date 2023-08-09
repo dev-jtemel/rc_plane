@@ -26,7 +26,7 @@ namespace io {
   } while (false)
 
 #define RCPLANE_ENTER(tag) \
-  RCPLANE_LOG(trace, tag, __PRETTY_FUNCTION__)
+  RCPLANE_LOG(trace, "", __PRETTY_FUNCTION__)
   
 
 

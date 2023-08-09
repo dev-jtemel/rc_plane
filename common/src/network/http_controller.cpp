@@ -30,16 +30,16 @@ bool http_controller::init() {
   });
 
   _svr->Get("/", [&](const httplib::Request &, httplib::Response &) {
-    RCPLANE_LOG(info, _tag, "path: /");
+    RCPLANE_LOG(debug, _tag, "path: /");
   });
 
   _svr->Get("/stop", [&](const httplib::Request &, httplib::Response &) {
-    RCPLANE_LOG(info, _tag, "path: /stop");
+    RCPLANE_LOG(debug, _tag, "path: /stop");
     _svr->stop();
   });
 
   _svr->Get("/gps", [&](const httplib::Request &, httplib::Response &res) {
-    RCPLANE_LOG(info, _tag, "path: /gps");
+    RCPLANE_LOG(debug, _tag, "path: /gps");
 
     std::ostringstream os;
     os << std::setprecision(10);
@@ -56,7 +56,7 @@ bool http_controller::init() {
   });
 
   _svr->Get("/cs", [&](const httplib::Request &, httplib::Response &res) {
-    RCPLANE_LOG(info, _tag, "path: /cs");
+    RCPLANE_LOG(debug, _tag, "path: /cs");
 
     std::ostringstream os;
     os << std::setprecision(10);
@@ -74,7 +74,7 @@ bool http_controller::init() {
   });
 
   _svr->Get("/gyro", [&](const httplib::Request &, httplib::Response &res) {
-    RCPLANE_LOG(info, _tag, "path: /gyro");
+    RCPLANE_LOG(debug, _tag, "path: /gyro");
 
     std::ostringstream os;
     os << std::setprecision(10);
@@ -89,7 +89,7 @@ bool http_controller::init() {
     res.status = 200;
   });
 
-  RCPLANE_LOG(info, _tag, "initialized");
+  RCPLANE_LOG(debug, _tag, "initialized");
   set_state(state::initialized);
   return true;
 }
