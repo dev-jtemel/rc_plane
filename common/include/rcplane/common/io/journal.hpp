@@ -8,10 +8,12 @@ namespace common {
 namespace io {
 
 #define RCPLANE_SEVERITY(lvl)                                                  \
-  rcplane::common::io::journal::instance().lock();                             \
-  rcplane::common::io::journal::instance().set_severity(                       \
-      rcplane::common::io::journal::severity::lvl);                            \
-  rcplane::common::io::journal::instance().unlock();
+  do { \
+    rcplane::common::io::journal::instance().lock();                             \
+    rcplane::common::io::journal::instance().set_severity(                       \
+        rcplane::common::io::journal::severity::lvl);                            \
+    rcplane::common::io::journal::instance().unlock(); \
+  } while (false)
 
 #define RCPLANE_LOG(lvl, tag, str)                                             \
   do {                                                                         \
@@ -22,6 +24,11 @@ namespace io {
         tag);                                                                  \
     rcplane::common::io::journal::instance().unlock();                         \
   } while (false)
+
+#define RCPLANE_ENTER(tag) \
+  RCPLANE_LOG(trace, tag, __PRETTY_FUNCTION__)
+  
+
 
 }  // namespace io
 }  // namespace common

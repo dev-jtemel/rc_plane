@@ -3,6 +3,8 @@
 
 #include "http/http.hpp"
 #include "rcplane/common/network/network_interface.hpp"
+#include <curl/curl.h>
+#include <memory>
 
 namespace rcplane {
 namespace common {
@@ -18,14 +20,11 @@ public:
   void terminate() override;
 
 private:
-#ifdef GTEST
-  const std::string IP = "192.168.0.20";
-#else
   const std::string IP = "localhost";
-#endif
   const uint16_t PORT = 8080U;
   const std::unique_ptr<httplib::Server> _svr =
       std::make_unique<httplib::Server>();
+  CURL * _curl;
 };
 
 }  // namespace network

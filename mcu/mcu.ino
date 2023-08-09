@@ -42,6 +42,7 @@ void setup() {
   Serial.begin(115200);
   delay(2000);
 
+/*
   Serial.println(START);
   Serial.println(START);
   Serial.println(START);
@@ -77,13 +78,28 @@ void setup() {
     Serial.println(IMU_BLANK);
   }
   delay(1000);
+*/
+
+  Serial.read();
+  Serial.println(START);
+  Serial.println(START);
+  Serial.println(START);
+  Serial.println(START);
   STATE |= mcu::lib::flag::FLIGHT_MODE;
 }
 
 void loop() {
+  delay(200);
+/*
   for (auto ctr : controllers) {
     ctr->step();
   }
   write_state();
   imu.step();
+*/
+
+  Serial.println(IMU_BLANK);
+  Serial.println(IMU_BLANK);
+  Serial.println(IMU_BLANK);
+  Serial.println(IMU_BLANK);
 }
