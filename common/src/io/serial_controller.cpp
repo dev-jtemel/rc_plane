@@ -93,7 +93,6 @@ void serial_controller::p_read_serial() {
   RCPLANE_ENTER();
 
   while (_running) {
-
     auto read_buffer = p_read_line();
     if (!read_buffer) { continue; }
 
