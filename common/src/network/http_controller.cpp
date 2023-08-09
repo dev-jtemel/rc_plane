@@ -89,7 +89,7 @@ bool http_controller::init() {
     res.status = 200;
   });
 
-  RCPLANE_LOG(debug, _tag, "initialized");
+  RCPLANE_LOG(info, _tag, "initialized");
   set_state(state::initialized);
   return true;
 }
@@ -97,8 +97,8 @@ bool http_controller::init() {
 void http_controller::start() {
   RCPLANE_ENTER(_tag);
 
-  _worker = std::thread([&]() {
-    RCPLANE_LOG(info, _tag, IP << ":" << PORT);
+  RCPLANE_LOG(info, _tag, IP << ":" << PORT);
+  _worker = boost::thread([&]() {
     _svr->listen(IP, PORT);
   });
 

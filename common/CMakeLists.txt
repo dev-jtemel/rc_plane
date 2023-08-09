@@ -8,6 +8,7 @@ target_link_libraries(rcplane_common_io
   PRIVATE
     boost_log
     boost_log_setup
+    boost_system
     boost_thread
 )
 
@@ -19,6 +20,8 @@ target_link_libraries(rcplane_common_network
   PUBLIC
     rcplane_common_io
     curl
+    boost_system
+    boost_thread
 )
 
 if (BUILD_TESTS)
