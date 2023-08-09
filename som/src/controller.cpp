@@ -21,7 +21,7 @@ void termination_handler(int signum) {
 
   std::lock_guard<std::mutex> lock(main_lock);
   running = false;
-  main_cv.notify_one();
+  main_cv.notify_all();
 }
 
 int main(int argc, char *argv[]) {

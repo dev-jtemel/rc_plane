@@ -10,7 +10,9 @@ add_library(rcplane_common_network
 )
 
 target_link_libraries(rcplane_common_network
-  rcplane_common_io
+  PUBLIC
+    rcplane_common_io
+    curl
 )
 
 if (BUILD_TESTS)

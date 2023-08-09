@@ -10,6 +10,7 @@ OPTIONS="\
   Compile \
   Flash \
   Run \
+  Debug \
   Test \
   GPS-Fake \
   Read-Serial \
@@ -33,13 +34,14 @@ usage() {
   echo "  2) Compile              : Compile the mode's code."
   echo "  3) Flash                : Flash the modes code (via serial for MCU or ssh for SOM)."
   echo "  4) Run                  : Run the desired code on the appropiate device."
-  echo "  5) Test                 : Compile and run the tests for the appropiate device."
-  echo "  6) GPS-Fake             : Start a simulated GPSd instance."
-  echo "  7) Read-Serial          : Read the serial output of the microcontroller."
-  echo "  8) Install-Dependencies : Install the required dependencies."
-  echo "  9) Run-Clang-Format     : Run clang-format on the project."
-  echo "  10) Help                : Display this message."
-  echo "  11) Quit                : Exit the builder script."
+  echo "  5) Debug                : Run gdb on the PC code."
+  echo "  6) Test                 : Compile and run the tests for the appropiate device."
+  echo "  7) GPS-Fake             : Start a simulated GPSd instance."
+  echo "  8) Read-Serial          : Read the serial output of the microcontroller."
+  echo "  9) Install-Dependencies : Install the required dependencies."
+  echo "  10) Run-Clang-Format    : Run clang-format on the project."
+  echo "  11) Help                : Display this message."
+  echo "  12) Quit                : Exit the builder script."
 }
 
 while getopts "d:i:h" opt; do
@@ -88,6 +90,13 @@ do
     then
       [ $MODE == "PC" ] && {
         ./build/som/som-controller
+        break
+      }
+      echo "Nothing to do on $MODE..."
+    elif [ "$opt" = "Debug" ];
+    then
+      [ $MODE == "PC" ] && {
+        gdb ./build/som/som-controller
         break
       }
       echo "Nothing to do on $MODE..."

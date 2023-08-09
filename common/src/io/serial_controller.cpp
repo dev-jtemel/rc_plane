@@ -21,11 +21,17 @@ namespace common {
 namespace io {
 
 serial_controller::serial_controller()
-  : ::rcplane::common::interface::base_controller("serial") {}
+  : ::rcplane::common::interface::base_controller("serial") {
+    RCPLANE_ENTER(_tag);
+  }
 
-serial_controller::~serial_controller() {}
+serial_controller::~serial_controller() { 
+    RCPLANE_ENTER(_tag);
+}
 
 bool serial_controller::init() {
+  RCPLANE_ENTER(_tag);
+
   static_assert(sizeof(float) == 4U);
 
   _fd = open(_tty.c_str(), O_RDWR | O_NOCTTY);
@@ -65,15 +71,18 @@ bool serial_controller::init() {
 
 void serial_controller::register_cs_cb(
     std::function<void(uint8_t, uint8_t, int8_t, int8_t, int8_t)> cb) {
+  RCPLANE_ENTER(_tag);
   _cs_cb = cb;
 }
 
 void serial_controller::register_gyro_cb(
     std::function<void(float, float, float)> cb) {
+  RCPLANE_ENTER(_tag);
   _gyro_cb = cb;
 }
 
 void serial_controller::start() {
+  RCPLANE_ENTER(_tag);
   {
     std::lock_guard<std::mutex> lk(_lk);
     _running = true;
@@ -85,6 +94,7 @@ void serial_controller::start() {
 }
 
 void serial_controller::terminate() {
+  RCPLANE_ENTER(_tag);
   {
     std::lock_guard<std::mutex> lk(_lk);
     _running = false;
@@ -101,6 +111,13 @@ void serial_controller::terminate() {
 }
 
 void serial_controller::p_read_serial() {
+  RCPLANE_ENTER(_tag);
+
+  if (write(_fd, "R", 1) <= 0) {
+    RCPLANE_LOG(error, _tag, "failed to write to serial!");
+    return;
+  }
+
   while (true) {
     {
       std::lock_guard<std::mutex> lk(_lk);
@@ -114,6 +131,7 @@ void serial_controller::p_read_serial() {
 
     try {
       _buffer = std::stoul(_buf, nullptr, 16);
+      RCPLANE_LOG(trace, _tag, std::hex << _buffer << std::dec);
 
       if ((START_INDICATOR == _buffer) && _startcount < 4U) {
         ++_startcount;
@@ -142,6 +160,8 @@ void serial_controller::p_read_serial() {
 }
 
 void serial_controller::p_handle_buffer() {
+  RCPLANE_ENTER(_tag);
+
   _timestamp.set(static_cast<uint32_t>(_buffer >> 40));
   _state.set(_buffer);
   _motor.set(_buffer >> 8);

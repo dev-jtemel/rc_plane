@@ -9,11 +9,18 @@ namespace common {
 namespace network {
 
 http_controller::http_controller(std::function<void(int)> termination_handler)
-  : interface::network_interface(termination_handler) {}
+  : interface::network_interface(termination_handler) {
+  RCPLANE_ENTER(_tag);
+}
 
-http_controller::~http_controller() {}
+http_controller::~http_controller() { RCPLANE_ENTER(_tag); }
 
 bool http_controller::init() {
+  RCPLANE_ENTER(_tag);
+
+  _curl = curl_easy_init();
+  if (!_curl) { return false; }
+
   _svr->set_post_routing_handler([](const auto &, auto &res) {
     res.set_header("Access-Control-Allow-Origin", "*");
     res.set_header("Access-Control-Allow-Methods",
@@ -88,6 +95,8 @@ bool http_controller::init() {
 }
 
 void http_controller::start() {
+  RCPLANE_ENTER(_tag);
+
   _worker = std::thread([&]() {
     RCPLANE_LOG(info, _tag, IP << ":" << PORT);
     _svr->listen(IP, PORT);
@@ -98,6 +107,11 @@ void http_controller::start() {
 }
 
 void http_controller::terminate() {
+  RCPLANE_ENTER(_tag);
+
+  curl_easy_setopt(_curl, CURLOPT_URL, "http://localhost:8080/stop");
+  curl_easy_perform(_curl);
+  curl_easy_cleanup(_curl);
   _worker.join();
 
   RCPLANE_LOG(info, _tag, "terminated");

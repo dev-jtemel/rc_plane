@@ -1,6 +1,6 @@
 #include "rcplane/common/io/serial_controller.hpp"
-#include <gtest/gtest.h>
 #include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 using namespace rcplane::common::io;
 
@@ -9,9 +9,7 @@ public:
   MOCK_METHOD(bool, init, ());
   MOCK_METHOD(void, p_read_serial, ());
 
-  void append_line(std::string data) {
-    simulated_data.push_back(data);
-  }
+  void append_line(std::string data) { simulated_data.push_back(data); }
 
 private:
   std::vector<std::string> simulated_data;
