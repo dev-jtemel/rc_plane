@@ -22,13 +22,13 @@ namespace io {
 
 serial_controller::serial_controller()
   : ::rcplane::common::interface::base_controller("serial") {
-  RCPLANE_ENTER(_tag);
+  RCPLANE_ENTER();
 }
 
-serial_controller::~serial_controller() { RCPLANE_ENTER(_tag); }
+serial_controller::~serial_controller() { RCPLANE_ENTER(); }
 
 bool serial_controller::init() {
-  RCPLANE_ENTER(_tag);
+  RCPLANE_ENTER();
 
   static_assert(sizeof(float) == 4U);
 
@@ -63,24 +63,27 @@ bool serial_controller::init() {
   tcflush(_fd, TCIFLUSH);
   tcsetattr(_fd, TCSANOW, &_ntio);
 
+  if (!p_handshake_mcu()) { return false; }
+
   RCPLANE_LOG(info, _tag, "initialized");
   return true;
 }
 
 void serial_controller::register_cs_cb(
     std::function<void(uint8_t, uint8_t, int8_t, int8_t, int8_t)> cb) {
-  RCPLANE_ENTER(_tag);
+  RCPLANE_ENTER();
   _cs_cb = cb;
 }
 
 void serial_controller::register_gyro_cb(
     std::function<void(float, float, float)> cb) {
-  RCPLANE_ENTER(_tag);
+  RCPLANE_ENTER();
   _gyro_cb = cb;
 }
 
 void serial_controller::start() {
-  RCPLANE_ENTER(_tag);
+  RCPLANE_ENTER();
+
   {
     std::lock_guard<std::mutex> lk(_lk);
     _running = true;
@@ -92,7 +95,7 @@ void serial_controller::start() {
 }
 
 void serial_controller::terminate() {
-  RCPLANE_ENTER(_tag);
+  RCPLANE_ENTER();
   {
     std::lock_guard<std::mutex> lk(_lk);
     _running = false;
@@ -109,12 +112,7 @@ void serial_controller::terminate() {
 }
 
 void serial_controller::p_read_serial() {
-  RCPLANE_ENTER(_tag);
-
-  if (write(_fd, "R", 1) <= 0) {
-    RCPLANE_LOG(error, _tag, "failed to write to serial!");
-    return;
-  }
+  RCPLANE_ENTER();
 
   while (true) {
     {
@@ -129,13 +127,6 @@ void serial_controller::p_read_serial() {
 
     try {
       _buffer = std::stoul(_buf, nullptr, 16);
-
-      if ((START_INDICATOR == _buffer) && _startcount < 4U) {
-        ++_startcount;
-        continue;
-      }
-
-      if (_startcount < 4U) { continue; }
 
       if (_line == 0U) {
         p_handle_buffer();
@@ -157,7 +148,7 @@ void serial_controller::p_read_serial() {
 }
 
 void serial_controller::p_handle_buffer() {
-  RCPLANE_ENTER(_tag);
+  RCPLANE_ENTER();
 
   _timestamp.set(static_cast<uint32_t>(_buffer >> 40));
   _state.set(_buffer);
@@ -183,6 +174,20 @@ void serial_controller::p_handle_buffer() {
   } else {
     RCPLANE_LOG(warn, _tag, "no cb regisetered");
   }
+}
+
+bool serial_controller::p_handshake_mcu() {
+  RCPLANE_ENTER();
+
+  for (uint8_t i = 0U; i < 2U; ++i) {
+    if (write(_fd, HELLO_RX, 1) != 1) {
+      RCPLANE_LOG(error, _tag, "Failed to say hello to mcu.");
+      return false;
+    }
+    std::this_thread::sleep_for(std::chrono::seconds(1U));
+  }
+
+  return true;
 }
 
 }  // namespace io
