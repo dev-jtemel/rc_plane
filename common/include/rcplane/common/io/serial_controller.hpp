@@ -2,12 +2,12 @@
 #define __RCPLANE__COMMON__IO__SERIAL_CONTROLLER_HPP__
 
 #include <array>
+#include <boost/optional.hpp>
+#include <boost/optional/optional_io.hpp>
 #include <fstream>
 #include <functional>
 #include <string>
 #include <termios.h>
-#include <boost/optional.hpp>
-#include <boost/optional/optional_io.hpp>
 
 #include "rcplane/common/base_controller.hpp"
 #include "rcplane/common/io/journal.hpp"

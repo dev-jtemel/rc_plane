@@ -17,7 +17,7 @@ std::condition_variable main_cv;
 volatile bool running = false;
 
 void termination_handler(int signum) {
-  RCPLANE_LOG(warn, TAG, "termination signal received");
+  RCPLANE_LOG(warning, TAG, "termination signal received");
 
   std::lock_guard<std::mutex> lock(main_lock);
   running = false;

@@ -1,12 +1,13 @@
 # COMMON IO
 
 add_library(rcplane_common_io
-  src/io/journal_impl.cpp
   src/io/serial_controller.cpp
 )
 
 target_link_libraries(rcplane_common_io
-  PUBLIC
+  PRIVATE
+    boost_log
+    boost_log_setup
     boost_system
     boost_thread
 )
