@@ -6,8 +6,10 @@ add_library(rcplane_common_io
 )
 
 target_link_libraries(rcplane_common_io
-  PUBLIC
+  PRIVATE
     boost_log
+    boost_log_setup
+    boost_thread
 )
 
 add_library(rcplane_common_network

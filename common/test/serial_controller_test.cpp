@@ -181,7 +181,6 @@ TEST(serial_controller_test, stress_test) {
           }));
 
   sc.init();
-  sc.start();
 
   auto cb = [=](uint8_t rstate,
                 uint8_t rmotor,
@@ -208,6 +207,14 @@ TEST(serial_controller_test, stress_test) {
   sc.register_cs_cb(cb);
   sc.register_gyro_cb(gyro_cb);
 
+  RCPLANE_LOG(warning, "", "disabling logging to avoid console spam...");
+  RCPLANE_DISABLE_LOGGING();
+
+  sc.start();
   std::this_thread::sleep_for(std::chrono::seconds(2));
+
+  RCPLANE_ENABLE_LOGGING();
+  RCPLANE_LOG(info, "", "enabling console logging...");
+
   sc.terminate();
 }

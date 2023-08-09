@@ -24,7 +24,7 @@ private:
   const uint16_t PORT = 8080U;
   const std::unique_ptr<httplib::Server> _svr =
       std::make_unique<httplib::Server>();
-  CURL * _curl;
+  CURL *_curl;
 };
 
 }  // namespace network
