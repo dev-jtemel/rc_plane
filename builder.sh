@@ -11,6 +11,7 @@ OPTIONS="\
   Flash \
   Run \
   Debug \
+  Compile-Test \
   Test \
   GPS-Fake \
   Read-Serial \
@@ -30,18 +31,19 @@ usage() {
   echo "               Default: 192.168.0.13"
   echo ""
   echo "COMMANDS:"
-  echo "  1) Change-Mode          : Cycle between MCU, SOM and PC (default: PC)."
-  echo "  2) Compile              : Compile the mode's code."
-  echo "  3) Flash                : Flash the modes code (via serial for MCU or ssh for SOM)."
-  echo "  4) Run                  : Run the desired code on the appropiate device."
-  echo "  5) Debug                : Run gdb on the PC code."
-  echo "  6) Test                 : Compile and run the tests for the appropiate device."
-  echo "  7) GPS-Fake             : Start a simulated GPSd instance."
-  echo "  8) Read-Serial          : Read the serial output of the microcontroller."
-  echo "  9) Install-Dependencies : Install the required dependencies."
-  echo "  10) Run-Clang-Format    : Run clang-format on the project."
-  echo "  11) Help                : Display this message."
-  echo "  12) Quit                : Exit the builder script."
+  echo "  1) Change-Mode            : Cycle between MCU, SOM and PC (default: PC)."
+  echo "  2) Compile                : Compile the mode's code."
+  echo "  3) Flash                  : Flash the modes code (via serial for MCU or ssh for SOM)."
+  echo "  4) Run                    : Run the desired code on the appropiate device."
+  echo "  5) Debug                  : Run gdb on the PC code."
+  echo "  6) Comple-Test            : Compile tests."
+  echo "  7) Test                   : Run the tests for the appropiate device."
+  echo "  8) GPS-Fake               : Start a simulated GPSd instance."
+  echo "  9) Read-Serial            : Read the serial output of the microcontroller."
+  echo "  10) Install-Dependencies  : Install the required dependencies."
+  echo "  11) Run-Clang-Format      : Run clang-format on the project."
+  echo "  12) Help                  : Display this message."
+  echo "  12) Quit                  : Exit the builder script."
 }
 
 while getopts "d:i:h" opt; do
@@ -100,6 +102,14 @@ do
         break
       }
       echo "Nothing to do on $MODE..."
+    elif [ "$opt" = "Compile-Test" ];
+    then
+      [ $MODE == "PC" ] && {
+        bash scripts/run-tests.sh "$ROOT_DIR" "True"
+        break
+      }
+      echo "Nothing to do on $MODE..."
+      break
     elif [ "$opt" = "Test" ];
     then
       [ $MODE == "PC" ] && {

@@ -3,6 +3,7 @@
 # DO NOT CALL DIRECTLY
 
 ROOT_DIR="$1"
+COMPILE_ONLY="$2"
 
 run_tests() {
     ./build/common/test/rcplane_common_tests
@@ -16,7 +17,8 @@ echo "***************************"
 echo "Compiling and running tests"
 echo "***************************"
 bash $ROOT_DIR/scripts/compile-som.sh "$ROOT_DIR" "True"
-run_tests
+
+[ $COMPILE_ONLY == "True" ] || run_tests
 echo "****"
 echo "Done"
 echo "****"
