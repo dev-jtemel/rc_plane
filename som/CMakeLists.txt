@@ -14,9 +14,11 @@ add_executable(som-controller
   src/controller.cpp
 )
 
-target_link_libraries(som-controller PUBLIC
-  rcplane_common_io
-  rcplane_common_network
-  som-position
-  pthread
+target_link_libraries(som-controller
+  PUBLIC
+    rcplane_common_io
+    rcplane_common_network
+    som-position
+    boost_system
+    boost_thread
 )

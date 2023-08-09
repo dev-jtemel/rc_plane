@@ -55,22 +55,16 @@ void serial_controller::register_gyro_cb(
 void serial_controller::start() {
   RCPLANE_ENTER();
 
-  {
-    std::lock_guard<std::mutex> lk(_lk);
-    _running = true;
-  }
-
-  _worker = std::thread([&]() { p_read_serial(); });
+  _running = true;
+  _worker = boost::thread(&serial_controller::p_read_serial, this);
 
   RCPLANE_LOG(info, _tag, "started");
 }
 
 void serial_controller::terminate() {
   RCPLANE_ENTER();
-  {
-    std::lock_guard<std::mutex> lk(_lk);
-    _running = false;
-  }
+
+  _running = false;
   _worker.join();
 
   // Restore old values
@@ -98,12 +92,7 @@ boost::optional<uint64_t> serial_controller::p_read_line() {
 void serial_controller::p_read_serial() {
   RCPLANE_ENTER();
 
-  while (true) {
-    {
-      std::lock_guard<std::mutex> lk(_lk);
-      if (!_running) { break; }
-    }
-
+  while (_running) {
     auto read_buffer = p_read_line();
     if (!read_buffer) { continue; }
 
@@ -117,8 +106,7 @@ void serial_controller::p_read_serial() {
     } else if (_line == 2U) {
       _yaw.set(static_cast<uint32_t>(_buffer >> 32U));
       _gyro_cb(_pitch.data(), _roll.data(), _yaw.data());
-    } else if (_line == 3U) {
-    }
+    } 
 
     _blackbox << _buf << std::endl;
     _line = (_line + 1U) % 4U;

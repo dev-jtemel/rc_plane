@@ -21,6 +21,7 @@ bool gps_controller::init() {
     RCPLANE_LOG(error, _tag, "failed to open gpsd");
     return false;
   }
+
   RCPLANE_LOG(info, _tag, "initialized");
   return true;
 }
@@ -31,7 +32,7 @@ void gps_controller::start() {
   (void)gps_stream(&_gps_data, WATCH_ENABLE | WATCH_JSON, NULL);
 
   _running = true;
-  _worker = std::thread([&]() { p_read_gps(); });
+  _worker = boost::thread(&gps_controller::p_read_gps, this);
 
   RCPLANE_LOG(info, _tag, "started");
 }
@@ -39,13 +40,12 @@ void gps_controller::start() {
 void gps_controller::terminate() {
   RCPLANE_ENTER(_tag);
 
-  {
-    std::lock_guard<std::mutex> lk(_lk);
     _running = false;
-  }
   _worker.join();
+
   (void)gps_stream(&_gps_data, WATCH_DISABLE, NULL);
   (void)gps_close(&_gps_data);
+
   RCPLANE_LOG(info, _tag, "terminated");
 }
 

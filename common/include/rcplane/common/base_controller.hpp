@@ -1,10 +1,9 @@
 #ifndef __RCPLANE__COMMON__BASE_CONTROLLER_HPP__
 #define __RCPLANE__COMMON__BASE_CONTROLLER_HPP__
 
-#include <condition_variable>
-#include <mutex>
+#include <boost/thread.hpp>
+#include <boost/atomic.hpp>
 #include <string>
-#include <thread>
 
 namespace rcplane {
 namespace common {
@@ -28,10 +27,8 @@ public:
 protected:
   std::string _tag;
   enum state _state;
-  std::mutex _lk;
-  std::condition_variable _cv;
-  volatile bool _running = false;
-  std::thread _worker;
+  boost::atomic<bool> _running;
+  boost::thread _worker;
 };
 
 }  // namespace interface
