@@ -6,6 +6,8 @@
 #include <functional>
 #include <string>
 #include <termios.h>
+#include <boost/optional.hpp>
+#include <boost/optional/optional_io.hpp>
 
 #include "rcplane/common/base_controller.hpp"
 #include "rcplane/common/io/journal.hpp"
@@ -32,11 +34,13 @@ public:
 
 private:
   virtual void p_read_serial();
+  virtual bool p_open_port();
+  virtual boost::optional<uint64_t> p_read_line();
   void p_read_log();
 
   void p_handle_buffer();
 
-  bool p_handshake_mcu();
+  virtual bool p_handshake_mcu();
 
   uint8_t _line = 0;
 

@@ -32,36 +32,7 @@ bool serial_controller::init() {
 
   static_assert(sizeof(float) == 4U);
 
-  _fd = open(_tty.c_str(), O_RDWR | O_NOCTTY);
-  if (_fd < 0) {
-    RCPLANE_LOG(error, _tag, "Failed to open " << _tty);
-    return false;
-  }
-
-  std::stringstream ss;
-
-  std::time_t now_t =
-      std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-
-  ss << "./logs/" << std::put_time(std::localtime(&now_t), "%F-%T")
-     << ".blackbox";
-
-  _blackbox = std::ofstream(ss.str());
-
-  // Store copy of old values
-  tcgetattr(_fd, &_otio);
-
-  bzero(&_ntio, sizeof(_ntio));
-
-  // Config the serial port
-  _ntio.c_cflag = B115200 | CRTSCTS | CS8 | CLOCAL | CREAD;
-  _ntio.c_iflag = IGNPAR | ICRNL;
-  _ntio.c_lflag = ICANON;
-  _ntio.c_cc[VEOF] = 4;
-  _ntio.c_cc[VMIN] = 1;
-
-  tcflush(_fd, TCIFLUSH);
-  tcsetattr(_fd, TCSANOW, &_ntio);
+  if (!p_open_port()) { return false; }
 
   if (!p_handshake_mcu()) { return false; }
 
@@ -111,6 +82,19 @@ void serial_controller::terminate() {
   RCPLANE_LOG(info, _tag, "terminated");
 }
 
+boost::optional<uint64_t> serial_controller::p_read_line() {
+  RCPLANE_ENTER();
+
+  _res = read(_fd, _buf, MAX_LEN - 1);
+  _buf[_res] = '\0';
+
+  if (_res < 1) { return {}; }
+
+  try {
+    return {std::stoul(_buf, nullptr, 16)};
+  } catch (...) { return {}; }
+}
+
 void serial_controller::p_read_serial() {
   RCPLANE_ENTER();
 
@@ -120,30 +104,24 @@ void serial_controller::p_read_serial() {
       if (!_running) { break; }
     }
 
-    _res = read(_fd, _buf, MAX_LEN - 1);
-    _buf[_res] = '\0';
+    auto read_buffer = p_read_line();
+    if (!read_buffer) { continue; }
 
-    if (_res <= 1) { continue; }
+    _buffer = read_buffer.get();
 
-    try {
-      _buffer = std::stoul(_buf, nullptr, 16);
-
-      if (_line == 0U) {
-        p_handle_buffer();
-      } else if (_line == 1U) {
-        _pitch.set(static_cast<uint32_t>(_buffer >> 32U));
-        _roll.set(static_cast<uint32_t>(0xFFFFFFFF & _buffer));
-      } else if (_line == 2U) {
-        _yaw.set(static_cast<uint32_t>(_buffer >> 32U));
-        _gyro_cb(_pitch.data(), _roll.data(), _yaw.data());
-      } else if (_line == 3U) {
-      }
-
-      _blackbox << _buf << std::endl;
-      _line = (_line + 1U) % 4U;
-    } catch (...) {
-      // Do nothing
+    if (_line == 0U) {
+      p_handle_buffer();
+    } else if (_line == 1U) {
+      _pitch.set(static_cast<uint32_t>(_buffer >> 32U));
+      _roll.set(static_cast<uint32_t>(0xFFFFFFFF & _buffer));
+    } else if (_line == 2U) {
+      _yaw.set(static_cast<uint32_t>(_buffer >> 32U));
+      _gyro_cb(_pitch.data(), _roll.data(), _yaw.data());
+    } else if (_line == 3U) {
     }
+
+    _blackbox << _buf << std::endl;
+    _line = (_line + 1U) % 4U;
   }
 }
 
@@ -187,6 +165,42 @@ bool serial_controller::p_handshake_mcu() {
     std::this_thread::sleep_for(std::chrono::seconds(1U));
   }
 
+  return true;
+}
+
+bool serial_controller::p_open_port() {
+  RCPLANE_ENTER();
+
+  _fd = open(_tty.c_str(), O_RDWR | O_NOCTTY);
+  if (_fd < 0) {
+    RCPLANE_LOG(error, _tag, "Failed to open " << _tty);
+    return false;
+  }
+
+  std::stringstream ss;
+
+  std::time_t now_t =
+      std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+
+  ss << "./logs/" << std::put_time(std::localtime(&now_t), "%F-%T")
+     << ".blackbox";
+
+  _blackbox = std::ofstream(ss.str());
+
+  // Store copy of old values
+  tcgetattr(_fd, &_otio);
+
+  bzero(&_ntio, sizeof(_ntio));
+
+  // Config the serial port
+  _ntio.c_cflag = B115200 | CRTSCTS | CS8 | CLOCAL | CREAD;
+  _ntio.c_iflag = IGNPAR | ICRNL;
+  _ntio.c_lflag = ICANON;
+  _ntio.c_cc[VEOF] = 4;
+  _ntio.c_cc[VMIN] = 1;
+
+  tcflush(_fd, TCIFLUSH);
+  tcsetattr(_fd, TCSANOW, &_ntio);
   return true;
 }
 
