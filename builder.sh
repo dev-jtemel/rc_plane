@@ -3,15 +3,14 @@
 ROOT_DIR="$PWD"
 DEV="/dev/ttyACM0"
 SOMIP="192.168.0.30"
-SIMULATION="OFF"
-MODE="SOM"
+MODE="PC"
 
 OPTIONS="\
   Change-Mode \
   Compile \
   Flash \
   Run \
-  Run-Test \
+  Test \
   GPS-Fake \
   Read-Serial \
   Install-Dependencies \
@@ -30,11 +29,11 @@ usage() {
   echo "               Default: 192.168.0.13"
   echo ""
   echo "COMMANDS:"
-  echo "  1) Change-Mode          : Cycle between MCU, SOM and PC (default: SOM)."
+  echo "  1) Change-Mode          : Cycle between MCU, SOM and PC (default: PC)."
   echo "  2) Compile              : Compile the mode's code."
   echo "  3) Flash                : Flash the modes code (via serial for MCU or ssh for SOM)."
   echo "  4) Run                  : Run the desired code on the appropiate device."
-  echo "  5) Run-Test             : Run the tests for the appropiate device."
+  echo "  5) Test                 : Compile and run the tests for the appropiate device."
   echo "  6) GPS-Fake             : Start a simulated GPSd instance."
   echo "  7) Read-Serial          : Read the serial output of the microcontroller."
   echo "  8) Install-Dependencies : Install the required dependencies."
@@ -69,10 +68,6 @@ do
       [ $MODE == "MCU" ] && MODE="SOM" && break
     elif [ "$opt" = "Compile" ];
     then
-      [ $MODE == "SOM" ] && {
-        ssh pi@${SOMIP} 'cd rc_plane && git pull && ./scripts/compile-som.sh /home/pi/rc_plane'
-        break
-      }
       [ $MODE == "PC" ] && {
         bash scripts/compile-som.sh "$ROOT_DIR"
         break
@@ -81,13 +76,9 @@ do
         bash scripts/compile-mcu.sh "$ROOT_DIR"
         break
       }
+      echo "Nothing to do on ${MODE}...."
     elif [ "$opt" = "Flash" ];
     then
-      [ $MODE == "SOM" ] && {
-        echo "Copying to bin..."
-        ssh pi@${SOMIP} 'cp rc_plane/build_som/som/som-controller bin'
-        break
-      }
       [ $MODE == "MCU" ] && {
         bash scripts/flash-mcu.sh "$ROOT_DIR" "$DEV"
         break
@@ -95,37 +86,21 @@ do
       echo "Nothing to do on PC...."
     elif [ "$opt" = "Run" ];
     then
-      [ $MODE == "SOM" ] && {
-        ssh -t pi@${SOMIP} '~/bin/som-controller'
-        break
-      }
       [ $MODE == "PC" ] && {
         ./build/som/som-controller
         break
       }
       echo "Nothing to do on $MODE..."
-    elif [ "$opt" = "Run-Test" ];
+    elif [ "$opt" = "Test" ];
     then
-      [ $MODE == "SOM" ] && {
-        ssh pi@${SOMIP} 'rc_plane/build/common/test/rcplane_common_tests'
-        break
-      }
       [ $MODE == "PC" ] && {
-        ./build/common/test/rcplane_common_tests
-        [ -d coverage ] && rm -rf coverage
-        mkdir coverage && pushd coverage
-        gcovr -r .. -e "../som" -e "../common/test/" -e "../third_party"  --html-details -o coverage.html
-        popd
+        bash scripts/run-tests.sh "$ROOT_DIR"
         break
       }
       echo "Nothing to do on $MODE..."
       break
     elif [ "$opt" = "GPS-Fake" ];
     then
-      [ $MODE == "SOM" ] && {
-        ssh pi@${SOMIP} 'killall gpsfake ; gpsfake -P 2000 -S rc_plane/logs/gps.nmea'
-        break
-      }
       [ $MODE == "PC" ] && {
         killall gpsfake ; sudo gpsfake -P 2000 -S ./logs/gps.nmea
         break
@@ -138,7 +113,7 @@ do
       break
     elif [ "$opt" = "Install-Dependencies" ];
     then
-      bash scripts/install-dependencies.sh "$ROOT_DIR"
+      bash scripts/install-dependencies.sh "$ROOT_DIR" "True"
       break
     elif [ "$opt" = "Run-Clang-Format" ];
     then
