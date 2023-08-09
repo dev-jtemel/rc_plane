@@ -8,11 +8,17 @@ namespace som {
 namespace position {
 
 gps_controller::gps_controller()
-  : ::rcplane::common::interface::base_controller("gps-controller") {}
+  : ::rcplane::common::interface::base_controller("gps-controller") {
+  RCPLANE_ENTER(_tag);
+  }
 
-gps_controller::~gps_controller() {}
+gps_controller::~gps_controller() {
+  RCPLANE_ENTER(_tag);
+}
 
 bool gps_controller::init() {
+  RCPLANE_ENTER(_tag);
+
   if (gps_open("localhost", GPSD_PORT.c_str(), &_gps_data)) {
     RCPLANE_LOG(error, _tag, "failed to open gpsd");
     return false;
@@ -22,6 +28,8 @@ bool gps_controller::init() {
 }
 
 void gps_controller::start() {
+  RCPLANE_ENTER(_tag);
+
   (void)gps_stream(&_gps_data, WATCH_ENABLE | WATCH_JSON, NULL);
 
   _running = true;
@@ -31,6 +39,8 @@ void gps_controller::start() {
 }
 
 void gps_controller::terminate() {
+  RCPLANE_ENTER(_tag);
+
   {
     std::lock_guard<std::mutex> lk(_lk);
     _running = false;
@@ -43,10 +53,14 @@ void gps_controller::terminate() {
 
 void gps_controller::register_cb(
     std::function<void(float, float, float, float)> cb) {
+  RCPLANE_ENTER(_tag);
+
   _cbs.push_back(cb);
 }
 
 void gps_controller::p_read_gps() {
+  RCPLANE_ENTER(_tag);
+
   while (_running && gps_waiting(&_gps_data, GPS_DELAY)) {
     if (0 > gps_read(&_gps_data, NULL, 0)) {
       RCPLANE_LOG(error, _tag, "invalid read");
