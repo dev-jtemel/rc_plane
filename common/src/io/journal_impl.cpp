@@ -28,8 +28,9 @@ void journal::log(severity slvl, const std::string tag) {
       std::cerr << "\e[38;5;" << severity_to_color(slvl) << "m";
     }
 
-    std::cerr << "[" << now() << "] " << severity_to_str(slvl) << " [" << tag
-              << "] " << _ss.str() << std::endl;
+    std::cerr << "[" << now() << "] " << severity_to_str(slvl) << " ";
+    if (tag.size() > 0) { std::cerr << "[" << tag << "] "; }
+    std::cerr << _ss.str() << std::endl;
 
     if (console) {  // logging to console
       std::cerr << "\e[0m";

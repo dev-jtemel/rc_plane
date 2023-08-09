@@ -10,11 +10,9 @@ namespace position {
 gps_controller::gps_controller()
   : ::rcplane::common::interface::base_controller("gps-controller") {
   RCPLANE_ENTER(_tag);
-  }
-
-gps_controller::~gps_controller() {
-  RCPLANE_ENTER(_tag);
 }
+
+gps_controller::~gps_controller() { RCPLANE_ENTER(_tag); }
 
 bool gps_controller::init() {
   RCPLANE_ENTER(_tag);
