@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS "-O3 -g -Wall")
 
 find_package(Threads REQUIRED)
+find_package(Boost 1.58.0 REQUIRED)
 
 include_directories(
   common/include
