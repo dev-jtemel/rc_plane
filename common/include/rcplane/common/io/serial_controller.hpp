@@ -36,10 +36,11 @@ private:
 
   void p_handle_buffer();
 
-  // Should appear 4 times in a row on a new connection.
-  const uint64_t START_INDICATOR = 0xFFFFFFFFFFFFFFFF;
-  uint8_t _startcount = 0;
+  bool p_handshake_mcu();
+
   uint8_t _line = 0;
+
+  const char *HELLO_RX = "1";
 
   static const uint32_t MAX_LEN = 17U;
   const std::string _tty = "/dev/ttyACM0";

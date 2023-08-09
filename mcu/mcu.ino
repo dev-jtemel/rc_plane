@@ -40,13 +40,11 @@ void write_state() {
 
 void setup() {
   Serial.begin(115200);
-  delay(2000);
 
-/*
-  Serial.println(START);
-  Serial.println(START);
-  Serial.println(START);
-  Serial.println(START);
+  while (Serial.available() == 0);
+  Serial.read();
+
+  delay(2000);
 
   flight_switch.setup();
 
@@ -61,7 +59,7 @@ void setup() {
 
   imu.setup();
 
-  delay(2000);
+  delay(1000);
 
   uint8_t i = 0;
   write_state();
@@ -77,14 +75,7 @@ void setup() {
     Serial.println(IMU_BLANK);
     Serial.println(IMU_BLANK);
   }
-  delay(1000);
-*/
 
-  Serial.read();
-  Serial.println(START);
-  Serial.println(START);
-  Serial.println(START);
-  Serial.println(START);
   STATE |= mcu::lib::flag::FLIGHT_MODE;
 }
 
