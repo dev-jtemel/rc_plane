@@ -54,7 +54,7 @@ Timestamp buffer overflows at 16777215 milliseconds (16777.215 seconds; 279.6202
 
 Packets are written to the serial port in HEX, with each line containing exactly 8 bytes of data. 
 
-When the serial connection is opened on the SOM, there is a chance of buffered data to be read before the microcontroller resets. To ensure the serial reader gets the packets in the order expected, all packets are discarded on the SOM until four "start" packets are read consecutively. A start packet is defined as: `0xFFFFFFFFFFFFFFFF`.
+When the serial connection is opened on the SOM, there is a chance of buffered data to be read before the microcontroller resets. To invalidate old data, the mcu and som perform a basic handshake by exchanging one byte.
 
 ### Hardware
 
