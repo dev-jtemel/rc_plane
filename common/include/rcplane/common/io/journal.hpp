@@ -1,32 +1,29 @@
 #ifndef __RCPLANE__COMMON__IO__JOURNAL_HPP__
 #define __RCPLANE__COMMON__IO__JOURNAL_HPP__
 
-#include "rcplane/common/io/journal_impl.hpp"
+#define BOOST_LOG_DYN_LINK 1
+
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/expressions.hpp>
 
 namespace rcplane {
 namespace common {
 namespace io {
 
 #define RCPLANE_SEVERITY(lvl)                                                  \
-  do { \
-    rcplane::common::io::journal::instance().lock();                             \
-    rcplane::common::io::journal::instance().set_severity(                       \
-        rcplane::common::io::journal::severity::lvl);                            \
-    rcplane::common::io::journal::instance().unlock(); \
+  do {                                                                         \
+    boost::log::core::get()->set_filter(                                       \
+        boost::log::trivial::severity >= boost::log::trivial::lvl              \
+    );                                                                         \
   } while (false)
 
 #define RCPLANE_LOG(lvl, tag, str)                                             \
   do {                                                                         \
-    rcplane::common::io::journal::instance().lock();                           \
-    rcplane::common::io::journal::instance().stream() << str;                  \
-    rcplane::common::io::journal::instance().log(                              \
-        rcplane::common::io::journal::severity::lvl,                           \
-        tag);                                                                  \
-    rcplane::common::io::journal::instance().unlock();                         \
+    BOOST_LOG_TRIVIAL(lvl) << "[" << tag << "] " << str;                       \
   } while (false)
 
-#define RCPLANE_ENTER(tag) \
-  RCPLANE_LOG(trace, "", __PRETTY_FUNCTION__)
+#define RCPLANE_ENTER(tag) BOOST_LOG_TRIVIAL(trace) << __PRETTY_FUNCTION__
   
 
 

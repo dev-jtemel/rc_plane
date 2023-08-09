@@ -150,7 +150,7 @@ void serial_controller::p_handle_buffer() {
            _elevator.data(),
            _rudder.data());
   } else {
-    RCPLANE_LOG(warn, _tag, "no cb regisetered");
+    RCPLANE_LOG(warning, _tag, "no cb regisetered");
   }
 }
 

@@ -5,6 +5,11 @@ add_library(rcplane_common_io
   src/io/serial_controller.cpp
 )
 
+target_link_libraries(rcplane_common_io
+  PUBLIC
+    boost_log
+)
+
 add_library(rcplane_common_network
   src/network/http_controller.cpp
 )
