@@ -14,8 +14,7 @@ namespace common {
 namespace io {
 
 serial_controller::serial_controller()
-  : ::rcplane::common::interface::base_controller("serial"), _io(),
-    _serial(_io, TTY) {
+  : ::rcplane::common::interface::base_controller("serial"), _io(), _serial(_io) {
   RCPLANE_ENTER();
 }
 
@@ -150,6 +149,7 @@ bool serial_controller::p_open_port() {
   RCPLANE_ENTER();
 
   _serial.set_option(boost::asio::serial_port_base::baud_rate(115200U));
+  _serial.open(TTY);
 
   std::stringstream ss;
   std::time_t now_t =
