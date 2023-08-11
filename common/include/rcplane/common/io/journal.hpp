@@ -15,9 +15,18 @@ namespace rcplane {
 namespace common {
 namespace io {
 
+/**
+* @brief Journaling sink for boost::log.
+*/
 class journal_sink
   : public boost::log::sinks::basic_formatted_sink_backend<char> {
 public:
+  /**
+   * @brief Custom log formatting.
+   *
+   * @param rec The record view to get meta data from.
+   * @param message The message to log.
+   */
   void consume(boost::log::record_view const &rec, string_type const &message) {
     auto severity = rec[boost::log::trivial::severity].get();
     switch (severity) {
