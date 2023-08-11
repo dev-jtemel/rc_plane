@@ -2,3 +2,5 @@ picocom
 curl
 gpsd
 gpsd-clients
+doxygen
+graphviz

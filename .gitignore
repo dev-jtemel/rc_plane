@@ -39,3 +39,4 @@ bin/
 resources/.*
 build*/
 coverage/
+docs/
