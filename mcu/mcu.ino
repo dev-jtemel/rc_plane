@@ -80,7 +80,7 @@ void setup() {
 }
 
 void loop() {
-  delay(200);
+  delay(50);
 /*
   for (auto ctr : controllers) {
     ctr->step();
@@ -89,8 +89,13 @@ void loop() {
   imu.step();
 */
 
+  Serial.println(START);
+  Serial.println(START);
+  Serial.println(START);
+  Serial.println(START);
+/*
   Serial.println(IMU_BLANK);
   Serial.println(IMU_BLANK);
   Serial.println(IMU_BLANK);
-  Serial.println(IMU_BLANK);
+*/
 }

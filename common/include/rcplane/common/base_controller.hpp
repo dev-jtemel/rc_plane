@@ -1,8 +1,8 @@
 #ifndef __RCPLANE__COMMON__BASE_CONTROLLER_HPP__
 #define __RCPLANE__COMMON__BASE_CONTROLLER_HPP__
 
-#include <boost/thread.hpp>
 #include <boost/atomic.hpp>
+#include <boost/thread.hpp>
 #include <string>
 
 namespace rcplane {

@@ -1,14 +1,7 @@
 #include <bitset>
 #include <chrono>
-#include <fcntl.h>
 #include <iomanip>
 #include <sstream>
-#include <stdio.h>
-#include <string.h>
-#include <strings.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <termios.h>
 #include <thread>
 #include <unistd.h>
 
@@ -21,7 +14,8 @@ namespace common {
 namespace io {
 
 serial_controller::serial_controller()
-  : ::rcplane::common::interface::base_controller("serial") {
+  : ::rcplane::common::interface::base_controller("serial"), _io(),
+    _serial(_io, TTY) {
   RCPLANE_ENTER();
 }
 
@@ -66,12 +60,7 @@ void serial_controller::terminate() {
 
   _running = false;
   _worker.join();
-
-  // Restore old values
-  if (_fd >= 0) {
-    tcsetattr(_fd, TCSANOW, &_otio);
-    _blackbox.close();
-  }
+  _blackbox.close();
 
   RCPLANE_LOG(info, _tag, "terminated");
 }
@@ -79,13 +68,17 @@ void serial_controller::terminate() {
 boost::optional<uint64_t> serial_controller::p_read_line() {
   RCPLANE_ENTER();
 
-  _res = read(_fd, _buf, MAX_LEN - 1);
-  _buf[_res] = '\0';
+  boost::asio::read_until(_serial, _streambuffer, '\n');
 
-  if (_res < 1) { return {}; }
+  std::string res{};
+  std::istream is(&_streambuffer);
+  std::getline(is, res);
+
+  RCPLANE_LOG(info, _tag, res);
+  _blackbox << res << std::endl;
 
   try {
-    return {std::stoul(_buf, nullptr, 16)};
+    return {std::stoul(res, nullptr, 16)};
   } catch (...) { return {}; }
 }
 
@@ -106,9 +99,8 @@ void serial_controller::p_read_serial() {
     } else if (_line == 2U) {
       _yaw.set(static_cast<uint32_t>(_buffer >> 32U));
       _gyro_cb(_pitch.data(), _roll.data(), _yaw.data());
-    } 
+    }
 
-    _blackbox << _buf << std::endl;
     _line = (_line + 1U) % 4U;
   }
 }
@@ -146,10 +138,8 @@ bool serial_controller::p_handshake_mcu() {
   RCPLANE_ENTER();
 
   for (uint8_t i = 0U; i < 2U; ++i) {
-    if (write(_fd, HELLO_RX, 1) != 1) {
-      RCPLANE_LOG(error, _tag, "Failed to say hello to mcu.");
-      return false;
-    }
+    boost::asio::write(_serial,
+                       boost::asio::buffer(HELLO_RX.c_str(), HELLO_RX.size()));
     std::this_thread::sleep_for(std::chrono::seconds(1U));
   }
 
@@ -159,14 +149,9 @@ bool serial_controller::p_handshake_mcu() {
 bool serial_controller::p_open_port() {
   RCPLANE_ENTER();
 
-  _fd = open(_tty.c_str(), O_RDWR | O_NOCTTY);
-  if (_fd < 0) {
-    RCPLANE_LOG(error, _tag, "Failed to open " << _tty);
-    return false;
-  }
+  _serial.set_option(boost::asio::serial_port_base::baud_rate(115200U));
 
   std::stringstream ss;
-
   std::time_t now_t =
       std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
@@ -175,20 +160,6 @@ bool serial_controller::p_open_port() {
 
   _blackbox = std::ofstream(ss.str());
 
-  // Store copy of old values
-  tcgetattr(_fd, &_otio);
-
-  bzero(&_ntio, sizeof(_ntio));
-
-  // Config the serial port
-  _ntio.c_cflag = B115200 | CRTSCTS | CS8 | CLOCAL | CREAD;
-  _ntio.c_iflag = IGNPAR | ICRNL;
-  _ntio.c_lflag = ICANON;
-  _ntio.c_cc[VEOF] = 4;
-  _ntio.c_cc[VMIN] = 1;
-
-  tcflush(_fd, TCIFLUSH);
-  tcsetattr(_fd, TCSANOW, &_ntio);
   return true;
 }
 

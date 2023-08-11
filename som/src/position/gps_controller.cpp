@@ -40,7 +40,7 @@ void gps_controller::start() {
 void gps_controller::terminate() {
   RCPLANE_ENTER(_tag);
 
-    _running = false;
+  _running = false;
   _worker.join();
 
   (void)gps_stream(&_gps_data, WATCH_DISABLE, NULL);

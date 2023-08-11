@@ -20,6 +20,7 @@ target_link_libraries(rcplane_common_network
   PUBLIC
     rcplane_common_io
     curl
+  PRIVATE
     boost_system
     boost_thread
 )
