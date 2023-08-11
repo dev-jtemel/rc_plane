@@ -7,7 +7,7 @@ namespace rcplane {
 namespace common {
 namespace io {
 
-enum packet_type {
+enum class packet_type : uint8_t {
   state = 0,
   motor = 1,
 

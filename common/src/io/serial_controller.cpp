@@ -2,6 +2,7 @@
 #include <chrono>
 #include <iomanip>
 #include <sstream>
+#include <iostream>
 #include <thread>
 #include <unistd.h>
 
@@ -116,7 +117,7 @@ void serial_controller::p_handle_buffer() {
 
   RCPLANE_LOG(debug,
               _tag,
-              "[" << timestamp << "]"
+              "[" << _timestamp.data() << "]"
                   << " state = " << std::bitset<8>(_state.data())
                   << " | motor = " << +_motor.data() << " | aileron = "
                   << +_aileron.data() << " | elevator = " << +_elevator.data()
@@ -138,18 +139,38 @@ bool serial_controller::p_handshake_mcu() {
 
   for (uint8_t i = 0U; i < 2U; ++i) {
     boost::asio::write(_serial,
-                       boost::asio::buffer(HELLO_RX.c_str(), HELLO_RX.size()));
+                       boost::asio::buffer(HELLO_TX.c_str(), HELLO_RX.size()));
     std::this_thread::sleep_for(std::chrono::seconds(1U));
   }
 
   return true;
 }
 
+void serial_controller::p_flush() {
+  RCPLANE_ENTER();
+
+  std::string res{};
+  while (res != HELLO_RX) {
+    boost::asio::read_until(_serial, _streambuffer, '\n');
+    std::istream is(&_streambuffer);
+    std::getline(is, res);
+  }
+  RCPLANE_LOG(info, _tag, "flushed");
+}
+
 bool serial_controller::p_open_port() {
   RCPLANE_ENTER();
 
-  _serial.set_option(boost::asio::serial_port_base::baud_rate(115200U));
-  _serial.open(TTY);
+  try {
+    _serial.open(TTY);
+    _serial.set_option(boost::asio::serial_port_base::baud_rate(115200U));
+
+    ::tcflush(_serial.lowest_layer().native_handle(), TCIFLUSH);
+    p_flush();
+  } catch (...) {
+    RCPLANE_LOG(error, _tag, "failed to open serial port");
+    return false;
+  }
 
   std::stringstream ss;
   std::time_t now_t =

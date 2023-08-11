@@ -33,16 +33,16 @@ public:
 private:
   virtual void p_read_serial();
   virtual bool p_open_port();
-  virtual boost::optional<uint64_t> p_read_line();
-  void p_read_log();
-
-  void p_handle_buffer();
-
   virtual bool p_handshake_mcu();
+  virtual boost::optional<uint64_t> p_read_line();
+  void p_flush();
+  void p_read_log();
+  void p_handle_buffer();
 
   uint8_t _line = 0;
   const std::string TTY = "/dev/ttyACM0";
-  const std::string HELLO_RX = "1";
+  const std::string HELLO_TX = "1";
+  const std::string HELLO_RX = "rcplane\r";
   std::ofstream _blackbox;
 
   boost::asio::streambuf _streambuffer;

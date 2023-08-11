@@ -41,6 +41,9 @@ void write_state() {
 void setup() {
   Serial.begin(115200);
 
+  Serial.flush();
+  Serial.println("to be flushed");
+  Serial.println("rcplane");
   while (Serial.available() == 0);
   Serial.read();
 
@@ -89,7 +92,7 @@ void loop() {
   imu.step();
 */
 
-  Serial.println(START);
+  write_state();
   Serial.println(START);
   Serial.println(START);
   Serial.println(START);
