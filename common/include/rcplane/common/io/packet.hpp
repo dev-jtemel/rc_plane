@@ -38,7 +38,8 @@ public:
   packet() : packet(packet_type::invalid) {}
 
   /**
-   * \warning RETURN_TYPE must be more or equal bytes to BUFFER_SIZE.
+   * @param type The packet type.
+   * @warning RETURN_TYPE must be more or equal bytes to BUFFER_SIZE.
    */
   explicit packet(packet_type type) {
     // Ensure that conversions will be perserved
@@ -50,7 +51,6 @@ public:
 
   /**
    * @brief Set the raw buffer data.
-   *
    * @param buffer The buffer to set and later convert.
    */
   void set(BUFFER_SIZE buffer) { _converter.raw = buffer; }

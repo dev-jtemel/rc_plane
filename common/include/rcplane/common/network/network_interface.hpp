@@ -12,8 +12,17 @@ namespace common {
 namespace network {
 namespace interface {
 
+/**
+ * @brief Interface for network communication.
+ *
+ * This interface defines the available interactions for a network controller
+ * to implement.
+ */
 class network_interface : public ::rcplane::common::interface::base_controller {
 public:
+  /**
+   * @param termination_handler Callback to fire on termination.
+   */
   explicit network_interface(std::function<void(int)> termination_handler)
     : base_controller("network_interface"),
       _termination_handler(termination_handler) {}
@@ -24,16 +33,37 @@ public:
   virtual void start() = 0;
   virtual void terminate() = 0;
 
+  /**
+   * @brief Thread-safe callback to buffer incoming gps data.
+   * @param lt Latitude data.
+   * @param ln Longitude data.
+   * @param track Track (bearing) data [0-360).
+   * @param speed Speed in m/s.
+   */
   void gps_cb(float lt, float ln, float track, float speed) {
     std::lock_guard<std::mutex> lk(_gps_lk);
     _gps = std::make_tuple(lt, ln, track, speed);
   }
 
+  /**
+   * @brief Thread-safe callback to buffer incoming gyro data.
+   * @param pitch Pitch angle (-180, 180].
+   * @param roll Roll angle (-180, 180].
+   * @param yaw Yaw angle (-180, 180].
+   */
   void gyro_cb(float pitch, float roll, float yaw) {
     std::lock_guard<std::mutex> lk(_gyro_lk);
     _gyro = std::make_tuple(pitch, roll, yaw);
   }
 
+  /**
+   * @brief Thread-safe callback to buffer incoming control surface data.
+   * @param state Bit representation of the current state.
+   * @param motor Current motor speed.
+   * @param aileron Current aileron deflection.
+   * @param elevator Current elevator deflection.
+   * @param rudder Current rudder deflection.
+   */
   void cs_cb(uint8_t state,
              uint8_t motor,
              int8_t aileron,

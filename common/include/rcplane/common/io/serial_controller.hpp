@@ -36,7 +36,6 @@ public:
    * port on connection and perform a handshake with the microcontroller.
    *
    * @warning Blocks until p_handshake_mcu() and p_flush() complete.
-   *
    * @return Status of the initialization.
    */
   bool init() override;
@@ -52,16 +51,13 @@ public:
 
   /**
    * @brief Close the serial port connection.
-   *
    * @warning Blocks until p_read_line() finishes.
-   *
    * @pre start() 
    */
   void terminate() override;
 
   /**
    * @brief Register a callback to be fired when a control surface statement is read.
-   *
    * @param cb The callback to register.
    */
   void register_cs_cb(
@@ -69,7 +65,6 @@ public:
 
   /**
    * @brief Register a callback to be fired when a gyro scope statement is read.
-   *
    * @param cb The callback to register.
    */
   void register_gyro_cb(std::function<void(float, float, float)> cb);
@@ -95,17 +90,15 @@ private:
    * @brief Handshake with MCU to coordinate serial io.
    *
    * Write two characters to the microcontroller to allow it to start execution.
-   * \see HELLO_TX.
    *
-   * \throws boost::system::system_error on write failure.
+   * @see HELLO_TX.
+   * @throws boost::system::system_error on write failure.
    */
   virtual bool p_handshake_mcu();
 
   /**
    * @brief Read a line from the serial port.
-   *
-   * \warning Possible for trailing characters to be read into _streambuffer.
-   *
+   * @warning Possible for trailing characters to be read into _streambuffer.
    * @returns uint64_t containing the binary value of the data read or boost::optional::empty
    *          if conversion to uint64_t failed.
    */

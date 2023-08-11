@@ -23,7 +23,6 @@ class journal_sink
 public:
   /**
    * @brief Custom log formatting.
-   *
    * @param rec The record view to get meta data from.
    * @param message The message to log.
    */
