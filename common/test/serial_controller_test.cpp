@@ -46,9 +46,6 @@ TEST(serial_controller_test, read_buffer_once) {
       .WillRepeatedly(
           ::testing::Invoke(::testing::Return<boost::optional<uint64_t>>({})));
 
-  sc.init();
-  sc.start();
-
   auto cb = [=](uint8_t rstate,
                 uint8_t rmotor,
                 int8_t raileron,
@@ -64,6 +61,10 @@ TEST(serial_controller_test, read_buffer_once) {
   };
 
   sc.register_cs_cb(cb);
+
+  sc.init();
+  sc.start();
+
 
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
   sc.terminate();
@@ -105,7 +106,6 @@ TEST(serial_controller_test, read_buffer_full_set) {
           ::testing::Invoke(::testing::Return<boost::optional<uint64_t>>({})));
 
   sc.init();
-  sc.start();
 
   auto cb = [=](uint8_t rstate,
                 uint8_t rmotor,
@@ -132,6 +132,7 @@ TEST(serial_controller_test, read_buffer_full_set) {
   sc.register_cs_cb(cb);
   sc.register_gyro_cb(gyro_cb);
 
+  sc.start();
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
   sc.terminate();
 }
