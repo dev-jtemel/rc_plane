@@ -98,9 +98,7 @@ void http_controller::start() {
   RCPLANE_ENTER(_tag);
 
   RCPLANE_LOG(info, _tag, IP << ":" << PORT);
-  _worker = boost::thread([&]() {
-    _svr->listen(IP, PORT);
-  });
+  _worker = boost::thread([&]() { _svr->listen(IP, PORT); });
 
   RCPLANE_LOG(info, _tag, "started");
   set_state(state::running);

@@ -41,6 +41,9 @@ void write_state() {
 void setup() {
   Serial.begin(115200);
 
+  Serial.flush();
+  Serial.println("to be flushed");
+  Serial.println("rcplane");
   while (Serial.available() == 0);
   Serial.read();
 
@@ -80,7 +83,7 @@ void setup() {
 }
 
 void loop() {
-  delay(200);
+  delay(50);
 /*
   for (auto ctr : controllers) {
     ctr->step();
@@ -89,8 +92,13 @@ void loop() {
   imu.step();
 */
 
+  write_state();
+  Serial.println(START);
+  Serial.println(START);
+  Serial.println(START);
+/*
   Serial.println(IMU_BLANK);
   Serial.println(IMU_BLANK);
   Serial.println(IMU_BLANK);
-  Serial.println(IMU_BLANK);
+*/
 }

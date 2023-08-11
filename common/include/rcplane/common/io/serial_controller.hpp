@@ -2,18 +2,16 @@
 #define __RCPLANE__COMMON__IO__SERIAL_CONTROLLER_HPP__
 
 #include <array>
+#include <boost/asio.hpp>
 #include <boost/optional.hpp>
 #include <boost/optional/optional_io.hpp>
 #include <fstream>
 #include <functional>
 #include <string>
-#include <termios.h>
 
 #include "rcplane/common/base_controller.hpp"
 #include "rcplane/common/io/journal.hpp"
 #include "rcplane/common/io/packet.hpp"
-
-#define _POSIX_SOURCE 1
 
 namespace rcplane {
 namespace common {
@@ -35,26 +33,19 @@ public:
 private:
   virtual void p_read_serial();
   virtual bool p_open_port();
+  virtual bool p_handshake_mcu();
   virtual boost::optional<uint64_t> p_read_line();
+  void p_flush();
   void p_read_log();
-
   void p_handle_buffer();
 
-  virtual bool p_handshake_mcu();
-
   uint8_t _line = 0;
-
-  const char *HELLO_RX = "1";
-
-  static const uint32_t MAX_LEN = 17U;
-  const std::string _tty = "/dev/ttyACM0";
-  int _fd;
-  int _res;
-  termios _otio;
-  termios _ntio;
-  char _buf[MAX_LEN];
+  const std::string TTY = "/dev/ttyACM0";
+  const std::string HELLO_TX = "1";
+  const std::string HELLO_RX = "rcplane\r";
   std::ofstream _blackbox;
 
+  boost::asio::streambuf _streambuffer;
   uint64_t _buffer;
   packet<uint32_t, uint32_t> _timestamp;
   packet<uint8_t, uint8_t> _state, _motor;
@@ -63,6 +54,9 @@ private:
 
   std::function<void(uint8_t, uint8_t, int8_t, int8_t, int8_t)> _cs_cb;
   std::function<void(float, float, float)> _gyro_cb;
+
+  boost::asio::io_service _io;
+  boost::asio::serial_port _serial;
 };
 
 }  // namespace io
