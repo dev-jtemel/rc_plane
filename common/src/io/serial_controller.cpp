@@ -1,8 +1,8 @@
 #include <bitset>
 #include <chrono>
 #include <iomanip>
-#include <sstream>
 #include <iostream>
+#include <sstream>
 #include <thread>
 #include <unistd.h>
 
@@ -15,7 +15,8 @@ namespace common {
 namespace io {
 
 serial_controller::serial_controller()
-  : ::rcplane::common::interface::base_controller("serial"), _io(), _serial(_io) {
+  : ::rcplane::common::interface::base_controller("serial"), _io(),
+    _serial(_io) {
   RCPLANE_ENTER();
 }
 

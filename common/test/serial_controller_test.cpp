@@ -65,7 +65,6 @@ TEST(serial_controller_test, read_buffer_once) {
   sc.init();
   sc.start();
 
-
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
   sc.terminate();
 }

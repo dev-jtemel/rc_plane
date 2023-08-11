@@ -24,12 +24,18 @@ public:
   /**
    * @brief Possible states.
    */
-  enum class state : uint8_t { uninitialized = 0, initialized = 1, running = 2, terminated = 3 };
+  enum class state : uint8_t {
+    uninitialized = 0,
+    initialized = 1,
+    running = 2,
+    terminated = 3
+  };
 
   /**
    * @param tag The logging tag to be prepend to internally produced log statements.
    */
-  explicit base_controller(std::string tag) : _tag(tag), _state(state::uninitialized) {}
+  explicit base_controller(std::string tag)
+    : _tag(tag), _state(state::uninitialized) {}
   virtual ~base_controller() {}
 
   /**
@@ -53,7 +59,7 @@ public:
   /**
    * @brief Terminate the controller.
    *
-   * Request to stop the execution of the controller. This may block until if \see _worker thread is
+   * Request to stop the execution of the controller. This may block until if the _worker thread is
    * executing and awaiting completion.
    *
    * @pre start() was called.
