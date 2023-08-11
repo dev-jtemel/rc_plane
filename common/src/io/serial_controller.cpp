@@ -74,7 +74,6 @@ boost::optional<uint64_t> serial_controller::p_read_line() {
   std::istream is(&_streambuffer);
   std::getline(is, res);
 
-  RCPLANE_LOG(info, _tag, res);
   _blackbox << res << std::endl;
 
   try {
