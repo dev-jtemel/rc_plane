@@ -12,18 +12,43 @@ namespace rcplane {
 namespace som {
 namespace position {
 
+/**
+ * @brief Read incoming gps data.
+ */
 class gps_controller : public ::rcplane::common::interface::base_controller {
 public:
   gps_controller();
   ~gps_controller();
 
+  /**
+   * @brief Connect to the gpsd service.
+   * @return Status of the initialization.
+   */
   bool init() override;
+
+  /**
+   * @brief Spawn a _worker thread and read gps data.
+   * @pre init()
+   */
   void start() override;
+
+  /**
+   * @brief Terminate the gps _worker thread.
+   * @pre start()
+   */
   void terminate() override;
 
+  /**
+   * @brief Register a callback to fire when new gps data is available.
+   * @param cb Callback to register.
+   */
   void register_cb(std::function<void(float, float, float, float)> cb);
 
 private:
+  /**
+   * @brief Read the first available gnss data.
+   * @warning Timesout if no data is read.
+   */
   void p_read_gps();
 
   std::string GPSD_PORT = "2947";
