@@ -3,14 +3,15 @@
 
 #include <algorithm>
 #include <boost/algorithm/string.hpp>
+#include <boost/noncopyable.hpp>
 #include <fstream>
 #include <sstream>
 #include <string>
 #include <vector>
 
-#include "rcplane/common/io/journal.hpp"
-
 #include "json/json.hpp"
+
+#include "rcplane/common/io/journal.hpp"
 
 namespace rcplane {
 namespace common {
@@ -24,15 +25,24 @@ namespace io {
  *
  * @warning This is a singleton class.
  */
-class config_manager {
+class config_manager : public ::boost::noncopyable {
 public:
+  /**
+   * @brief Retreive the instance or create one if required.
+   */
   static config_manager &instance() {
     static config_manager c;
     return c;
   }
 
+  /**
+   * @brief Get a value from the config manifest.
+   * @param path The path to the value via dot notation as an rvalue
+   * @throws nlohmann::json_cast_error if path is invalid or not of type T
+   * @returns Value at path in the manifest casted to type T
+   */
   template<typename T>
-  T get(std::string path) {
+  T get(const std::string &&path) {
     std::vector<std::string> split_paths;
     boost::split(split_paths, path, boost::is_any_of("."));
 
@@ -45,6 +55,13 @@ public:
   }
 
 private:
+  /**
+   * @breif Private constructor for singleton.
+   * 
+   * Set the severity level specified in the config manifest.
+   *
+   * @throws nlohmann::json::parse_error if manifest is invalid json.
+   */
   explicit config_manager() {
     read_config();
 
@@ -53,12 +70,19 @@ private:
     RCPLANE_LOG(trace, "config_manager", "\n" << _config.dump(2));
   }
 
+  /**
+   * @brief Read the config manifest to json.
+   */
   void read_config() {
     std::ifstream f("/home/jtemel/ws/rc_plane/config.json");
     _config = nlohmann::json::parse(f);
   }
 
-  void set_log_severity(std::string severity) {
+  /**
+   * @brief Set the severity as specified in the manifest.
+   * @param severity the severity in the manfiest as an rvalue.
+   */
+  void set_log_severity(const std::string &&severity) {
     if (severity == "trace") {
       RCPLANE_SEVERITY_UPDATE(trace);
     } else if (severity == "debug") {

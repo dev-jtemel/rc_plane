@@ -49,7 +49,7 @@ typedef boost::log::sinks::synchronous_sink<rcplane::common::io::journal_sink>
 static boost::shared_ptr<colored_sink> _journal_sink =
     boost::make_shared<colored_sink>();
 
-#define RCPLANE_LOG_INIT()                                                         \
+#define RCPLANE_LOG_INIT()                                                     \
   do {                                                                         \
     boost::log::add_common_attributes();                                       \
     boost::log::core::get()->add_sink(rcplane::common::io::_journal_sink);     \
