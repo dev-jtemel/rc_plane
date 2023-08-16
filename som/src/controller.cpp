@@ -1,10 +1,12 @@
 #include <bitset>
 #include <condition_variable>
 #include <csignal>
+#include <fstream>
 #include <memory>
 #include <mutex>
 #include <string>
 
+#include "rcplane/common/io/config_manager.hpp"
 #include "rcplane/common/io/journal.hpp"
 #include "rcplane/common/io/serial_controller.hpp"
 #include "rcplane/common/network/http_controller.hpp"
@@ -25,7 +27,7 @@ void termination_handler(int signum) {
 }
 
 int main(int argc, char *argv[]) {
-  RCPLANE_SEVERITY(trace);
+  RCPLANE_LOG_INIT();
   RCPLANE_LOG(info, TAG, "starting");
 
   signal(SIGINT, termination_handler);

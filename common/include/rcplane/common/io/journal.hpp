@@ -49,11 +49,15 @@ typedef boost::log::sinks::synchronous_sink<rcplane::common::io::journal_sink>
 static boost::shared_ptr<colored_sink> _journal_sink =
     boost::make_shared<colored_sink>();
 
-#define RCPLANE_SEVERITY(lvl)                                                  \
+#define RCPLANE_LOG_INIT()                                                         \
   do {                                                                         \
     boost::log::add_common_attributes();                                       \
     boost::log::core::get()->add_sink(rcplane::common::io::_journal_sink);     \
-                                                                               \
+    (void)rcplane::common::io::config_manager::instance();                     \
+  } while (false)
+
+#define RCPLANE_SEVERITY_UPDATE(lvl)                                           \
+  do {                                                                         \
     boost::log::core::get()->set_filter(boost::log::trivial::severity          \
                                         >= boost::log::trivial::lvl);          \
   } while (false)

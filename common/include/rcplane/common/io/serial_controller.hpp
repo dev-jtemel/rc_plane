@@ -114,14 +114,15 @@ private:
    */
   void p_handle_buffer();
 
-  uint8_t _line = 0;
-  const std::string TTY = "/dev/ttyACM0";
-  const std::string HELLO_TX = "1";
-  const std::string HELLO_RX = "rcplane\r";
+  std::string TTY{};
+  const std::string HELLO_TX{"1"};
+  const std::string HELLO_RX{"rcplane\r"};
   std::ofstream _blackbox;
 
+  uint8_t _line = 0;
   boost::asio::streambuf _streambuffer;
   uint64_t _buffer;
+
   packet<uint32_t, uint32_t> _timestamp;
   packet<uint8_t, uint8_t> _state, _motor;
   packet<uint8_t, int8_t> _aileron, _elevator, _rudder;

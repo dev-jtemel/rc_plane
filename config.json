@@ -1,0 +1,20 @@
+{
+  "common": {
+    "log": {
+      "level": "trace"
+    }
+  },
+  "mcu": {
+    "serial": {
+      "dev": "/dev/ttyACM0"
+    }
+  },
+ "som": {
+   "gps_controller": {
+     "gpsd": {
+       "port": "2947",
+       "delay": 500
+     }
+   }
+ }
+}

@@ -51,8 +51,8 @@ private:
    */
   void p_read_gps();
 
-  std::string GPSD_PORT = "2947";
-  size_t GPS_DELAY = 5000000;
+  std::string GPSD_PORT{};
+  size_t GPSD_DELAY{};
   std::string MODE_STR[MODE_STR_NUM] = {"n/a", "None", "2D", "3D"};
   std::vector<std::function<void(float, float, float, float)>> _cbs;
   struct gps_data_t _gps_data;

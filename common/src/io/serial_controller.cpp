@@ -6,6 +6,7 @@
 #include <thread>
 #include <unistd.h>
 
+#include "rcplane/common/io/config_manager.hpp"
 #include "rcplane/common/io/journal.hpp"
 #include "rcplane/common/io/packet.hpp"
 #include "rcplane/common/io/serial_controller.hpp"
@@ -18,6 +19,8 @@ serial_controller::serial_controller()
   : ::rcplane::common::interface::base_controller("serial"), _io(),
     _serial(_io) {
   RCPLANE_ENTER();
+
+  TTY = config_manager::instance().get<std::string>("mcu.serial.dev");
 }
 
 serial_controller::~serial_controller() { RCPLANE_ENTER(); }
