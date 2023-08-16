@@ -44,8 +44,8 @@ public:
   void terminate() override;
 
 private:
-  const std::string IP = "localhost";
-  const uint16_t PORT = 8080U;
+  std::string IP{};
+  uint16_t PORT{};
   const std::unique_ptr<httplib::Server> _svr =
       std::make_unique<httplib::Server>();
   CURL *_curl;

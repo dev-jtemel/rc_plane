@@ -20,7 +20,8 @@ serial_controller::serial_controller()
     _serial(_io) {
   RCPLANE_ENTER();
 
-  TTY = config_manager::instance().get<std::string>("mcu.serial.dev");
+  TTY = config_manager::instance().get<std::string>(
+      "common.io.serial_controller.dev");
 }
 
 serial_controller::~serial_controller() { RCPLANE_ENTER(); }

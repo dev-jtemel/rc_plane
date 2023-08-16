@@ -1,20 +1,27 @@
 {
   "common": {
-    "log": {
-      "level": "trace"
+    "io": {
+      "journal": {
+        "severity": "trace"
+      },
+      "serial_controller": {
+        "dev": "/dev/ttyACM0",
+        "baudrate": 115200
+      }
+    },
+    "network": {
+      "http_controller": {
+        "ip": "localhost",
+        "port": 8080
+      }
     }
   },
-  "mcu": {
-    "serial": {
-      "dev": "/dev/ttyACM0"
+  "som": {
+    "gps_controller": {
+      "gpsd": {
+        "port": "2947",
+        "delay": 5000
+      }
     }
-  },
- "som": {
-   "gps_controller": {
-     "gpsd": {
-       "port": "2947",
-       "delay": 500
-     }
-   }
- }
+  }
 }

@@ -65,7 +65,8 @@ private:
   explicit config_manager() {
     read_config();
 
-    set_log_severity(_config["common"]["log"]["level"].get<std::string>());
+    set_log_severity(
+        _config["common"]["io"]["journal"]["severity"].get<std::string>());
   }
 
   /**
