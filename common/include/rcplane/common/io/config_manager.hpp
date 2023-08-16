@@ -66,8 +66,6 @@ private:
     read_config();
 
     set_log_severity(_config["common"]["log"]["level"].get<std::string>());
-
-    RCPLANE_LOG(trace, "config_manager", "\n" << _config.dump(2));
   }
 
   /**

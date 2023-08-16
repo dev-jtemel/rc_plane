@@ -15,6 +15,9 @@ namespace rcplane {
 namespace common {
 namespace io {
 
+// Forward declaration
+class config_manager;
+
 /**
 * @brief Journaling sink for boost::log.
 */

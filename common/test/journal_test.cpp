@@ -4,15 +4,16 @@
 using namespace rcplane::common::io;
 
 TEST(journal_test, severity_change) {
-  RCPLANE_SEVERITY(trace);
   RCPLANE_LOG(trace, "journal_test", "message appears");
 
-  RCPLANE_SEVERITY(info);
+  RCPLANE_SEVERITY_UPDATE(info);
   RCPLANE_LOG(trace, "journal_test", "message does NOT appear");
+
+  RCPLANE_SEVERITY_UPDATE(trace);
 }
 
 TEST(journal_test, all_severities) {
-  RCPLANE_SEVERITY(trace);
+  RCPLANE_SEVERITY_UPDATE(trace);
   RCPLANE_LOG(trace, "journal_test", "trace");
   RCPLANE_LOG(debug, "journal_test", "debug");
   RCPLANE_LOG(info, "journal_test", "info");
