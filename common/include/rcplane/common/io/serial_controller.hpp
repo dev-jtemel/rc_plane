@@ -115,6 +115,7 @@ private:
   void p_handle_buffer();
 
   std::string TTY{};
+  uint32_t BAUDRATE{};
   const std::string HELLO_TX{"1"};
   const std::string HELLO_RX{"rcplane\r"};
   std::ofstream _blackbox;

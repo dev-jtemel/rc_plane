@@ -67,13 +67,16 @@ private:
 
     set_log_severity(
         _config["common"]["io"]["journal"]["severity"].get<std::string>());
+
+    RCPLANE_LOG(trace, "config_manager", "\n" << _config.dump(2));
   }
 
   /**
    * @brief Read the config manifest to json.
+   * @warning Looks at parent path which must be top of the repo!
    */
   void read_config() {
-    std::ifstream f("/home/jtemel/ws/rc_plane/config.json");
+    std::ifstream f("config.json");
     _config = nlohmann::json::parse(f);
   }
 
