@@ -1,4 +1,5 @@
 #include "rcplane/som/position/gps_controller.hpp"
+#include "rcplane/common/io/config_manager.hpp"
 #include "rcplane/common/io/journal.hpp"
 #include <cmath>
 #include <sstream>
@@ -10,6 +11,11 @@ namespace position {
 gps_controller::gps_controller()
   : ::rcplane::common::interface::base_controller("gps-controller") {
   RCPLANE_ENTER(_tag);
+
+  GPSD_PORT = common::io::config_manager::instance().get<std::string>(
+      "som.gps_controller.gpsd.port");
+  GPSD_DELAY = common::io::config_manager::instance().get<size_t>(
+      "som.gps_controller.gpsd.delay");
 }
 
 gps_controller::~gps_controller() { RCPLANE_ENTER(_tag); }
@@ -59,7 +65,7 @@ void gps_controller::register_cb(
 void gps_controller::p_read_gps() {
   RCPLANE_ENTER(_tag);
 
-  while (_running && gps_waiting(&_gps_data, GPS_DELAY)) {
+  while (_running && gps_waiting(&_gps_data, GPSD_DELAY)) {
     if (0 > gps_read(&_gps_data, NULL, 0)) {
       RCPLANE_LOG(error, _tag, "invalid read");
       break;

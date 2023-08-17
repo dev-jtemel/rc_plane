@@ -6,6 +6,7 @@
 #include <thread>
 #include <unistd.h>
 
+#include "rcplane/common/io/config_manager.hpp"
 #include "rcplane/common/io/journal.hpp"
 #include "rcplane/common/io/packet.hpp"
 #include "rcplane/common/io/serial_controller.hpp"
@@ -18,6 +19,11 @@ serial_controller::serial_controller()
   : ::rcplane::common::interface::base_controller("serial"), _io(),
     _serial(_io) {
   RCPLANE_ENTER();
+
+  TTY = config_manager::instance().get<std::string>(
+      "common.io.serial_controller.dev");
+  BAUDRATE = config_manager::instance().get<uint32_t>(
+      "common.io.serial_controller.baudrate");
 }
 
 serial_controller::~serial_controller() { RCPLANE_ENTER(); }
@@ -163,7 +169,7 @@ bool serial_controller::p_open_port() {
 
   try {
     _serial.open(TTY);
-    _serial.set_option(boost::asio::serial_port_base::baud_rate(115200U));
+    _serial.set_option(boost::asio::serial_port_base::baud_rate(BAUDRATE));
 
     ::tcflush(_serial.lowest_layer().native_handle(), TCIFLUSH);
     p_flush();

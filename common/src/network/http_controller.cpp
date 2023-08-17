@@ -1,8 +1,11 @@
-#include "rcplane/common/network/http_controller.hpp"
-#include "rcplane/common/io/journal.hpp"
 #include <csignal>
 #include <iomanip>
 #include <sstream>
+
+#include "rcplane/common/io/config_manager.hpp"
+#include "rcplane/common/io/journal.hpp"
+
+#include "rcplane/common/network/http_controller.hpp"
 
 namespace rcplane {
 namespace common {
@@ -11,6 +14,11 @@ namespace network {
 http_controller::http_controller(std::function<void(int)> termination_handler)
   : interface::network_interface(termination_handler) {
   RCPLANE_ENTER(_tag);
+
+  IP = common::io::config_manager::instance().get<std::string>(
+      "common.network.http_controller.ip");
+  PORT = common::io::config_manager::instance().get<uint16_t>(
+      "common.network.http_controller.port");
 }
 
 http_controller::~http_controller() { RCPLANE_ENTER(_tag); }
