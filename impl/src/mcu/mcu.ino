@@ -62,17 +62,11 @@ void loop() {
   /**
    * Populate the control surface packet and wrtie to the som.
    */
-  //cs_packet.timestamp = sizeof(rcplane::common::control_surface_packet);
-  ++cs_packet.motor;
-  ++cs_packet.aileron;
-  ++cs_packet.elevator;
-  ++cs_packet.rudder;
-  /*
+  cs_packet.timestamp = millis();
   cs_packet.motor = toRange(pulseIn(MOTOR_IN, HIGH), 0, 255);
   cs_packet.aileron = static_cast<uint8_t>(toRange(pulseIn(AILERON_IN, HIGH), -30, 30));
   cs_packet.elevator = static_cast<uint8_t>(toRange(pulseIn(ELEVATOR_IN, HIGH), -50, 50));
   cs_packet.rudder = static_cast<uint8_t>(toRange(pulseIn(RUDDER_IN, HIGH), -30, 30));
-  */
   rcplane::common::write_packet<rcplane::common::control_surface_packet>(cs_packet);
 
   cs_packet.timestamp = rcplane::common::read_packet<rcplane::common::control_surface_packet>(cs_packet);

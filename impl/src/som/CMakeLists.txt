@@ -4,6 +4,8 @@ add_executable(som_controller
 
 target_link_libraries(som_controller
   PUBLIC
+    rcplane_io
+  PRIVATE
     boost_log
     boost_log_setup
     boost_system
