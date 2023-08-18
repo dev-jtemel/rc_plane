@@ -4,12 +4,12 @@ project(rc-plane)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS "-O3 -g -Wall")
 
+ADD_DEFINITIONS(-DBOOST_LOG_DYN_LINK)
 find_package(Threads REQUIRED)
 find_package(Boost 1.58.0 REQUIRED)
 
 include_directories(
-  common/include
-  som/include
+  impl/include
   third_party
 )
 
@@ -21,5 +21,4 @@ if (BUILD_TESTS)
   SET(CMAKE_C_FLAGS "-g -O0 --coverage -fprofile-arcs -ftest-coverage")
 endif()
 
-add_subdirectory(common)
-add_subdirectory(som)
+add_subdirectory(impl)

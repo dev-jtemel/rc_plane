@@ -6,7 +6,8 @@
       },
       "serial_controller": {
         "dev": "/dev/ttyACM0",
-        "baudrate": 115200
+        "baudrate": 115200,
+        "blackbox": "bb.log"
       }
     },
     "network": {
