@@ -39,9 +39,7 @@ public:
 
     std::cout << "["
               << boost::log::extract<boost::posix_time::ptime>("TimeStamp", rec)
-              << "] ["
-              <<  boost::this_thread::get_id()
-              << "] ";
+              << "] [" << boost::this_thread::get_id() << "] ";
     std::cout << message << "\x1b[0m" << std::endl;
   }
 };

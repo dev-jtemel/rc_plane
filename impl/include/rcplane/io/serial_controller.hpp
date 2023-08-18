@@ -4,14 +4,15 @@
 #include <boost/asio.hpp>
 #include <boost/optional.hpp>
 #include <boost/optional/optional_io.hpp>
-#include <boost/thread.hpp>
 #include <boost/signals2.hpp>
+#include <boost/thread.hpp>
+#include <chrono>
 #include <fstream>
 #include <string>
 #include <thread>
-#include <chrono>
 
 #include "rcplane/base_controller.hpp"
+#include "rcplane/common/packet.hpp"
 #include "rcplane/io/journal.hpp"
 
 namespace rcplane {
@@ -31,7 +32,7 @@ public:
    * @param io The io_context of the main application.
    */
   explicit serial_controller(boost::asio::io_context &io)
-  : interface::base_controller("serial-controller"), _io(io), _serial(_io) {
+    : interface::base_controller("serial-controller"), _io(io), _serial(_io) {
     RCPLANE_ENTER();
 
     TTY = config_manager::instance().get<std::string>(
@@ -40,9 +41,7 @@ public:
         "common.io.serial_controller.baudrate");
   }
 
-  virtual ~serial_controller() {
-    RCPLANE_ENTER();
-  }
+  virtual ~serial_controller() { RCPLANE_ENTER(); }
 
   /**
    * @brief Connect to the serial port.
@@ -91,19 +90,14 @@ public:
     _worker.join();
   }
 
-  boost::signals2::signal<void (uint32_t)> &signals() {
-    return _timestamp;
-  }
+  boost::signals2::signal<void(uint32_t)> &signals() { return _timestamp; }
 
   void write() {
-    boost::asio::write(_serial,
-                      boost::asio::buffer(&done, sizeof(done)));
+    boost::asio::write(_serial, boost::asio::buffer(&done, sizeof(done)));
   }
 
 private:
-  void timestamp(uint32_t timestamp) {
-    _timestamp(timestamp);
-  }
+  void timestamp(uint32_t timestamp) { _timestamp(timestamp); }
 
   /**
    * @brief Continously read the serial port until terminate() is called.
@@ -114,12 +108,15 @@ private:
     RCPLANE_ENTER();
 
     while (_running) {
+      RCPLANE_LOG(warning, _tag, _running);
       static int l = 0;
       auto read_buffer = read_line();
       if (!read_buffer) { continue; }
       _buffer = read_buffer.get();
-      if ( l % 4 == 0)
-        _io.post(boost::bind(&rcplane::io::serial_controller::timestamp, this, static_cast<uint32_t>(_buffer >> 40)));
+      if (l % 4 == 0)
+        _io.post(boost::bind(&rcplane::io::serial_controller::timestamp,
+                             this,
+                             static_cast<uint32_t>(_buffer >> 40)));
       ++l;
     }
   }
@@ -157,8 +154,7 @@ private:
    */
   virtual bool handshake_mcu() {
     RCPLANE_ENTER();
-    boost::asio::write(_serial,
-                       boost::asio::buffer(kHELLO_TX.c_str(), kHELLO_TX.size()));
+    boost::asio::write(_serial, boost::asio::buffer("1", 1));
     return true;
   }
 
@@ -171,21 +167,24 @@ private:
   virtual boost::optional<uint64_t> read_line() {
     RCPLANE_ENTER();
 
-    boost::asio::read_until(_serial, _streambuffer, '\n');
+    boost::asio::read(_serial,
+                      _streambuffer,
+                      boost::asio::transfer_exactly(sizeof(common::control_surface_packet)));
 
-    std::string res{};
-    std::istream is(&_streambuffer);
-    std::getline(is, res);
+    _cs_packet = const_cast<common::control_surface_packet *>(
+        boost::asio::buffer_cast<const common::control_surface_packet *>(_streambuffer.data()));
 
-    _blackbox << res << std::endl;
-    RCPLANE_LOG(info, _tag, res);
-
-    try {
-      return {std::stoul(res, nullptr, 16)};
-    } catch (...) { 
-      RCPLANE_LOG(error, _tag, res);
-      return {}; 
-      }
+    RCPLANE_LOG(error,
+                "",
+                "[" << _cs_packet->timestamp << "]"
+                    << " state = " << std::bitset<8>(_cs_packet->state)
+                    << " | motor = " << +_cs_packet->motor
+                    << " | aileron = " << +_cs_packet->aileron
+                    << " | elevator = " << +_cs_packet->elevator
+                    << " | rudder = " << +_cs_packet->rudder);
+    _streambuffer.consume(sizeof(common::control_surface_packet));
+    //_blackbox << res.substr(0) << std::endl;
+    return {};
   }
 
   /**
@@ -193,27 +192,30 @@ private:
    */
   void flush() {
     RCPLANE_ENTER();
-
     std::string res{};
-    while (res != kHELLO_RX) {
+    while (res != HELLO_RX) {
       boost::asio::read_until(_serial, _streambuffer, '\n');
       std::istream is(&_streambuffer);
       std::getline(is, res);
     }
+    _streambuffer.consume(1000);
     RCPLANE_LOG(info, _tag, "flushed");
   }
 
   std::string TTY{};
   uint32_t BAUDRATE{};
-  const std::string kHELLO_RX{"rcplane\r"};
-  const std::string kHELLO_TX{"rcplane\r\n"};
+
+  const std::string HELLO_RX{"rcplane\r"};
+  const uint8_t kHANDSHAKE_TX{0x80};
   const uint32_t done{0xFFFFFFFF};
   std::atomic<bool> _running{false};
   std::ofstream _blackbox;
 
   uint8_t _line = 0;
   boost::asio::streambuf _streambuffer;
+  uint8_t buf[10];
   uint64_t _buffer;
+  common::control_surface_packet *_cs_packet;
 
   boost::thread _worker;
   boost::asio::io_service &_io;

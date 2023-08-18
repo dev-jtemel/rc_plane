@@ -137,9 +137,8 @@ do
     elif [ "$opt" = "Run-Clang-Format" ];
     then
       [ $MODE == "PC" ] && {
-        find "$ROOT_DIR/common" -iname "*.hpp" -exec clang-format --verbose -style=file -i {} +
-        find "$ROOT_DIR/som" -iname "*.hpp" -exec clang-format --verbose -style=file -i {} +
-        find "$ROOT_DIR" -iname "*.cpp" -exec clang-format --verbose -style=file -i {} +
+        find "$ROOT_DIR/impl" -iname "*.hpp" -exec clang-format --verbose -style=file -i {} +
+        find "$ROOT_DIR/impl" -iname "*.cpp" -exec clang-format --verbose -style=file -i {} +
         break
       }
       echo "Nothing to do on $MODE..."
