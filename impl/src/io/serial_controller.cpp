@@ -123,7 +123,7 @@ void serial_controller::write_packet() {
                   << " | rudder = " << +_cs_packet->rudder);
   boost::asio::write(
       _serial,
-      boost::asio::buffer((uint8_t *)_cs_packet,
+      boost::asio::buffer(reinterpret_cast<uint8_t *>(_cs_packet),
                           sizeof(common::control_surface_packet)));
 }
 
