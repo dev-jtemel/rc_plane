@@ -9,12 +9,10 @@
 #include <functional>
 #include <string>
 
-#include "rcplane/common/base_controller.hpp"
-#include "rcplane/common/io/journal.hpp"
-#include "rcplane/common/io/packet.hpp"
+#include "rcplane/base_controller.hpp"
+#include "rcplane/io/journal.hpp"
 
 namespace rcplane {
-namespace common {
 namespace io {
 
 /**
@@ -24,9 +22,13 @@ namespace io {
  * predefined format, callbacks can be registered to be notified of specific data
  * types when received.
  */
-class serial_controller : public ::rcplane::common::interface::base_controller {
+class serial_controller : public ::rcplane::interface::base_controller {
 public:
-  explicit serial_controller();
+  /**
+   * @brief Construct a serial controller and hold the io_service reference.=
+   * @param io The io_context of the main application.
+   */
+  explicit serial_controller(boost::asio::io_service &io);
   virtual ~serial_controller();
 
   /**
@@ -38,7 +40,9 @@ public:
    * @warning Blocks until p_handshake_mcu() and p_flush() complete.
    * @return Status of the initialization.
    */
-  bool init() override;
+  bool init() {
+    return true;
+  }
 
   /**
    * @brief Read the serial port.
@@ -47,27 +51,18 @@ public:
    *
    * @pre init() succeeded.
    */
-  void start() override;
+  void start() {
+    
+  }
 
   /**
    * @brief Close the serial port connection.
    * @warning Blocks until p_read_line() finishes.
    * @pre start() 
    */
-  void terminate() override;
-
-  /**
-   * @brief Register a callback to be fired when a control surface statement is read.
-   * @param cb The callback to register.
-   */
-  void register_cs_cb(
-      std::function<void(uint8_t, uint8_t, int8_t, int8_t, int8_t)> cb);
-
-  /**
-   * @brief Register a callback to be fired when a gyro scope statement is read.
-   * @param cb The callback to register.
-   */
-  void register_gyro_cb(std::function<void(float, float, float)> cb);
+  void terminate() {
+    
+  }
 
 private:
   /**
@@ -75,7 +70,9 @@ private:
    *
    * Handle line switching and forwarding the correct data to the correct callbacks.
    */
-  virtual void p_read_serial();
+  virtual void read_serial() {
+
+  }
 
   /**
    * @brief Open a connection to the serial port and flush the buffers.
@@ -84,7 +81,9 @@ private:
    *
    * @returns Status of openning the serial port.
    */
-  virtual bool p_open_port();
+  virtual bool open_port() {
+
+  }
 
   /**
    * @brief Handshake with MCU to coordinate serial io.
@@ -94,7 +93,9 @@ private:
    * @see HELLO_TX.
    * @throws boost::system::system_error on write failure.
    */
-  virtual bool p_handshake_mcu();
+  virtual bool handshake_mcu() {
+    
+  }
 
   /**
    * @brief Read a line from the serial port.
@@ -102,42 +103,33 @@ private:
    * @returns uint64_t containing the binary value of the data read or boost::optional::empty
    *          if conversion to uint64_t failed.
    */
-  virtual boost::optional<uint64_t> p_read_line();
+  virtual boost::optional<uint64_t> read_line() {
+    
+  }
 
   /**
    * @brief Flush the serial buffers.
    */
-  void p_flush();
+  void flush();
 
   /**
    * @brief Handle coversion of _buffer into the designated packets.
    */
-  void p_handle_buffer();
+  void handle_buffer();
 
   std::string TTY{};
   uint32_t BAUDRATE{};
-  const std::string HELLO_TX{"1"};
-  const std::string HELLO_RX{"rcplane\r"};
   std::ofstream _blackbox;
 
   uint8_t _line = 0;
   boost::asio::streambuf _streambuffer;
   uint64_t _buffer;
 
-  packet<uint32_t, uint32_t> _timestamp;
-  packet<uint8_t, uint8_t> _state, _motor;
-  packet<uint8_t, int8_t> _aileron, _elevator, _rudder;
-  packet<uint32_t, float> _pitch, _roll, _yaw;
-
-  std::function<void(uint8_t, uint8_t, int8_t, int8_t, int8_t)> _cs_cb;
-  std::function<void(float, float, float)> _gyro_cb;
-
   boost::asio::io_service _io;
   boost::asio::serial_port _serial;
 };
 
 }  // namespace io
-}  // namespace common
 }  // namespace rcplane
 
 #endif  //__RCPLANE__COMMON__IO__SERIAL_CONTROLLER_HPP__

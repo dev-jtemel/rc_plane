@@ -2,15 +2,14 @@
  * @file base_controller.hpp
  * @author Jonathon Temelkovski <dev.jtemel@gmail.com>
  */
-#ifndef __RCPLANE__COMMON__BASE_CONTROLLER_HPP__
-#define __RCPLANE__COMMON__BASE_CONTROLLER_HPP__
+#ifndef __RCPLANE__BASE_CONTROLLER_HPP__
+#define __RCPLANE__BASE_CONTROLLER_HPP__
 
 #include <boost/atomic.hpp>
 #include <boost/thread.hpp>
 #include <string>
 
 namespace rcplane {
-namespace common {
 namespace interface {
 
 /**
@@ -84,7 +83,6 @@ protected:
 };
 
 }  // namespace interface
-}  // namespace common
 }  // namespace rcplane
 
-#endif  //__RCPLANE__COMMON__BASE_CONTROLLER_HPP__
+#endif  //__RCPLANE__BASE_CONTROLLER_HPP__
