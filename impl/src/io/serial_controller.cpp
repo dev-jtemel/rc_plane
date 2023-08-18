@@ -28,7 +28,9 @@ bool serial_controller::init() {
 
   if (!handshake_mcu()) { return false; }
 
-  _blackbox = std::ofstream(cBLACKBOX);
+  // TODO: Enable when BOOST_SERIALIZATION is added.
+  //_blackbox = std::ofstream(cBLACKBOX);
+
   RCPLANE_LOG(info, _tag, "initialized");
   return true;
 }
