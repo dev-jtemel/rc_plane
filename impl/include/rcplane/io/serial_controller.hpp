@@ -93,7 +93,21 @@ public:
   boost::signals2::signal<void(uint32_t)> &signals() { return _timestamp; }
 
   void write() {
-    boost::asio::write(_serial, boost::asio::buffer(&done, sizeof(done)));
+    /*
+    ++_cs_packet->motor;
+    ++_cs_packet->aileron;
+    ++_cs_packet->elevator;
+    ++_cs_packet->rudder;
+    */
+    RCPLANE_LOG(warning,
+                "",
+                "[" << sizeof(common::control_surface_packet) << "]"
+                    << " state = " << std::bitset<8>(_cs_packet->state)
+                    << " | motor = " << +_cs_packet->motor
+                    << " | aileron = " << +_cs_packet->aileron
+                    << " | elevator = " << +_cs_packet->elevator
+                    << " | rudder = " << +_cs_packet->rudder);
+    boost::asio::write(_serial, boost::asio::buffer((uint8_t *)_cs_packet, sizeof(common::control_surface_packet)));
   }
 
 private:
@@ -108,16 +122,9 @@ private:
     RCPLANE_ENTER();
 
     while (_running) {
-      RCPLANE_LOG(warning, _tag, _running);
-      static int l = 0;
-      auto read_buffer = read_line();
-      if (!read_buffer) { continue; }
-      _buffer = read_buffer.get();
-      if (l % 4 == 0)
-        _io.post(boost::bind(&rcplane::io::serial_controller::timestamp,
-                             this,
-                             static_cast<uint32_t>(_buffer >> 40)));
-      ++l;
+      (void)read_line();
+      write();
+    _streambuffer.consume(sizeof(common::control_surface_packet));
     }
   }
 
@@ -154,7 +161,7 @@ private:
    */
   virtual bool handshake_mcu() {
     RCPLANE_ENTER();
-    boost::asio::write(_serial, boost::asio::buffer("1", 1));
+    boost::asio::write(_serial, boost::asio::buffer(&kHANDSHAKE_TX, sizeof(kHANDSHAKE_TX)));
     return true;
   }
 
@@ -167,12 +174,14 @@ private:
   virtual boost::optional<uint64_t> read_line() {
     RCPLANE_ENTER();
 
-    boost::asio::read(_serial,
-                      _streambuffer,
-                      boost::asio::transfer_exactly(sizeof(common::control_surface_packet)));
+    boost::asio::read(
+        _serial,
+        _streambuffer,
+        boost::asio::transfer_exactly(sizeof(common::control_surface_packet)));
 
     _cs_packet = const_cast<common::control_surface_packet *>(
-        boost::asio::buffer_cast<const common::control_surface_packet *>(_streambuffer.data()));
+        boost::asio::buffer_cast<const common::control_surface_packet *>(
+            _streambuffer.data()));
 
     RCPLANE_LOG(error,
                 "",
@@ -182,7 +191,6 @@ private:
                     << " | aileron = " << +_cs_packet->aileron
                     << " | elevator = " << +_cs_packet->elevator
                     << " | rudder = " << +_cs_packet->rudder);
-    _streambuffer.consume(sizeof(common::control_surface_packet));
     //_blackbox << res.substr(0) << std::endl;
     return {};
   }

@@ -1,5 +1,4 @@
 #include <Arduino.h>
-#include <assert.h>
 #include <packet.hpp>
 
 const uint8_t MOTOR_IN = 5U;
@@ -25,30 +24,56 @@ rcplane::common::control_surface_packet cs_packet;
 void setup() {
   Serial.begin(115200);
 
+  /**
+   * Flush the serial buffer and await for a byte to be transmitted before
+   * we continue. This is to avoid the som incorrectly parsing old data on the serial 
+   * buffer and breaking preconditions.
+   */
   Serial.flush();
   Serial.println("to be flushed");
   Serial.println("rcplane");
   while (Serial.available() == 0);
   Serial.read();
+  Serial.flush();
 
+  /**
+   * Setup required pins.
+   */
   pinMode(MOTOR_IN, INPUT);
   pinMode(AILERON_IN, INPUT);
   pinMode(ELEVATOR_IN, INPUT);
   pinMode(RUDDER_IN, INPUT);
 
+  /**
+   * TODO: Actually run tests. 
+   */
   for (int i = 0; i < 4; ++i) {
     STATE |= TEST_FLAGS[i];
   }
   STATE |= FLIGHT_MODE;
   cs_packet.state = STATE;
+  cs_packet.motor = 0;
+  cs_packet.aileron = 0;
+  cs_packet.elevator = 0;
+  cs_packet.rudder = 0;
 }
 
 void loop() {
-  cs_packet.timestamp = millis();
+  /**
+   * Populate the control surface packet and wrtie to the som.
+   */
+  //cs_packet.timestamp = sizeof(rcplane::common::control_surface_packet);
+  ++cs_packet.motor;
+  ++cs_packet.aileron;
+  ++cs_packet.elevator;
+  ++cs_packet.rudder;
+  /*
   cs_packet.motor = toRange(pulseIn(MOTOR_IN, HIGH), 0, 255);
   cs_packet.aileron = static_cast<uint8_t>(toRange(pulseIn(AILERON_IN, HIGH), -30, 30));
   cs_packet.elevator = static_cast<uint8_t>(toRange(pulseIn(ELEVATOR_IN, HIGH), -50, 50));
   cs_packet.rudder = static_cast<uint8_t>(toRange(pulseIn(RUDDER_IN, HIGH), -30, 30));
-  
+  */
   rcplane::common::write_packet<rcplane::common::control_surface_packet>(cs_packet);
+
+  cs_packet.timestamp = rcplane::common::read_packet<rcplane::common::control_surface_packet>(cs_packet);
 }
