@@ -90,7 +90,7 @@ void loop() {
 
   rcplane::common::write_packet<rcplane::common::orientation_packet>(ori_packet);
 
-  //cs_packet.timestamp = rcplane::common::read_packet<rcplane::common::control_surface_packet>(cs_packet);
+  cs_packet.timestamp = rcplane::common::read_packet<rcplane::common::control_surface_packet>(cs_packet);
 
   // Simulate writing to servos
   analogWrite(kELEVATOR_OUT, cs_packet.elevator + 115);
