@@ -6,7 +6,7 @@
 #include "rcplane/base_controller.hpp"
 #include "rcplane/common/packet.hpp"
 #include "rcplane/io/journal.hpp"
-#include "rcplane/hw/elevator_controller.hpp"
+#include "rcplane/io/config_manager.hpp"
 
 namespace rcplane {
 namespace hw {
@@ -17,6 +17,22 @@ public:
   explicit control_surface_manager()
     : interface::base_controller("cs-manager") {
     RCPLANE_ENTER();
+
+    cAILERON_MAX_POS = io::config_manager::instance().get<int8_t>(
+        "rcplane.hw.aileron.max_pos");
+    cAILERON_MAX_NEG = io::config_manager::instance().get<int8_t>(
+                   "rcplane.hw.aileron.max_neg")
+        * -1;
+    cELEVATOR_MAX_POS = io::config_manager::instance().get<int8_t>(
+        "rcplane.hw.elevator.max_pos");
+    cELEVATOR_MAX_NEG = io::config_manager::instance().get<int8_t>(
+                   "rcplane.hw.elevator.max_neg")
+        * -1;
+    cRUDDER_MAX_POS = io::config_manager::instance().get<int8_t>(
+        "rcplane.hw.rudder.max_pos");
+    cRUDDER_MAX_NEG = io::config_manager::instance().get<int8_t>(
+                   "rcplane.hw.rudder.max_neg")
+        * -1;
   }
   ~control_surface_manager() { RCPLANE_ENTER(); }
 
@@ -31,15 +47,61 @@ public:
 
   void on(common::control_surface_packet *_cs_packet) {
     RCPLANE_ENTER();
-    
-    _aileron_controller.on(_cs_packet->aileron);
-    _elevator_controller.on(_cs_packet->elevator);
-    _rudder_controller.on(_cs_packet->rudder);
+
+    aileron_limiter(_cs_packet->aileron);
+    elevator_limiter(_cs_packet->elevator);
+    rudder_limiter(_cs_packet->rudder);
   }
 
-  elevator_controller _aileron_controller;
-  elevator_controller _elevator_controller;
-  elevator_controller _rudder_controller;
+private:
+  void aileron_limiter(int8_t &aileron) {
+    if (aileron >= cAILERON_MAX_POS) {
+      RCPLANE_LOG(warning,
+                  _tag,
+                  "aileron :: max pos hit :: " << +aileron << " -> " << +cAILERON_MAX_POS);
+      aileron = cAILERON_MAX_POS;
+    } else if (aileron <= cAILERON_MAX_NEG) {
+      RCPLANE_LOG(warning,
+                  _tag,
+                  "aileron :: max neg hit :: " << +aileron << " -> " << +cAILERON_MAX_NEG);
+      aileron = cAILERON_MAX_NEG;
+    }
+  }
+
+  void elevator_limiter(int8_t &elevator) {
+    if (elevator >= cELEVATOR_MAX_POS) {
+      RCPLANE_LOG(warning,
+                  _tag,
+                  "elevator :: max pos hit :: " << +elevator << " -> " << +cELEVATOR_MAX_POS);
+      elevator = cELEVATOR_MAX_POS;
+    } else if (elevator <= cELEVATOR_MAX_NEG) {
+      RCPLANE_LOG(warning,
+                  _tag,
+                  "elevator :: max neg hit :: " << +elevator << " -> " << +cELEVATOR_MAX_NEG);
+      elevator = cELEVATOR_MAX_NEG;
+    }
+  }
+
+  void rudder_limiter(int8_t &rudder) {
+    if (rudder >= cRUDDER_MAX_POS) {
+      RCPLANE_LOG(warning,
+                  _tag,
+                  "rudder :: max pos hit :: " << +rudder << " -> " << +cRUDDER_MAX_POS);
+      rudder = cRUDDER_MAX_POS;
+    } else if (rudder <= cRUDDER_MAX_NEG) {
+      RCPLANE_LOG(warning,
+                  _tag,
+                  "rudder :: max neg hit :: " << +rudder << " -> " << +cRUDDER_MAX_NEG);
+      rudder = cRUDDER_MAX_NEG;
+    }
+  }
+
+  int8_t cAILERON_MAX_POS{};
+  int8_t cAILERON_MAX_NEG{};
+  int8_t cELEVATOR_MAX_POS{};
+  int8_t cELEVATOR_MAX_NEG{};
+  int8_t cRUDDER_MAX_POS{};
+  int8_t cRUDDER_MAX_NEG{};
 };
 
 }  // namespace hw

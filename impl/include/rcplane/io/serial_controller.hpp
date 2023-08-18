@@ -97,7 +97,7 @@ private:
   /**
    * @brief Read one packet from the serial bus.
    */
-  void read_packet();
+  void read_packets();
 
   /**
    * @brief Write one packet from the serial bus.
@@ -124,6 +124,7 @@ private:
 
   boost::asio::streambuf _streambuffer;
   common::control_surface_packet *_cs_packet;
+  common::orientation_packet *_ori_packet;
 
   boost::thread _worker;
   boost::asio::io_service &_io;
