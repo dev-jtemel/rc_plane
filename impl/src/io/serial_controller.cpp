@@ -37,17 +37,19 @@ bool serial_controller::init() {
 
 void serial_controller::start() {
   RCPLANE_ENTER();
+
   _running = true;
   _worker = boost::thread(&serial_controller::read_write_serial, this);
+
   RCPLANE_LOG(info, _tag, "started");
 }
 
 void serial_controller::terminate() {
   RCPLANE_ENTER();
+
   _running = false;
   _worker.join();
 }
-
 
 void serial_controller::read_write_serial() {
   RCPLANE_ENTER();
@@ -77,6 +79,7 @@ bool serial_controller::open_port() {
 
 bool serial_controller::handshake_mcu() {
   RCPLANE_ENTER();
+
   boost::asio::write(_serial,
                      boost::asio::buffer(&kHELLO_TX, sizeof(kHELLO_TX)));
   return true;
@@ -108,6 +111,8 @@ void serial_controller::read_packet() {
 }
 
 void serial_controller::write_packet() {
+  RCPLANE_ENTER();
+
   RCPLANE_LOG(debug,
               _tag,
               "[" << _cs_packet->timestamp << "]"
@@ -124,6 +129,7 @@ void serial_controller::write_packet() {
 
 void serial_controller::flush() {
   RCPLANE_ENTER();
+
   std::string res{};
   while (res != kHELLO_RX) {
     boost::asio::read_until(_serial, _streambuffer, '\n');
