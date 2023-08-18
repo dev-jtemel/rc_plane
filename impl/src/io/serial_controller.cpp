@@ -1,6 +1,8 @@
 #include "rcplane/io/serial_controller.hpp"
 #include "rcplane/io/config_manager.hpp"
 #include "rcplane/io/journal.hpp"
+#include <thread> //rm
+#include <chrono> //rm
 
 namespace rcplane {
 namespace io {
@@ -51,11 +53,18 @@ void serial_controller::terminate() {
   _worker.join();
 }
 
+boost::signals2::signal<void(common::control_surface_packet *)>
+    &serial_controller::cs_packet_signal() {
+  RCPLANE_ENTER();
+  return _cs_signal;
+}
+
 void serial_controller::read_write_serial() {
   RCPLANE_ENTER();
 
   while (_running) {
     read_packet();
+    _cs_signal(_cs_packet);
     write_packet();
     _streambuffer.consume(sizeof(common::control_surface_packet));
   }
@@ -96,15 +105,6 @@ void serial_controller::read_packet() {
   _cs_packet = const_cast<common::control_surface_packet *>(
       boost::asio::buffer_cast<const common::control_surface_packet *>(
           _streambuffer.data()));
-
-  RCPLANE_LOG(debug,
-              _tag,
-              "[" << _cs_packet->timestamp << "]"
-                  << " state = " << std::bitset<8>(_cs_packet->state)
-                  << " | motor = " << +_cs_packet->motor
-                  << " | aileron = " << +_cs_packet->aileron
-                  << " | elevator = " << +_cs_packet->elevator
-                  << " | rudder = " << +_cs_packet->rudder);
 
   // TODO: BOOST serialization to file.
   //_blackbox << _cs_packet << std::endl;

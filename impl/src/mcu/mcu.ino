@@ -5,6 +5,7 @@ const uint8_t MOTOR_IN = 5U;
 const uint8_t AILERON_IN = 2U;
 const uint8_t ELEVATOR_IN = 3U;
 const uint8_t RUDDER_IN = 4U;
+const uint8_t ELEVATOR_OUT = 8U;
 
 const uint16_t FLIGHT_MODE = 0x1;
 const uint16_t TEST_FLAGS[] = {0x2, 0x4, 0x8, 0x10, 0x0, 0x0};
@@ -44,6 +45,8 @@ void setup() {
   pinMode(ELEVATOR_IN, INPUT);
   pinMode(RUDDER_IN, INPUT);
 
+  pinMode(ELEVATOR_OUT, OUTPUT);
+
   /**
    * TODO: Actually run tests. 
    */
@@ -70,4 +73,10 @@ void loop() {
   rcplane::common::write_packet<rcplane::common::control_surface_packet>(cs_packet);
 
   cs_packet.timestamp = rcplane::common::read_packet<rcplane::common::control_surface_packet>(cs_packet);
+
+  // Simulate writing to servos
+  analogWrite(ELEVATOR_OUT, cs_packet.elevator + 115);
+  analogWrite(ELEVATOR_OUT, cs_packet.elevator + 115);
+  analogWrite(ELEVATOR_OUT, cs_packet.elevator + 115);
+  analogWrite(ELEVATOR_OUT, cs_packet.elevator + 115);
 }

@@ -2,7 +2,9 @@
 #define __RCPLANE__COMMON__IO__SERIAL_CONTROLLER_HPP__
 
 #include <boost/asio.hpp>
+#include <boost/atomic.hpp>
 #include <boost/noncopyable.hpp>
+#include <boost/signals2.hpp>
 #include <boost/thread.hpp>
 #include <fstream>
 #include <string>
@@ -39,7 +41,7 @@ public:
    * @warning Blocks until handshake_mcu() and flush() complete.
    * @return Status of the initialization.
    */
-  bool init();
+  bool init() override;
 
   /**
    * @brief Read the serial port.
@@ -48,14 +50,22 @@ public:
    *
    * @pre init() succeeded.
    */
-  void start();
+  void start() override;
 
   /**
    * @brief Close the serial port connection.
    * @warning Blocks until read_write_serial() iteration finishes.
    * @pre start() 
    */
-  void terminate();
+  void terminate() override;
+
+  /**
+   * @brief Connect to a singal slot for the control surface packet.
+   * @returns boost::signal<void(control_surface_packet *)> reference to
+   * connect to.
+   */
+  boost::signals2::signal<void(common::control_surface_packet *)>
+      &cs_packet_signal();
 
 private:
   /**
@@ -109,8 +119,8 @@ private:
 
   const std::string kHELLO_RX{"rcplane\r"};
   const uint8_t kHELLO_TX{1U};
-  std::atomic<bool> _running{false};
-  std::ofstream _blackbox;
+
+  boost::atomic<bool> _running{false};
 
   boost::asio::streambuf _streambuffer;
   common::control_surface_packet *_cs_packet;
@@ -118,6 +128,9 @@ private:
   boost::thread _worker;
   boost::asio::io_service &_io;
   boost::asio::serial_port _serial;
+  boost::signals2::signal<void(common::control_surface_packet *)> _cs_signal;
+
+  std::ofstream _blackbox;
 };
 
 }  // namespace io

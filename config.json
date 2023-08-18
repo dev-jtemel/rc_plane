@@ -17,11 +17,11 @@
       }
     }
   },
-  "som": {
-    "gps_controller": {
-      "gpsd": {
-        "port": "2947",
-        "delay": 5000
+  "rcplane": {
+    "hw": {
+      "elevator": {
+        "max_pos": 20,
+        "max_neg": 45
       }
     }
   }

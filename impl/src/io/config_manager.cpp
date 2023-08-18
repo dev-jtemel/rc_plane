@@ -67,6 +67,7 @@ void config_manager::set_log_severity(const std::string &&severity) {
 
 template std::string config_manager::get<std::string>(const std::string &&);
 template uint32_t config_manager::get<uint32_t>(const std::string &&);
+template int8_t config_manager::get<int8_t>(const std::string &&);
 
 }  // namespace io
 }  // namespace rcplane
