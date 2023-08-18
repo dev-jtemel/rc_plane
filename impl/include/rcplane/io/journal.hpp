@@ -1,5 +1,5 @@
-#ifndef __RCPLANE__COMMON__IO__JOURNAL_HPP__
-#define __RCPLANE__COMMON__IO__JOURNAL_HPP__
+#ifndef __RCPLANE__IO__JOURNAL_HPP__
+#define __RCPLANE__IO__JOURNAL_HPP__
 
 #include <boost/log/common.hpp>
 #include <boost/log/expressions.hpp>
@@ -10,11 +10,10 @@
 #include <boost/log/utility/setup/common_attributes.hpp>
 
 namespace rcplane {
-namespace common {
 namespace io {
 
 // Forward declaration
-//class config_manager;
+class config_manager;
 
 /**
 * @brief Journaling sink for boost::log.
@@ -47,7 +46,7 @@ public:
   }
 };
 
-typedef boost::log::sinks::synchronous_sink<rcplane::common::io::journal_sink>
+typedef boost::log::sinks::synchronous_sink<rcplane::io::journal_sink>
     colored_sink;
 static boost::shared_ptr<colored_sink> _journal_sink =
     boost::make_shared<colored_sink>();
@@ -55,7 +54,8 @@ static boost::shared_ptr<colored_sink> _journal_sink =
 #define RCPLANE_LOG_INIT()                                                     \
   do {                                                                         \
     boost::log::add_common_attributes();                                       \
-    boost::log::core::get()->add_sink(rcplane::common::io::_journal_sink);     \
+    boost::log::core::get()->add_sink(rcplane::io::_journal_sink);             \
+    (void)rcplane::io::config_manager::instance();                             \
   } while (false)
 
 #define RCPLANE_SEVERITY_UPDATE(lvl)                                           \
@@ -77,7 +77,6 @@ static boost::shared_ptr<colored_sink> _journal_sink =
   do { boost::log::core::get()->set_logging_enabled(false); } while (false)
 
 }  // namespace io
-}  // namespace common
 }  // namespace rcplane
 
-#endif  //__RCPLANE__COMMON__IO__JOURNAL_HPP__
+#endif  //__RCPLANE__IO__JOURNAL_HPP__
