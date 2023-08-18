@@ -9,7 +9,7 @@ FQBN="arduino:avr:mega"
 
 flash_mcu() {
   sudo chmod a+rw $DEV
-  $ARDUINO_CLI upload -p ${DEV} --fqbn ${FQBN} mcu/ -v
+  $ARDUINO_CLI upload -p ${DEV} --fqbn ${FQBN} impl/src/mcu/ -v
 }
 
 echo "*************************"

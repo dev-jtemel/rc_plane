@@ -5,6 +5,7 @@
 #include <boost/optional.hpp>
 #include <boost/optional/optional_io.hpp>
 #include <boost/thread.hpp>
+#include <boost/signals2.hpp>
 #include <fstream>
 #include <string>
 #include <thread>
@@ -87,9 +88,23 @@ public:
   void terminate() {
     RCPLANE_ENTER();
     _running = false;
+    _worker.join();
+  }
+
+  boost::signals2::signal<void (uint32_t)> &signals() {
+    return _timestamp;
+  }
+
+  void write() {
+    boost::asio::write(_serial,
+                      boost::asio::buffer(&done, sizeof(done)));
   }
 
 private:
+  void timestamp(uint32_t timestamp) {
+    _timestamp(timestamp);
+  }
+
   /**
    * @brief Continously read the serial port until terminate() is called.
    *
@@ -99,8 +114,13 @@ private:
     RCPLANE_ENTER();
 
     while (_running) {
+      static int l = 0;
       auto read_buffer = read_line();
       if (!read_buffer) { continue; }
+      _buffer = read_buffer.get();
+      if ( l % 4 == 0)
+        _io.post(boost::bind(&rcplane::io::serial_controller::timestamp, this, static_cast<uint32_t>(_buffer >> 40)));
+      ++l;
     }
   }
 
@@ -137,13 +157,8 @@ private:
    */
   virtual bool handshake_mcu() {
     RCPLANE_ENTER();
-
-    const auto k_write_delay = 1U;
-    for (uint8_t i = 0U; i < 2U; ++i) {
-      boost::asio::write(_serial,
-                        boost::asio::buffer(kHELLO_TX.c_str(), kHELLO_RX.size()));
-      std::this_thread::sleep_for(std::chrono::seconds(k_write_delay));
-    }
+    boost::asio::write(_serial,
+                       boost::asio::buffer(kHELLO_TX.c_str(), kHELLO_TX.size()));
     return true;
   }
 
@@ -167,7 +182,10 @@ private:
 
     try {
       return {std::stoul(res, nullptr, 16)};
-    } catch (...) { return {}; }
+    } catch (...) { 
+      RCPLANE_LOG(error, _tag, res);
+      return {}; 
+      }
   }
 
   /**
@@ -188,7 +206,8 @@ private:
   std::string TTY{};
   uint32_t BAUDRATE{};
   const std::string kHELLO_RX{"rcplane\r"};
-  const std::string kHELLO_TX{"1"};
+  const std::string kHELLO_TX{"rcplane\r\n"};
+  const uint32_t done{0xFFFFFFFF};
   std::atomic<bool> _running{false};
   std::ofstream _blackbox;
 
@@ -199,6 +218,7 @@ private:
   boost::thread _worker;
   boost::asio::io_service &_io;
   boost::asio::serial_port _serial;
+  boost::signals2::signal<void(uint32_t)> _timestamp;
 };
 
 }  // namespace io
