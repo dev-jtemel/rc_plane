@@ -1,6 +1,8 @@
 #include "rcplane/io/serial_controller.hpp"
 #include "rcplane/io/config_manager.hpp"
 #include "rcplane/io/journal.hpp"
+#include <chrono>  //rm
+#include <thread>  //rm
 
 namespace rcplane {
 namespace io {
@@ -51,13 +53,21 @@ void serial_controller::terminate() {
   _worker.join();
 }
 
+boost::signals2::signal<void(common::control_surface_packet *)>
+    &serial_controller::cs_packet_signal() {
+  RCPLANE_ENTER();
+  return _cs_signal;
+}
+
 void serial_controller::read_write_serial() {
   RCPLANE_ENTER();
 
   while (_running) {
-    read_packet();
+    read_packets();
+    _cs_signal(_cs_packet);
     write_packet();
-    _streambuffer.consume(sizeof(common::control_surface_packet));
+    _streambuffer.consume(sizeof(common::control_surface_packet)
+                          + sizeof(common::orientation_packet));
   }
 }
 
@@ -85,7 +95,7 @@ bool serial_controller::handshake_mcu() {
   return true;
 }
 
-void serial_controller::read_packet() {
+void serial_controller::read_packets() {
   RCPLANE_ENTER();
 
   boost::asio::read(
@@ -96,15 +106,18 @@ void serial_controller::read_packet() {
   _cs_packet = const_cast<common::control_surface_packet *>(
       boost::asio::buffer_cast<const common::control_surface_packet *>(
           _streambuffer.data()));
+  _streambuffer.consume(sizeof(common::control_surface_packet));
 
-  RCPLANE_LOG(debug,
-              _tag,
-              "[" << _cs_packet->timestamp << "]"
-                  << " state = " << std::bitset<8>(_cs_packet->state)
-                  << " | motor = " << +_cs_packet->motor
-                  << " | aileron = " << +_cs_packet->aileron
-                  << " | elevator = " << +_cs_packet->elevator
-                  << " | rudder = " << +_cs_packet->rudder);
+  boost::asio::read(
+      _serial,
+      _streambuffer,
+      boost::asio::transfer_exactly(sizeof(common::orientation_packet)));
+
+  _ori_packet = const_cast<common::orientation_packet *>(
+      boost::asio::buffer_cast<const common::orientation_packet *>(
+          _streambuffer.data()));
+
+  _streambuffer.consume(sizeof(common::orientation_packet));
 
   // TODO: BOOST serialization to file.
   //_blackbox << _cs_packet << std::endl;
@@ -123,7 +136,7 @@ void serial_controller::write_packet() {
                   << " | rudder = " << +_cs_packet->rudder);
   boost::asio::write(
       _serial,
-      boost::asio::buffer((uint8_t *)_cs_packet,
+      boost::asio::buffer(reinterpret_cast<uint8_t *>(_cs_packet),
                           sizeof(common::control_surface_packet)));
 }
 

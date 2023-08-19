@@ -5,8 +5,6 @@
 #ifndef __RCPLANE__BASE_CONTROLLER_HPP__
 #define __RCPLANE__BASE_CONTROLLER_HPP__
 
-#include <boost/atomic.hpp>
-#include <boost/thread.hpp>
 #include <string>
 
 namespace rcplane {

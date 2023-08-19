@@ -25,6 +25,20 @@ struct __attribute__((packed)) control_surface_packet {
   int8_t rudder;
 };
 
+/**
+ * @brief Packet definition of gyro scope readings.
+ * 
+ * This packet defines the (formed) gyro data to be communicated
+ * to and from the mcu and som.
+ * 
+ * @warning This packet is packed to avoid compiler padding.
+ */
+struct __attribute__((packed)) orientation_packet {
+  float roll;
+  float pitch;
+  float yaw;
+};
+
 #ifdef ARDUINO_ARCH_AVR
 /**
  * @brief Write the packet to UART.
