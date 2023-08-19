@@ -23,38 +23,74 @@ public:
   /**
   * @brief Construct a new imu manager object.
   */
-  explicit autopilot() : interface::base_controller("autopilot") {}
-  ~autopilot() {}
+  explicit autopilot(boost::asio::io_context &io)
+    : interface::base_controller("autopilot"), _io(io) {
+    RCPLANE_ENTER();
+  }
+  ~autopilot() { RCPLANE_ENTER(); }
 
   /**
    * @brief NOP.
    * @return true always.
    */
-  bool init() override { return true; }
+  bool init() override {
+    RCPLANE_ENTER();
+    (void)_cs_manager.init();
+    (void)_imu_manager.init();
+    RCPLANE_LOG(info, _tag, "initialized");
+    return true;
+  }
 
   /**
    * @brief NOP.
    */
-  void start() override {}
+  void start() override {
+    RCPLANE_ENTER();
+    _cs_manager.start();
+    _imu_manager.start();
+    RCPLANE_LOG(info, _tag, "started");
+  }
 
   /**
    * @brief NOP.
    */
-  void terminate() override {}
+  void terminate() override {
+    RCPLANE_ENTER();
+    _cs_manager.terminate();
+    _imu_manager.terminate();
+    RCPLANE_LOG(info, _tag, "terminated");
+  }
 
   /**
-   * @brief Handle an incoming imu_packet, applying
-   * and filters and/or limiters.
-   * 
-   * @param _imu_packet Pointer to the most recent packet received.
+   * @brief Post the packet to the io service to handle in main thread.
+   * @param _cs_packet Pointer to the most recent control_surface_packet received.
+   * @param _imu_packet Pointer to the most recent imu_packet received.
    */
   void on(common::control_surface_packet *_cs_packet,
           common::imu_packet *_imu_packet) {
     RCPLANE_ENTER();
-    _cs_manager.on(_cs_packet, _imu_manager.on(_imu_packet));
+    _io.post(boost::bind(&autopilot::handler, this, _cs_packet, _imu_packet));
   }
 
 private:
+  /**
+   * @brief Handle an incoming imu_packet, applying
+   * and filters and/or limiters.
+   * 
+   * Lifespan of underlying packets are maintained in the serial_controller.
+   * 
+   * @see serial_controller
+   * @param _cs_packet Pointer to the most recent control_surface_packet received.
+   * @param _imu_packet Pointer to the most recent imu_packet received.
+   */
+  void handler(common::control_surface_packet *_cs_packet,
+               common::imu_packet *_imu_packet) {
+    RCPLANE_ENTER();
+    _cs_manager.on(_cs_packet, _imu_manager.on(_imu_packet));
+    ;
+  }
+
+  boost::asio::io_context &_io;
   hw::control_surface_manager _cs_manager;
   hw::imu_manager _imu_manager;
 };

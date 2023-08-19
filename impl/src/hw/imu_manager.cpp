@@ -23,12 +23,19 @@ imu_manager::~imu_manager() { RCPLANE_ENTER(); }
 
 bool imu_manager::init() {
   RCPLANE_ENTER();
+  RCPLANE_LOG(info, _tag, "initialized");
   return true;
 }
 
-void imu_manager::start() { RCPLANE_ENTER(); }
+void imu_manager::start() {
+  RCPLANE_ENTER();
+  RCPLANE_LOG(info, _tag, "started");
+}
 
-void imu_manager::terminate() { RCPLANE_ENTER(); }
+void imu_manager::terminate() {
+  RCPLANE_ENTER();
+  RCPLANE_LOG(info, _tag, "terminated");
+}
 
 int8_t imu_manager::on(common::imu_packet *_imu_packet) {
   RCPLANE_ENTER();

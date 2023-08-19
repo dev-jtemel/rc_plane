@@ -31,7 +31,7 @@ int main() {
       std::make_unique<rcplane::io::serial_controller>(io);
 
   std::unique_ptr<rcplane::autopilot::autopilot> autopilot =
-      std::make_unique<rcplane::autopilot::autopilot>();
+      std::make_unique<rcplane::autopilot::autopilot>(io);
 
   serial_controller->packet_signal().connect(
       boost::bind(&rcplane::autopilot::autopilot::on,
@@ -40,10 +40,14 @@ int main() {
                   boost::placeholders::_2));
 
   serial_controller->init();
+  autopilot->init();
+
   serial_controller->start();
+  autopilot->start();
 
   io.run();
 
+  autopilot->terminate();
   serial_controller->terminate();
 
   return 1;

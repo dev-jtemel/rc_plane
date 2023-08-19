@@ -51,6 +51,8 @@ void serial_controller::terminate() {
 
   _running = false;
   _worker.join();
+  RCPLANE_LOG(info, _tag, "worker collected");
+  RCPLANE_LOG(info, _tag, "terminated");
 }
 
 boost::signals2::signal<void(common::control_surface_packet *,
@@ -62,6 +64,8 @@ boost::signals2::signal<void(common::control_surface_packet *,
 
 void serial_controller::read_write_serial() {
   RCPLANE_ENTER();
+
+  RCPLANE_LOG(info, _tag, "worker started");
 
   while (_running) {
     read_packets();
