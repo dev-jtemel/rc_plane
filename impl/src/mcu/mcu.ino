@@ -12,7 +12,7 @@ const uint8_t kAUTOPILOT_IN = 7U;
 const uint8_t kELEVATOR_OUT = 8U;
 
 const uint16_t kASSISTANCE_FLAG = 0x10;
-const uint16_t kUSER_INPUT = 0x20;
+const uint16_t kUSER_AILERON = 0x20;
 const uint16_t kTEST_FLAGS[] = {0x1, 0x4, 0x4, 0x08};
 
 const double PVM_MIN = 1000.00;

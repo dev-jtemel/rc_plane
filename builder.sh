@@ -17,6 +17,7 @@ OPTIONS="\
   Read-Serial \
   Install-Dependencies \
   Run-Clang-Format \
+  Documentation \
   Help \
   Quit\
 "
@@ -42,8 +43,9 @@ usage() {
   echo "  9) Read-Serial            : Read the serial output of the microcontroller."
   echo "  10) Install-Dependencies  : Install the required dependencies."
   echo "  11) Run-Clang-Format      : Run clang-format on the project."
-  echo "  12) Help                  : Display this message."
-  echo "  12) Quit                  : Exit the builder script."
+  echo "  12) Documentation         : Run doxygen on the project."
+  echo "  13) Help                  : Display this message."
+  echo "  14) Quit                  : Exit the builder script."
 }
 
 while getopts "d:i:h" opt; do
@@ -139,6 +141,14 @@ do
       [ $MODE == "PC" ] && {
         find "$ROOT_DIR/impl" -iname "*.hpp" -exec clang-format --verbose -style=file -i {} +
         find "$ROOT_DIR/impl" -iname "*.cpp" -exec clang-format --verbose -style=file -i {} +
+        break
+      }
+      echo "Nothing to do on $MODE..."
+      break
+    elif [ "$opt" = "Documentation" ];
+    then
+      [ $MODE == "PC" ] && {
+        doxygen Doxyfile
         break
       }
       echo "Nothing to do on $MODE..."

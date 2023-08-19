@@ -5,102 +5,70 @@
 
 #include "rcplane/base_controller.hpp"
 #include "rcplane/common/packet.hpp"
-#include "rcplane/io/config_manager.hpp"
-#include "rcplane/io/journal.hpp"
 
 namespace rcplane {
 namespace hw {
 
+/**
+ * @brief Manages and controls the control surfaces on the plane.
+ * 
+ * The control surfaces (ailerons, elevators and rudder) are controlled
+ * and maintained here.
+  */
 class control_surface_manager : public interface::base_controller,
                                 public ::boost::noncopyable {
 public:
-  explicit control_surface_manager()
-    : interface::base_controller("cs-manager") {
-    RCPLANE_ENTER();
+  /**
+   * @brief Construct a new control surface manager object.
+   */
+  explicit control_surface_manager();
+  ~control_surface_manager();
 
-    cAILERON_MAX_POS = io::config_manager::instance().get<int8_t>(
-        "rcplane.hw.aileron.max_pos");
-    cAILERON_MAX_NEG =
-        io::config_manager::instance().get<int8_t>("rcplane.hw.aileron.max_neg")
-        * -1;
-    cELEVATOR_MAX_POS = io::config_manager::instance().get<int8_t>(
-        "rcplane.hw.elevator.max_pos");
-    cELEVATOR_MAX_NEG = io::config_manager::instance().get<int8_t>(
-                            "rcplane.hw.elevator.max_neg")
-        * -1;
-    cRUDDER_MAX_POS =
-        io::config_manager::instance().get<int8_t>("rcplane.hw.rudder.max_pos");
-    cRUDDER_MAX_NEG =
-        io::config_manager::instance().get<int8_t>("rcplane.hw.rudder.max_neg")
-        * -1;
-  }
-  ~control_surface_manager() { RCPLANE_ENTER(); }
+  /**
+   * @brief NOP.
+   * @return true always.
+   */
+  bool init() override;
 
-  bool init() override {
-    RCPLANE_ENTER();
-    return true;
-  }
+  /**
+   * @brief NOP.
+   */
+  void start() override;
 
-  void start() override { RCPLANE_ENTER(); }
+  /**
+   * @brief NOP.
+   */
+  void terminate() override;
 
-  void terminate() override { RCPLANE_ENTER(); }
-
-  void on(common::control_surface_packet *_cs_packet) {
-    RCPLANE_ENTER();
-
-    aileron_limiter(_cs_packet->aileron);
-    elevator_limiter(_cs_packet->elevator);
-    rudder_limiter(_cs_packet->rudder);
-  }
+  /**
+   * @brief Handle an incoming control_surface_packet, applying
+   * and filters and/or limiters.
+   * 
+   * @param _cs_packet Pointer to the most recent packet received.
+   */
+  void on(common::control_surface_packet *_cs_packet);
 
 private:
-  void aileron_limiter(int8_t &aileron) {
-    if (aileron >= cAILERON_MAX_POS) {
-      RCPLANE_LOG(debug,
-                  _tag,
-                  "aileron :: max pos hit :: " << +aileron << " -> "
-                                               << +cAILERON_MAX_POS);
-      aileron = cAILERON_MAX_POS;
-    } else if (aileron <= cAILERON_MAX_NEG) {
-      RCPLANE_LOG(debug,
-                  _tag,
-                  "aileron :: max neg hit :: " << +aileron << " -> "
-                                               << +cAILERON_MAX_NEG);
-      aileron = cAILERON_MAX_NEG;
-    }
-  }
+  /**
+   * @brief Limit the aileron deflection within the configured bounds.
+   * 
+   * @param aileron Aileron ref in the current packet.
+   */
+  void aileron_limiter(int8_t &aileron);
 
-  void elevator_limiter(int8_t &elevator) {
-    if (elevator >= cELEVATOR_MAX_POS) {
-      RCPLANE_LOG(debug,
-                  _tag,
-                  "elevator :: max pos hit :: " << +elevator << " -> "
-                                                << +cELEVATOR_MAX_POS);
-      elevator = cELEVATOR_MAX_POS;
-    } else if (elevator <= cELEVATOR_MAX_NEG) {
-      RCPLANE_LOG(debug,
-                  _tag,
-                  "elevator :: max neg hit :: " << +elevator << " -> "
-                                                << +cELEVATOR_MAX_NEG);
-      elevator = cELEVATOR_MAX_NEG;
-    }
-  }
+  /**
+   * @brief Limit the elevator deflection within the configured bounds.
+   * 
+   * @param elevator Elevator ref in the current packet.
+   */
+  void elevator_limiter(int8_t &elevator);
 
-  void rudder_limiter(int8_t &rudder) {
-    if (rudder >= cRUDDER_MAX_POS) {
-      RCPLANE_LOG(debug,
-                  _tag,
-                  "rudder :: max pos hit :: " << +rudder << " -> "
-                                              << +cRUDDER_MAX_POS);
-      rudder = cRUDDER_MAX_POS;
-    } else if (rudder <= cRUDDER_MAX_NEG) {
-      RCPLANE_LOG(debug,
-                  _tag,
-                  "rudder :: max neg hit :: " << +rudder << " -> "
-                                              << +cRUDDER_MAX_NEG);
-      rudder = cRUDDER_MAX_NEG;
-    }
-  }
+  /**
+   * @brief Limit the rudder deflection within the configured bounds.
+   * 
+   * @param rudder Rudder ref in the current packet.
+   */
+  void rudder_limiter(int8_t &rudder);
 
   int8_t cAILERON_MAX_POS{};
   int8_t cAILERON_MAX_NEG{};
