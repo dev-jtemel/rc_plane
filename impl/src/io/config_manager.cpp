@@ -35,7 +35,7 @@ config_manager::config_manager() {
   read_config();
 
   set_log_severity(
-      _config["common"]["io"]["journal"]["severity"].get<std::string>());
+      _config["rcplane"]["io"]["journal"]["severity"].get<std::string>());
 
   RCPLANE_LOG(trace, "config_manager", "\n" << _config.dump(2));
 }

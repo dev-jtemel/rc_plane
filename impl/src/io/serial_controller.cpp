@@ -8,15 +8,13 @@ namespace rcplane {
 namespace io {
 
 serial_controller::serial_controller(boost::asio::io_context &io)
-  : interface::base_controller("serial-controller"), _io(io), _serial(_io) {
+  : interface::base_controller("serial_controller"), _io(io), _serial(_io) {
   RCPLANE_ENTER();
 
-  cBLACKBOX = config_manager::instance().get<std::string>(
-      "common.io.serial_controller.blackbox");
   cTTY = config_manager::instance().get<std::string>(
-      "common.io.serial_controller.dev");
+      "rcplane.io.serial_controller.dev");
   cBAUDRATE = config_manager::instance().get<uint32_t>(
-      "common.io.serial_controller.baudrate");
+      "rcplane.io.serial_controller.baudrate");
 }
 
 serial_controller::~serial_controller() { RCPLANE_ENTER(); }

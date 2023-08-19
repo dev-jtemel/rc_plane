@@ -5,18 +5,18 @@
 namespace rcplane {
 namespace hw {
 
-imu_manager::imu_manager() : interface::base_controller("imu-manager") {
+imu_manager::imu_manager() : interface::base_controller("imu_manager") {
   RCPLANE_ENTER();
 
-  cROLL_MAX_POS =
-      io::config_manager::instance().get<int8_t>("rcplane.hw.imu.roll_max_pos");
-  cROLL_MAX_NEG =
-      io::config_manager::instance().get<int8_t>("rcplane.hw.imu.roll_max_neg")
+  cROLL_MAX_POS = io::config_manager::instance().get<int8_t>(
+      "rcplane.hw.imu_manager.roll_max_pos");
+  cROLL_MAX_NEG = io::config_manager::instance().get<int8_t>(
+                      "rcplane.hw.imu_manager.roll_max_neg")
       * -1;
   cPTICH_MAX_POS = io::config_manager::instance().get<int8_t>(
-      "rcplane.hw.imu.pitch_max_pos");
-  cPTICH_MAX_NEG =
-      io::config_manager::instance().get<int8_t>("rcplane.hw.imu.pitch_max_neg")
+      "rcplane.hw.imu_manager.pitch_max_pos");
+  cPTICH_MAX_NEG = io::config_manager::instance().get<int8_t>(
+                       "rcplane.hw.imu_manager.pitch_max_neg")
       * -1;
 }
 imu_manager::~imu_manager() { RCPLANE_ENTER(); }

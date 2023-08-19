@@ -1,37 +1,28 @@
 {
-  "common": {
+  "rcplane": {
     "io": {
       "journal": {
-        "severity": "trace"
+        "severity": "trace",
+        "log_destination": "./logs"
+      },
+      "blackbox": {
+        "log_destination": "./logs"
       },
       "serial_controller": {
         "dev": "/dev/ttyACM0",
-        "baudrate": 115200,
-        "blackbox": "bb.log"
+        "baudrate": 115200
       }
     },
-    "network": {
-      "http_controller": {
-        "ip": "localhost",
-        "port": 8080
-      }
-    }
-  },
-  "rcplane": {
     "hw": {
-      "aileron": {
-        "max_pos": 20,
-        "max_neg": 20
+      "control_surface_manager": {
+        "aileron_max_pos": 20,
+        "aileron_max_neg": 20,
+        "elevator_max_pos": 20,
+        "elevator_max_neg": 45,
+        "rudder_max_pos": 20,
+        "rudder_max_neg": 20
       },
-      "elevator": {
-        "max_pos": 20,
-        "max_neg": 45
-      },
-      "rudder": {
-        "max_pos": 20,
-        "max_neg": 20
-      },
-      "imu": {
+      "imu_manager": {
         "roll_max_pos": 20,
         "roll_max_neg": 20,
         "pitch_max_pos": 30,
