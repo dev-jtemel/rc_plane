@@ -14,6 +14,7 @@ target_link_libraries(rcplane_io
 
 add_library(rcplane_hw
   hw/control_surface_manager.cpp
+  hw/imu_manager.cpp
 )
 
 target_link_libraries(rcplane_hw

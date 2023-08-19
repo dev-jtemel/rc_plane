@@ -33,7 +33,7 @@ struct __attribute__((packed)) control_surface_packet {
  * 
  * @warning This packet is packed to avoid compiler padding.
  */
-struct __attribute__((packed)) orientation_packet {
+struct __attribute__((packed)) imu_packet {
   float roll;
   float pitch;
   float yaw;

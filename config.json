@@ -30,6 +30,12 @@
       "rudder": {
         "max_pos": 20,
         "max_neg": 20
+      },
+      "imu": {
+        "roll_max_pos": 20,
+        "roll_max_neg": 20,
+        "pitch_max_pos": 30,
+        "pitch_max_neg": 10
       }
     }
   }

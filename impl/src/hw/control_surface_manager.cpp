@@ -37,8 +37,15 @@ void control_surface_manager::start() { RCPLANE_ENTER(); }
 
 void control_surface_manager::terminate() { RCPLANE_ENTER(); }
 
-void control_surface_manager::on(common::control_surface_packet *_cs_packet) {
+void control_surface_manager::on(common::control_surface_packet *_cs_packet,
+                                 int8_t bank) {
   RCPLANE_ENTER();
+
+  if (bank > 0) {
+    _cs_packet->aileron += 10;
+  } else if (bank < 0) {
+    _cs_packet->aileron -= 10;
+  }
 
   aileron_limiter(_cs_packet->aileron);
   elevator_limiter(_cs_packet->elevator);
