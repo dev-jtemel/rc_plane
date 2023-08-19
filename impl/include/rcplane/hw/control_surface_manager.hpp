@@ -46,7 +46,7 @@ public:
    * 
    * @param _cs_packet Pointer to the most recent packet received.
    */
-  void on(common::control_surface_packet *_cs_packet);
+  void on(common::control_surface_packet *_cs_packet, int8_t bank);
 
 private:
   /**

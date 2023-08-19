@@ -30,15 +30,29 @@ control_surface_manager::~control_surface_manager() { RCPLANE_ENTER(); }
 
 bool control_surface_manager::init() {
   RCPLANE_ENTER();
+  RCPLANE_LOG(info, _tag, "initialized");
   return true;
 }
 
-void control_surface_manager::start() { RCPLANE_ENTER(); }
-
-void control_surface_manager::terminate() { RCPLANE_ENTER(); }
-
-void control_surface_manager::on(common::control_surface_packet *_cs_packet) {
+void control_surface_manager::start() {
   RCPLANE_ENTER();
+  RCPLANE_LOG(info, _tag, "started");
+}
+
+void control_surface_manager::terminate() {
+  RCPLANE_ENTER();
+  RCPLANE_LOG(info, _tag, "terminated");
+}
+
+void control_surface_manager::on(common::control_surface_packet *_cs_packet,
+                                 int8_t bank) {
+  RCPLANE_ENTER();
+
+  if (bank > 0) {
+    _cs_packet->aileron += 10;
+  } else if (bank < 0) {
+    _cs_packet->aileron -= 10;
+  }
 
   aileron_limiter(_cs_packet->aileron);
   elevator_limiter(_cs_packet->elevator);

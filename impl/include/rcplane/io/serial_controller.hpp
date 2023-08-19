@@ -64,8 +64,9 @@ public:
    * @returns boost::signal<void(control_surface_packet *)> reference to
    * connect to.
    */
-  boost::signals2::signal<void(common::control_surface_packet *)>
-      &cs_packet_signal();
+  boost::signals2::signal<void(common::control_surface_packet *,
+                               common::imu_packet *)>
+      &packet_signal();
 
 private:
   /**
@@ -124,12 +125,14 @@ private:
 
   boost::asio::streambuf _streambuffer;
   common::control_surface_packet *_cs_packet;
-  common::orientation_packet *_ori_packet;
+  common::imu_packet *_imu_packet;
 
   boost::thread _worker;
   boost::asio::io_service &_io;
   boost::asio::serial_port _serial;
-  boost::signals2::signal<void(common::control_surface_packet *)> _cs_signal;
+  boost::signals2::signal<void(common::control_surface_packet *,
+                               common::imu_packet *)>
+      _packet_signal;
 
   std::ofstream _blackbox;
 };

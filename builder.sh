@@ -93,14 +93,14 @@ do
     elif [ "$opt" = "Run" ];
     then
       [ $MODE == "PC" ] && {
-        ./build/impl/src/som/som_controller
+        ./build/impl/src/som_controller
         break
       }
       echo "Nothing to do on $MODE..."
     elif [ "$opt" = "Debug" ];
     then
       [ $MODE == "PC" ] && {
-        gdb ./build/impl/src/som/som_controller
+        gdb ./build/impl/src/som_controller
         break
       }
       echo "Nothing to do on $MODE..."

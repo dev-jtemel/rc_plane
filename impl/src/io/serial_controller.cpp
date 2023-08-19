@@ -51,23 +51,28 @@ void serial_controller::terminate() {
 
   _running = false;
   _worker.join();
+  RCPLANE_LOG(info, _tag, "worker collected");
+  RCPLANE_LOG(info, _tag, "terminated");
 }
 
-boost::signals2::signal<void(common::control_surface_packet *)>
-    &serial_controller::cs_packet_signal() {
+boost::signals2::signal<void(common::control_surface_packet *,
+                             common::imu_packet *)>
+    &serial_controller::packet_signal() {
   RCPLANE_ENTER();
-  return _cs_signal;
+  return _packet_signal;
 }
 
 void serial_controller::read_write_serial() {
   RCPLANE_ENTER();
 
+  RCPLANE_LOG(info, _tag, "worker started");
+
   while (_running) {
     read_packets();
-    _cs_signal(_cs_packet);
+    _packet_signal(_cs_packet, _imu_packet);
     write_packet();
     _streambuffer.consume(sizeof(common::control_surface_packet)
-                          + sizeof(common::orientation_packet));
+                          + sizeof(common::imu_packet));
   }
 }
 
@@ -106,18 +111,18 @@ void serial_controller::read_packets() {
   _cs_packet = const_cast<common::control_surface_packet *>(
       boost::asio::buffer_cast<const common::control_surface_packet *>(
           _streambuffer.data()));
+
   _streambuffer.consume(sizeof(common::control_surface_packet));
 
-  boost::asio::read(
-      _serial,
-      _streambuffer,
-      boost::asio::transfer_exactly(sizeof(common::orientation_packet)));
+  boost::asio::read(_serial,
+                    _streambuffer,
+                    boost::asio::transfer_exactly(sizeof(common::imu_packet)));
 
-  _ori_packet = const_cast<common::orientation_packet *>(
-      boost::asio::buffer_cast<const common::orientation_packet *>(
+  _imu_packet = const_cast<common::imu_packet *>(
+      boost::asio::buffer_cast<const common::imu_packet *>(
           _streambuffer.data()));
 
-  _streambuffer.consume(sizeof(common::orientation_packet));
+  _streambuffer.consume(sizeof(common::imu_packet));
 
   // TODO: BOOST serialization to file.
   //_blackbox << _cs_packet << std::endl;
@@ -134,6 +139,12 @@ void serial_controller::write_packet() {
                   << " | aileron = " << +_cs_packet->aileron
                   << " | elevator = " << +_cs_packet->elevator
                   << " | rudder = " << +_cs_packet->rudder);
+
+  RCPLANE_LOG(debug,
+              _tag,
+              "roll = " << _imu_packet->roll
+                        << " | pitch = " << _imu_packet->pitch
+                        << " | yaw = " << _imu_packet->yaw);
   boost::asio::write(
       _serial,
       boost::asio::buffer(reinterpret_cast<uint8_t *>(_cs_packet),
