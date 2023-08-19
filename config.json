@@ -3,10 +3,10 @@
     "io": {
       "journal": {
         "severity": "trace",
-        "log_destination": "./logs"
+        "log_destination": "./logs/"
       },
       "blackbox": {
-        "log_destination": "./logs"
+        "log_destination": "./logs/"
       },
       "serial_controller": {
         "dev": "/dev/ttyACM0",

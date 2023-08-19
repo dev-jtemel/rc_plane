@@ -4,10 +4,13 @@
 #include <boost/log/common.hpp>
 #include <boost/log/expressions.hpp>
 #include <boost/log/sinks.hpp>
+#include <boost/log/sinks/text_file_backend.hpp>
+#include <boost/log/sources/record_ostream.hpp>
 #include <boost/log/sources/severity_logger.hpp>
 #include <boost/log/support/date_time.hpp>
 #include <boost/log/trivial.hpp>
 #include <boost/log/utility/setup/common_attributes.hpp>
+#include <boost/log/utility/setup/file.hpp>
 
 namespace rcplane {
 namespace io {
@@ -53,7 +56,15 @@ static boost::shared_ptr<colored_sink> _journal_sink =
   do {                                                                         \
     boost::log::add_common_attributes();                                       \
     boost::log::core::get()->add_sink(rcplane::io::_journal_sink);             \
-    (void)rcplane::io::config_manager::instance();                             \
+    rcplane::io::config_manager::instance().init();                            \
+    boost::log::add_file_log(                                                  \
+        boost::log::keywords::file_name =                                      \
+            rcplane::io::config_manager::instance().get<std::string>(          \
+                "rcplane.io.journal.log_destination")                          \
+            + "%d_%m_%Y_%I_%M_%S.log",                                         \
+        boost::log::keywords::format =                                         \
+            "[%Timestamp%] [%ThreadID%] [%Severity%] %Message%");              \
+    rcplane::io::config_manager::instance().dump();                            \
   } while (false)
 
 #define RCPLANE_SEVERITY_UPDATE(lvl)                                           \
