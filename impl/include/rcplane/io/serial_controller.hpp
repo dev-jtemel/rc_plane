@@ -134,7 +134,8 @@ private:
                                common::imu_packet *)>
       _packet_signal;
 
-  std::ofstream _blackbox;
+  std::ofstream _blackbox_in;
+  std::ofstream _blackbox_out;
 };
 
 }  // namespace io

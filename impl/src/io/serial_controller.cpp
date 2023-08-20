@@ -11,6 +11,8 @@ serial_controller::serial_controller(boost::asio::io_context &io)
   : interface::base_controller("serial_controller"), _io(io), _serial(_io) {
   RCPLANE_ENTER();
 
+  cBLACKBOX = config_manager::instance().get<std::string>(
+      "rcplane.io.serial_controller.blackbox_destination");
   cTTY = config_manager::instance().get<std::string>(
       "rcplane.io.serial_controller.dev");
   cBAUDRATE = config_manager::instance().get<uint32_t>(
@@ -28,8 +30,8 @@ bool serial_controller::init() {
 
   if (!handshake_mcu()) { return false; }
 
-  // TODO: Enable when BOOST_SERIALIZATION is added.
-  //_blackbox = std::ofstream(cBLACKBOX);
+  _blackbox_in = std::ofstream(cBLACKBOX + "bb_in.bin", std::ios::binary);
+  _blackbox_out = std::ofstream(cBLACKBOX + "bb_out.bin", std::ios::binary);
 
   RCPLANE_LOG(info, _tag, "initialized");
   return true;
@@ -122,8 +124,10 @@ void serial_controller::read_packets() {
 
   _streambuffer.consume(sizeof(common::imu_packet));
 
-  // TODO: BOOST serialization to file.
-  //_blackbox << _cs_packet << std::endl;
+  _blackbox_in.write(reinterpret_cast<const char *>(_cs_packet),
+                     sizeof(sizeof(common::control_surface_packet)));
+  _blackbox_in.write(reinterpret_cast<const char *>(_imu_packet),
+                     sizeof(sizeof(common::imu_packet)));
 }
 
 void serial_controller::write_packet() {
@@ -143,10 +147,14 @@ void serial_controller::write_packet() {
               "roll = " << _imu_packet->roll
                         << " | pitch = " << _imu_packet->pitch
                         << " | yaw = " << _imu_packet->yaw);
+
   boost::asio::write(
       _serial,
       boost::asio::buffer(reinterpret_cast<uint8_t *>(_cs_packet),
                           sizeof(common::control_surface_packet)));
+
+  _blackbox_out.write(reinterpret_cast<const char *>(_cs_packet),
+                      sizeof(sizeof(common::control_surface_packet)));
 }
 
 void serial_controller::flush() {

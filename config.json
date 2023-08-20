@@ -5,12 +5,10 @@
         "severity": "trace",
         "log_destination": "./logs/"
       },
-      "blackbox": {
-        "log_destination": "./logs/"
-      },
       "serial_controller": {
         "dev": "/dev/ttyACM0",
-        "baudrate": 115200
+        "baudrate": 115200,
+        "blackbox_destination": "./logs/"
       }
     },
     "hw": {

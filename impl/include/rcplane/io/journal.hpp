@@ -63,7 +63,7 @@ static boost::shared_ptr<colored_sink> _journal_sink =
                 "rcplane.io.journal.log_destination")                          \
             + "%d_%m_%Y_%I_%M_%S.log",                                         \
         boost::log::keywords::format =                                         \
-            "[%Timestamp%] [%ThreadID%] [%Severity%] %Message%");              \
+            "[%TimeStamp%] [%ThreadID%] [%Severity%] %Message%");              \
     rcplane::io::config_manager::instance().dump();                            \
   } while (false)
 
