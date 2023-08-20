@@ -6,23 +6,23 @@ namespace rcplane {
 namespace hw {
 
 control_surface_manager::control_surface_manager()
-  : interface::base_controller("cs-manager") {
+  : interface::base_controller("control_surface_manager") {
   RCPLANE_ENTER();
 
-  cAILERON_MAX_POS =
-      io::config_manager::instance().get<int8_t>("rcplane.hw.aileron.max_pos");
-  cAILERON_MAX_NEG =
-      io::config_manager::instance().get<int8_t>("rcplane.hw.aileron.max_neg")
+  cAILERON_MAX_POS = io::config_manager::instance().get<int8_t>(
+      "rcplane.hw.control_surface_manager.aileron_max_pos");
+  cAILERON_MAX_NEG = io::config_manager::instance().get<int8_t>(
+                         "rcplane.hw.control_surface_manager.aileron_max_neg")
       * -1;
-  cELEVATOR_MAX_POS =
-      io::config_manager::instance().get<int8_t>("rcplane.hw.elevator.max_pos");
-  cELEVATOR_MAX_NEG =
-      io::config_manager::instance().get<int8_t>("rcplane.hw.elevator.max_neg")
+  cELEVATOR_MAX_POS = io::config_manager::instance().get<int8_t>(
+      "rcplane.hw.control_surface_manager.elevator_max_pos");
+  cELEVATOR_MAX_NEG = io::config_manager::instance().get<int8_t>(
+                          "rcplane.hw.control_surface_manager.elevator_max_neg")
       * -1;
-  cRUDDER_MAX_POS =
-      io::config_manager::instance().get<int8_t>("rcplane.hw.rudder.max_pos");
-  cRUDDER_MAX_NEG =
-      io::config_manager::instance().get<int8_t>("rcplane.hw.rudder.max_neg")
+  cRUDDER_MAX_POS = io::config_manager::instance().get<int8_t>(
+      "rcplane.hw.control_surface_manager.rudder_max_pos");
+  cRUDDER_MAX_NEG = io::config_manager::instance().get<int8_t>(
+                        "rcplane.hw.control_surface_manager.rudder_max_neg")
       * -1;
 }
 

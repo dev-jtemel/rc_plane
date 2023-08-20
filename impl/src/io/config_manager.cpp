@@ -18,6 +18,17 @@ config_manager &config_manager::instance() {
   return c;
 }
 
+void config_manager::init() {
+  read_config();
+
+  set_log_severity(
+      _config["rcplane"]["io"]["journal"]["severity"].get<std::string>());
+}
+
+void config_manager::dump() {
+  RCPLANE_LOG(trace, "config_manager", "\n" << _config.dump(2));
+}
+
 template<typename T>
 T config_manager::get(const std::string &&path) {
   std::vector<std::string> split_paths;
@@ -31,14 +42,7 @@ T config_manager::get(const std::string &&path) {
   return sub_config.at(split_paths[split_paths.size() - 1]).get<T>();
 }
 
-config_manager::config_manager() {
-  read_config();
-
-  set_log_severity(
-      _config["common"]["io"]["journal"]["severity"].get<std::string>());
-
-  RCPLANE_LOG(trace, "config_manager", "\n" << _config.dump(2));
-}
+config_manager::config_manager() {}
 
 void config_manager::read_config() {
   std::ifstream f("config.json");

@@ -26,6 +26,16 @@ public:
   static config_manager &instance();
 
   /**
+   * @brief Read the config file.
+   */
+  void init();
+
+  /**
+   * @brief Dump the config file to log.
+   */
+  void dump();
+
+  /**
    * @brief Get a value from the config manifest.
    * @tparam T The desired type to cast to.
    * @param path The path to the value via dot notation as an rvalue
