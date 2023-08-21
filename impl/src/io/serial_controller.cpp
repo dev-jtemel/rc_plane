@@ -1,8 +1,12 @@
+/**
+ * @file serial_controller.cpp
+ * @author Jonathon Temelkovski (dev.jtemel@gmail.com)
+ * @version 0.1
+ * @date 2023-08-21
+ */
 #include "rcplane/io/serial_controller.hpp"
 #include "rcplane/io/config_manager.hpp"
 #include "rcplane/io/journal.hpp"
-#include <chrono>  //rm
-#include <thread>  //rm
 
 namespace rcplane {
 namespace io {

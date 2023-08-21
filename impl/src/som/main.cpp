@@ -1,3 +1,10 @@
+/**
+ * @file main.cpp
+ * @author Jonathon Temelkovski (dev.jtemel@gmail.com)
+ * @brief Entry point for the som controller.
+ * @version 0.1
+ * @date 2023-08-21
+ */
 #include <boost/asio/executor_work_guard.hpp>
 #include <boost/asio/io_service.hpp>
 #include <csignal>

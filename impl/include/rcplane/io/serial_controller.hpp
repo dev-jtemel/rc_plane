@@ -1,3 +1,9 @@
+/**
+ * @file serial_controller.hpp
+ * @author Jonathon Temelkovski (dev.jtemel@gmail.com)
+ * @version 0.1
+ * @date 2023-08-21
+ */
 #ifndef __RCPLANE__COMMON__IO__SERIAL_CONTROLLER_HPP__
 #define __RCPLANE__COMMON__IO__SERIAL_CONTROLLER_HPP__
 
@@ -59,6 +65,10 @@ public:
    */
   void terminate() override;
 
+  /**
+   * @brief Handler to post an io event to write the control surface packet
+   * to the mcu.
+   */
   void on_write_signal();
 
   /**
