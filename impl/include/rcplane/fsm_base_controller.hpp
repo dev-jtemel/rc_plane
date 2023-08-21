@@ -1,6 +1,8 @@
-/** 
- * @file base_controller.hpp
- * @author Jonathon Temelkovski <dev.jtemel@gmail.com>
+/**
+ * @file fsm_base_controller.hpp
+ * @author Jonathon Temelkovski (dev.jtemel@gmail.com)
+ * @version 0.1
+ * @date 2023-08-21
  */
 #ifndef __RCPLANE__FSM_BASE_CONTROLLER_HPP__
 #define __RCPLANE__FSM_BASE_CONTROLLER_HPP__
