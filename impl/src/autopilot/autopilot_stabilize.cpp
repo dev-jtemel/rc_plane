@@ -1,3 +1,9 @@
+/**
+ * @file autopilot_stabilize.cpp
+ * @author Jonathon Temelkovski (dev.jtemel@gmail.com)
+ * @version 0.1
+ * @date 2023-08-21
+ */
 #include "rcplane/autopilot/autopilot_stabilize.hpp"
 
 namespace rcplane {
@@ -26,7 +32,7 @@ void autopilot_stabilize::handler_impl(
   RCPLANE_ENTER();
 
   RCPLANE_LOG(info, _tag, "stabalizing...");
-  //_cs_manager.on(cs_packet, _imu_manager.on(imu_packet));
+  _cs_manager.on(cs_packet, _imu_manager.on(imu_packet));
 }
 
 }  // namespace autopilot

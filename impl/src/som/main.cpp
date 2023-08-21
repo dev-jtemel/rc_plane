@@ -46,8 +46,6 @@ int main() {
   autopilot_manager->init();
   serial_controller->init();
 
-
-
   autopilot_manager->autopilot()->write_signal().connect(
       boost::bind(&rcplane::io::serial_controller::on_write_signal,
                   serial_controller.get()));

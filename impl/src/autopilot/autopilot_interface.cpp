@@ -19,7 +19,7 @@ autopilot_interface::~autopilot_interface() { RCPLANE_ENTER(); }
 
 boost::signals2::signal<void()> &autopilot_interface::write_signal() {
   RCPLANE_ENTER();
-  
+
   return _write_signal;
 }
 

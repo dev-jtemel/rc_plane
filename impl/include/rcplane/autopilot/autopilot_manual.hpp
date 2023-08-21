@@ -1,4 +1,4 @@
-./**
+/**
  * @file autopilot_manual.hpp
  * @author Jonathon Temelkovski (dev.jtemel@gmail.com)
  * @version 0.1
