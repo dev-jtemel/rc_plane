@@ -55,6 +55,18 @@ void serial_controller::terminate() {
   RCPLANE_LOG(info, _tag, "terminated");
 }
 
+void serial_controller::on_write_signal() {
+  RCPLANE_ENTER();
+
+  _io.post(boost::bind(&rcplane::io::serial_controller::write_packet, this));
+}
+
+boost::signals2::signal<void(common::state_packet *)>
+    &serial_controller::state_signal() {
+  RCPLANE_ENTER();
+  return _state_signal;
+}
+
 boost::signals2::signal<void(common::control_surface_packet *,
                              common::imu_packet *)>
     &serial_controller::packet_signal() {
@@ -68,11 +80,14 @@ void serial_controller::read_write_serial() {
   RCPLANE_LOG(info, _tag, "worker started");
 
   while (_running) {
-    read_packets();
+    _state_packet = read_packet<rcplane::common::state_packet>();
+    _cs_packet = read_packet<rcplane::common::control_surface_packet>();
+    _imu_packet = read_packet<rcplane::common::imu_packet>();
+
+    _state_signal(_state_packet);
     _packet_signal(_cs_packet, _imu_packet);
+
     write_packet();
-    _streambuffer.consume(sizeof(common::control_surface_packet)
-                          + sizeof(common::imu_packet));
   }
 }
 
@@ -100,34 +115,22 @@ bool serial_controller::handshake_mcu() {
   return true;
 }
 
-void serial_controller::read_packets() {
+template<typename PACKET_TYPE>
+PACKET_TYPE *serial_controller::read_packet() {
   RCPLANE_ENTER();
-
-  boost::asio::read(
-      _serial,
-      _streambuffer,
-      boost::asio::transfer_exactly(sizeof(common::control_surface_packet)));
-
-  _cs_packet = const_cast<common::control_surface_packet *>(
-      boost::asio::buffer_cast<const common::control_surface_packet *>(
-          _streambuffer.data()));
-
-  _streambuffer.consume(sizeof(common::control_surface_packet));
 
   boost::asio::read(_serial,
                     _streambuffer,
-                    boost::asio::transfer_exactly(sizeof(common::imu_packet)));
+                    boost::asio::transfer_exactly(sizeof(PACKET_TYPE)));
 
-  _imu_packet = const_cast<common::imu_packet *>(
-      boost::asio::buffer_cast<const common::imu_packet *>(
-          _streambuffer.data()));
+  PACKET_TYPE *packet = const_cast<PACKET_TYPE *>(
+      boost::asio::buffer_cast<const PACKET_TYPE *>(_streambuffer.data()));
 
-  _streambuffer.consume(sizeof(common::imu_packet));
+  _streambuffer.consume(sizeof(PACKET_TYPE));
 
-  _blackbox_in.write(reinterpret_cast<const char *>(_cs_packet),
-                     sizeof(sizeof(common::control_surface_packet)));
-  _blackbox_in.write(reinterpret_cast<const char *>(_imu_packet),
-                     sizeof(sizeof(common::imu_packet)));
+  _blackbox_in.write(reinterpret_cast<const char *>(packet),
+                     sizeof(PACKET_TYPE));
+  return packet;
 }
 
 void serial_controller::write_packet() {
@@ -135,12 +138,16 @@ void serial_controller::write_packet() {
 
   RCPLANE_LOG(debug,
               _tag,
-              "[" << _cs_packet->timestamp << "]"
-                  << " state = " << std::bitset<8>(_cs_packet->state)
-                  << " | motor = " << +_cs_packet->motor
-                  << " | aileron = " << +_cs_packet->aileron
-                  << " | elevator = " << +_cs_packet->elevator
-                  << " | rudder = " << +_cs_packet->rudder);
+              "timestamp = " << _state_packet->timestamp << " |"
+                             << " state = "
+                             << std::bitset<8>(_state_packet->state));
+
+  RCPLANE_LOG(debug,
+              _tag,
+              "motor = " << +_cs_packet->motor
+                         << " | aileron = " << +_cs_packet->aileron
+                         << " | elevator = " << +_cs_packet->elevator
+                         << " | rudder = " << +_cs_packet->rudder);
 
   RCPLANE_LOG(debug,
               _tag,
@@ -154,7 +161,7 @@ void serial_controller::write_packet() {
                           sizeof(common::control_surface_packet)));
 
   _blackbox_out.write(reinterpret_cast<const char *>(_cs_packet),
-                      sizeof(sizeof(common::control_surface_packet)));
+                      sizeof(common::control_surface_packet));
 }
 
 void serial_controller::flush() {
@@ -169,6 +176,13 @@ void serial_controller::flush() {
   _streambuffer.consume(1000);
   RCPLANE_LOG(info, _tag, "flushed");
 }
+
+template rcplane::common::state_packet *serial_controller::read_packet<
+    rcplane::common::state_packet>();
+template rcplane::common::control_surface_packet *serial_controller::
+    read_packet<rcplane::common::control_surface_packet>();
+template rcplane::common::imu_packet *serial_controller::read_packet<
+    rcplane::common::imu_packet>();
 
 }  // namespace io
 }  // namespace rcplane

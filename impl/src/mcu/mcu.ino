@@ -25,6 +25,7 @@ bool has_user_input(int8_t &value) {
   return value >= 3 || value <= -3;
 }
 
+rcplane::common::state_packet state_packet;
 rcplane::common::control_surface_packet cs_packet;
 rcplane::common::imu_packet imu_packet;
 
@@ -45,7 +46,7 @@ void setup() {
   Serial.read();
   Serial.flush();
 
-  cs_packet.state = 0U;
+  state_packet.state = 0U;
 
   /**
    * Setup required pins.
@@ -67,17 +68,19 @@ void loop() {
   /**
    * Populate the control surface packet and wrtie to the som.
    */
-  cs_packet.timestamp = millis();
   cs_packet.motor = toRange(pulseIn(kMOTOR_IN, HIGH), 0, 255);
   cs_packet.aileron = static_cast<uint8_t>(toRange(pulseIn(kAILERON_IN, HIGH), -100, 100));
   cs_packet.elevator = static_cast<uint8_t>(toRange(pulseIn(kELEVATOR_IN, HIGH), -100, 100));
   cs_packet.rudder = static_cast<uint8_t>(toRange(pulseIn(kRUDDER_IN, HIGH), -100, 100));
 
-  cs_packet.state = 0x0;
-  cs_packet.state |= pulseIn(kASSITANCE_IN, HIGH) > 1600 ? rcplane::common::state::kASSISTANCE_FLAG : 0x0;
-  cs_packet.state |= has_user_input(cs_packet.aileron) ? rcplane::common::state::kUSER_ROLL : 0x0;
-  cs_packet.state |= has_user_input(cs_packet.elevator) ? rcplane::common::state::kUSER_PITCH : 0x0;
 
+  state_packet.timestamp = millis();
+  state_packet.state = 0x0;
+  state_packet.state |= pulseIn(kASSITANCE_IN, HIGH) > 1600 ? rcplane::common::state::kASSISTANCE_FLAG : 0x0;
+  state_packet.state |= has_user_input(cs_packet.aileron) ? rcplane::common::state::kUSER_ROLL : 0x0;
+  state_packet.state |= has_user_input(cs_packet.elevator) ? rcplane::common::state::kUSER_PITCH : 0x0;
+
+  rcplane::common::write_packet<rcplane::common::state_packet>(state_packet);
   rcplane::common::write_packet<rcplane::common::control_surface_packet>(cs_packet);
 
   mpu.update();
@@ -87,7 +90,7 @@ void loop() {
 
   rcplane::common::write_packet<rcplane::common::imu_packet>(imu_packet);
 
-  cs_packet.timestamp = rcplane::common::read_packet<rcplane::common::control_surface_packet>(cs_packet);
+  rcplane::common::read_packet<rcplane::common::control_surface_packet>(cs_packet);
 
   // Simulate writing to servos
   analogWrite(kELEVATOR_OUT, cs_packet.elevator + 115);

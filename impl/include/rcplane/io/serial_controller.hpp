@@ -59,6 +59,15 @@ public:
    */
   void terminate() override;
 
+  void on_write_signal();
+
+  /**
+   * @brief Connect to a singal slot for the control surface packet.
+   * @returns boost::signal<void(control_surface_packet *)> reference to
+   * connect to.
+   */
+  boost::signals2::signal<void(common::state_packet *)> &state_signal();
+
   /**
    * @brief Connect to a singal slot for the control surface packet.
    * @returns boost::signal<void(control_surface_packet *)> reference to
@@ -97,8 +106,12 @@ private:
 
   /**
    * @brief Read one packet from the serial bus.
+   * 
+   * @tparam PACKET_TYPE The type of packet to read and consume.
+   * @return PACKET_TYPE* Pointer to the packet read.
    */
-  void read_packets();
+  template<typename PACKET_TYPE>
+  PACKET_TYPE *read_packet();
 
   /**
    * @brief Write one packet from the serial bus.
@@ -124,12 +137,15 @@ private:
   boost::atomic<bool> _running{false};
 
   boost::asio::streambuf _streambuffer;
+
+  common::state_packet *_state_packet;
   common::control_surface_packet *_cs_packet;
   common::imu_packet *_imu_packet;
 
   boost::thread _worker;
   boost::asio::io_service &_io;
   boost::asio::serial_port _serial;
+  boost::signals2::signal<void(common::state_packet *)> _state_signal;
   boost::signals2::signal<void(common::control_surface_packet *,
                                common::imu_packet *)>
       _packet_signal;
