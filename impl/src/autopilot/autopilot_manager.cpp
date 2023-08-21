@@ -1,3 +1,9 @@
+/**
+ * @file autopilot_manager.cpp
+ * @author Jonathon Temelkovski (dev.jtemel@gmail.com)
+ * @version 0.1
+ * @date 2023-08-21
+ */
 #include "rcplane/autopilot/autopilot_manager.hpp"
 #include "rcplane/io/journal.hpp"
 
