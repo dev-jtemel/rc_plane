@@ -50,10 +50,12 @@ void autopilot_manager::on_state_signal(common::state_packet *state_packet) {
   RCPLANE_ENTER();
 
   if ((_prev_state & 0xC0) != (state_packet->state & 0xC0)) {
+    auto old_autopilot = _autopilot;
     _autopilot->on_exit();
     _autopilot = state_packet->state & 0x80
         ? dynamic_cast<interface::autopilot_interface *>(&_ap_stabilize)
         : dynamic_cast<interface::autopilot_interface *>(&_ap_manual);
+    _autopilot->set_write_signal(old_autopilot->write_signal());
     _autopilot->on_entry();
 
     _prev_state = state_packet->state;

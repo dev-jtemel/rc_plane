@@ -42,6 +42,12 @@ public:
   boost::signals2::signal<void()> &write_signal();
 
   /**
+   * @brief Take ownership of the write_signal handler.
+   * @param write_signal The signal handler to take ownership of.
+   */
+  void set_write_signal(boost::signals2::signal<void()> &write_signal);
+
+  /**
    * @brief Post an io event to handle the incoming packets.
    * 
    * This internally calls handler_impl() allow the dervied autopilot system to

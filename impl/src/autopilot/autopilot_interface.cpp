@@ -23,11 +23,18 @@ boost::signals2::signal<void()> &autopilot_interface::write_signal() {
   return _write_signal;
 }
 
+void autopilot_interface::set_write_signal(boost::signals2::signal<void()> &write_signal) {
+  RCPLANE_ENTER();
+
+  _write_signal = std::move(write_signal);
+}
+
 void autopilot_interface::handler(common::control_surface_packet *cs_packet,
                                   common::imu_packet *imu_packet) {
   RCPLANE_ENTER();
 
   handler_impl(cs_packet, imu_packet);
+
   _write_signal();
 }
 

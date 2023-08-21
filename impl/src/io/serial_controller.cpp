@@ -90,8 +90,6 @@ void serial_controller::read_write_serial() {
 
     _state_signal(_state_packet);
     _packet_signal(_cs_packet, _imu_packet);
-
-    write_packet();
   }
 }
 
