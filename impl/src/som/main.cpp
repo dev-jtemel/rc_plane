@@ -1,9 +1,16 @@
+/**
+ * @file main.cpp
+ * @author Jonathon Temelkovski (dev.jtemel@gmail.com)
+ * @brief Entry point for the som controller.
+ * @version 0.1
+ * @date 2023-08-21
+ */
 #include <boost/asio/executor_work_guard.hpp>
 #include <boost/asio/io_service.hpp>
 #include <csignal>
 #include <memory>
 
-#include "rcplane/autopilot/autopilot.hpp"
+#include "rcplane/autopilot/autopilot_manager.hpp"
 #include "rcplane/io/config_manager.hpp"
 #include "rcplane/io/journal.hpp"
 #include "rcplane/io/serial_controller.hpp"
@@ -30,25 +37,33 @@ int main() {
   std::unique_ptr<rcplane::io::serial_controller> serial_controller =
       std::make_unique<rcplane::io::serial_controller>(io);
 
-  std::unique_ptr<rcplane::autopilot::autopilot> autopilot =
-      std::make_unique<rcplane::autopilot::autopilot>(io);
+  std::unique_ptr<rcplane::autopilot::autopilot_manager> autopilot_manager =
+      std::make_unique<rcplane::autopilot::autopilot_manager>(io);
 
+  serial_controller->state_signal().connect(
+      boost::bind(&rcplane::autopilot::autopilot_manager::on_state_signal,
+                  autopilot_manager.get(),
+                  boost::placeholders::_1));
   serial_controller->packet_signal().connect(
-      boost::bind(&rcplane::autopilot::autopilot::on,
-                  autopilot.get(),
+      boost::bind(&rcplane::autopilot::autopilot_manager::on_mcu_signal,
+                  autopilot_manager.get(),
                   boost::placeholders::_1,
                   boost::placeholders::_2));
 
+  autopilot_manager->init();
   serial_controller->init();
-  autopilot->init();
 
+  autopilot_manager->autopilot()->write_signal().connect(
+      boost::bind(&rcplane::io::serial_controller::on_write_signal,
+                  serial_controller.get()));
+
+  autopilot_manager->start();
   serial_controller->start();
-  autopilot->start();
 
   io.run();
 
-  autopilot->terminate();
   serial_controller->terminate();
+  autopilot_manager->terminate();
 
-  return 1;
+  return 0;
 }

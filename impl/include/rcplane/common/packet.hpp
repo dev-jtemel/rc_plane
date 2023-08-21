@@ -9,6 +9,16 @@ namespace rcplane {
 namespace common {
 
 /**
+ * @brief Packet definition of time and state of the application.
+ * 
+ * @warning This packet is packed to avoid compiler padding.
+ */
+struct __attribute((packed)) state_packet {
+  uint32_t timestamp;
+  uint8_t state;
+};
+
+/**
  * @brief Packet definition of control surface values.
  * 
  * This packet defines the control surface data to be communicated
@@ -17,8 +27,6 @@ namespace common {
  * @warning This packet is packed to avoid compiler padding.
  */
 struct __attribute__((packed)) control_surface_packet {
-  uint32_t timestamp;
-  uint8_t state;
   uint8_t motor;
   int8_t aileron;
   int8_t elevator;

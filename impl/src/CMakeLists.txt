@@ -22,6 +22,20 @@ target_link_libraries(rcplane_hw
     rcplane_io
 )
 
+add_library(rcplane_autopilot
+  autopilot/autopilot_manager.cpp
+  autopilot/autopilot_interface.cpp
+  autopilot/autopilot_manual.cpp
+  autopilot/autopilot_stabilize.cpp
+)
+
+target_link_libraries(rcplane_autopilot
+  PUBLIC
+    rcplane_io
+    rcplane_hw
+)
+
+
 add_executable(som_controller
   som/main.cpp
 )
@@ -30,6 +44,7 @@ target_link_libraries(som_controller
   PUBLIC
     rcplane_io
     rcplane_hw
+    rcplane_autopilot
   PRIVATE
     boost_log
     boost_log_setup

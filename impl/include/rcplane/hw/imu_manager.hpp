@@ -25,18 +25,18 @@ public:
   ~imu_manager();
 
   /**
-   * @brief NOP.
+   * @brief nop.
    * @return true always.
    */
   bool init() override;
 
   /**
-   * @brief NOP.
+   * @brief nop.
    */
   void start() override;
 
   /**
-   * @brief NOP.
+   * @brief nop.
    */
   void terminate() override;
 
