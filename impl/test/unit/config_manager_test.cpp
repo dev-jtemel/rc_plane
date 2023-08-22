@@ -39,14 +39,16 @@ protected:
 };
 
 TEST_F(config_manager_fixture, dump) {
-  const std::string kREAL_CONFIG = "configs/config.json";
-  load_config(kREAL_CONFIG);
+  const std::string kTEST_CONFIG =
+      "configs/test/unit/config_manager/test_config.json";
+  load_config(kTEST_CONFIG);
   _config_manager_mock->dump();
 }
 
 TEST_F(config_manager_fixture, get_dne) {
-  const std::string kREAL_CONFIG = "configs/config.json";
-  load_config(kREAL_CONFIG);
+  const std::string kTEST_CONFIG =
+      "configs/test/unit/config_manager/test_config.json";
+  load_config(kTEST_CONFIG);
   EXPECT_THROW(
       {
         try {
@@ -63,8 +65,9 @@ TEST_F(config_manager_fixture, get_dne) {
 }
 
 TEST_F(config_manager_fixture, get_empty) {
-  const std::string kREAL_CONFIG = "configs/config.json";
-  load_config(kREAL_CONFIG);
+  const std::string kTEST_CONFIG =
+      "configs/test/unit/config_manager/test_config.json";
+  load_config(kTEST_CONFIG);
   EXPECT_THROW(
       {
         try {
@@ -80,8 +83,9 @@ TEST_F(config_manager_fixture, get_empty) {
 }
 
 TEST_F(config_manager_fixture, get_invalid_st) {
-  const std::string kREAL_CONFIG = "configs/config.json";
-  load_config(kREAL_CONFIG);
+  const std::string kTEST_CONFIG =
+      "configs/test/unit/config_manager/test_config.json";
+  load_config(kTEST_CONFIG);
   EXPECT_THROW(
       {
         try {
@@ -98,7 +102,8 @@ TEST_F(config_manager_fixture, get_invalid_st) {
 }
 
 TEST_F(config_manager_fixture, get_invalid_type_str_to_u32) {
-  const std::string kTEST_CONFIG = "configs/test_config.json";
+  const std::string kTEST_CONFIG =
+      "configs/test/unit/config_manager/test_config.json";
   load_config(kTEST_CONFIG);
   EXPECT_THROW(
       {
@@ -116,7 +121,8 @@ TEST_F(config_manager_fixture, get_invalid_type_str_to_u32) {
 }
 
 TEST_F(config_manager_fixture, get_invalid_type_str_to_int8) {
-  const std::string kTEST_CONFIG = "configs/test_config.json";
+  const std::string kTEST_CONFIG =
+      "configs/test/unit/config_manager/test_config.json";
   load_config(kTEST_CONFIG);
   EXPECT_THROW(
       {
@@ -134,7 +140,8 @@ TEST_F(config_manager_fixture, get_invalid_type_str_to_int8) {
 }
 
 TEST_F(config_manager_fixture, get_invalid_type_u32_to_str) {
-  const std::string kTEST_CONFIG = "configs/test_config.json";
+  const std::string kTEST_CONFIG =
+      "configs/test/unit/config_manager/test_config.json";
   load_config(kTEST_CONFIG);
   EXPECT_THROW(
       {
@@ -152,7 +159,8 @@ TEST_F(config_manager_fixture, get_invalid_type_u32_to_str) {
 }
 
 TEST_F(config_manager_fixture, get_str) {
-  const std::string kTEST_CONFIG = "configs/test_config.json";
+  const std::string kTEST_CONFIG =
+      "configs/test/unit/config_manager/test_config.json";
   load_config(kTEST_CONFIG);
 
   const std::string ex = "some string";
@@ -162,7 +170,8 @@ TEST_F(config_manager_fixture, get_str) {
 }
 
 TEST_F(config_manager_fixture, get_int8) {
-  const std::string kTEST_CONFIG = "configs/test_config.json";
+  const std::string kTEST_CONFIG =
+      "configs/test/unit/config_manager/test_config.json";
   load_config(kTEST_CONFIG);
 
   const int8_t ex = 101;
@@ -171,7 +180,8 @@ TEST_F(config_manager_fixture, get_int8) {
 }
 
 TEST_F(config_manager_fixture, get_u32) {
-  const std::string kTEST_CONFIG = "configs/test_config.json";
+  const std::string kTEST_CONFIG =
+      "configs/test/unit/config_manager/test_config.json";
   load_config(kTEST_CONFIG);
 
   const uint32_t ex = 101;
@@ -180,7 +190,8 @@ TEST_F(config_manager_fixture, get_u32) {
 }
 
 TEST_F(config_manager_fixture, set_trace) {
-  const std::string kTEST_CONFIG = "configs/trace.json";
+  const std::string kTEST_CONFIG =
+      "configs/test/unit/config_manager/trace.json";
   load_config(kTEST_CONFIG);
 
   RCPLANE_LOG(trace, "test", "trace");
@@ -192,9 +203,10 @@ TEST_F(config_manager_fixture, set_trace) {
 }
 
 TEST_F(config_manager_fixture, set_debug) {
-  const std::string kTEST_CONFIG = "configs/debug.json";
+  const std::string kTEST_CONFIG =
+      "configs/test/unit/config_manager/debug.json";
   load_config(kTEST_CONFIG);
-  
+
   RCPLANE_LOG(trace, "test", "trace");
   RCPLANE_LOG(debug, "test", "debug");
   RCPLANE_LOG(info, "test", "info");
@@ -204,9 +216,9 @@ TEST_F(config_manager_fixture, set_debug) {
 }
 
 TEST_F(config_manager_fixture, set_info) {
-  const std::string kTEST_CONFIG = "configs/info.json";
+  const std::string kTEST_CONFIG = "configs/test/unit/config_manager/info.json";
   load_config(kTEST_CONFIG);
-  
+
   RCPLANE_LOG(trace, "test", "trace");
   RCPLANE_LOG(debug, "test", "debug");
   RCPLANE_LOG(info, "test", "info");
@@ -216,9 +228,10 @@ TEST_F(config_manager_fixture, set_info) {
 }
 
 TEST_F(config_manager_fixture, set_warning) {
-  const std::string kTEST_CONFIG = "configs/warning.json";
+  const std::string kTEST_CONFIG =
+      "configs/test/unit/config_manager/warning.json";
   load_config(kTEST_CONFIG);
-  
+
   RCPLANE_LOG(trace, "test", "trace");
   RCPLANE_LOG(debug, "test", "debug");
   RCPLANE_LOG(info, "test", "info");
@@ -228,9 +241,10 @@ TEST_F(config_manager_fixture, set_warning) {
 }
 
 TEST_F(config_manager_fixture, set_error) {
-  const std::string kTEST_CONFIG = "configs/error.json";
+  const std::string kTEST_CONFIG =
+      "configs/test/unit/config_manager/error.json";
   load_config(kTEST_CONFIG);
-  
+
   RCPLANE_LOG(trace, "test", "trace");
   RCPLANE_LOG(debug, "test", "debug");
   RCPLANE_LOG(info, "test", "info");
@@ -240,9 +254,10 @@ TEST_F(config_manager_fixture, set_error) {
 }
 
 TEST_F(config_manager_fixture, set_fatal) {
-  const std::string kTEST_CONFIG = "configs/fatal.json";
+  const std::string kTEST_CONFIG =
+      "configs/test/unit/config_manager/fatal.json";
   load_config(kTEST_CONFIG);
-  
+
   RCPLANE_LOG(trace, "test", "trace");
   RCPLANE_LOG(debug, "test", "debug");
   RCPLANE_LOG(info, "test", "info");
@@ -252,9 +267,10 @@ TEST_F(config_manager_fixture, set_fatal) {
 }
 
 TEST_F(config_manager_fixture, set_invalid) {
-  const std::string kTEST_CONFIG = "configs/invalid.json";
+  const std::string kTEST_CONFIG =
+      "configs/test/unit/config_manager/invalid.json";
   load_config(kTEST_CONFIG);
-  
+
   RCPLANE_LOG(trace, "test", "trace");
   RCPLANE_LOG(debug, "test", "debug");
   RCPLANE_LOG(info, "test", "info");
@@ -264,9 +280,10 @@ TEST_F(config_manager_fixture, set_invalid) {
 }
 
 TEST_F(config_manager_fixture, invalid_json) {
-  const std::string kTEST_CONFIG = "configs/bad_json.json";
+  const std::string kTEST_CONFIG =
+      "configs/test/unit/config_manager/bad_json.json";
   EXPECT_THROW({ load_config(kTEST_CONFIG); }, nlohmann::json::parse_error);
-  
+
   RCPLANE_LOG(trace, "test", "trace");
   RCPLANE_LOG(debug, "test", "debug");
   RCPLANE_LOG(info, "test", "info");

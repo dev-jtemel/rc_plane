@@ -11,9 +11,6 @@ class config_manager_mock : public rcplane::io::config_manager {
 public:
   MOCK_METHOD(void, read_config, (const std::string &), (override));
   MOCK_METHOD(void, set_log_severity, (const std::string &&severity), ());
-
-private:
-  rcplane::io::config_manager _config_manager;
 };
 
 }  // namespace test
