@@ -9,15 +9,11 @@ namespace test {
 
 class config_manager_mock : public rcplane::io::config_manager {
 public:
-  MOCK_METHOD(void, init, (), (override));
-  MOCK_METHOD(void, dump, (), (override));
+  MOCK_METHOD(void, read_config, (const std::string &), (override));
+  MOCK_METHOD(void, set_log_severity, (const std::string &&severity), ());
 
 private:
-  MOCK_METHOD(void, read_config, (), (override));
-  MOCK_METHOD(void,
-              set_log_severity,
-              (const std::string &&severity),
-              (override));
+  rcplane::io::config_manager _config_manager;
 };
 
 }  // namespace test

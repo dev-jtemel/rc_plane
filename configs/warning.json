@@ -1,0 +1,14 @@
+{
+  "rcplane": {
+    "io": {
+      "journal": {
+        "severity": "warning"
+      }
+    },
+    "test": {
+      "str": "some string",
+      "bool": true,
+      "int8": 101
+    }
+  }
+}

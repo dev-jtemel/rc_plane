@@ -35,6 +35,7 @@ public:
    * @throws nlohmann::json::parse_error if manifest is invalid json.
    */
   explicit config_manager();
+  ~config_manager();
 
   /**
    * @brief Read the config file.
@@ -67,19 +68,20 @@ public:
   template<typename T>
   T get(const std::string &&path);
 
-private:
-  /**
-   * @brief Read the config manifest to json.
-   * @warning Looks at parent path which must be top of the repo!
-   */
-  void read_config();
-
   /**
    * @brief Set the severity as specified in the manifest.
    * @param severity the severity in the manfiest as an rvalue.
    */
   void set_log_severity(const std::string &&severity);
 
+  /**
+   * @brief Read the config manifest to json.
+   * @warning Looks at parent path which must be top of the repo!
+   */
+  VIRTUAL_TEST void read_config(const std::string &path);
+
+private:
+  const std::string kCONFIG_PATH{"configs/config.json"};
   nlohmann::json _config;
 };
 

@@ -23,11 +23,12 @@ config_manager::config_manager()
   : rcplane::interface::base_controller("config_manager") {
   RCPLANE_ENTER();
 }
+config_manager::~config_manager() { RCPLANE_ENTER(); }
 
 bool config_manager::init() {
   RCPLANE_ENTER();
 
-  read_config();
+  read_config(kCONFIG_PATH);
 
   set_log_severity(
       _config["rcplane"]["io"]["journal"]["severity"].get<std::string>());
@@ -42,13 +43,13 @@ void config_manager::start() {
 
 void config_manager::terminate() {
   RCPLANE_ENTER();
-  RCPLANE_LOG(info, _tag, "started");
+  RCPLANE_LOG(info, _tag, "terminated");
 }
 
 void config_manager::dump() {
   RCPLANE_ENTER();
 
-  RCPLANE_LOG(trace, "config_manager", "\n" << _config.dump(2));
+  RCPLANE_LOG(trace, _tag, "\n" << _config.dump(2));
 }
 
 template<typename T>
@@ -66,10 +67,10 @@ T config_manager::get(const std::string &&path) {
   return sub_config.at(split_paths[split_paths.size() - 1]).get<T>();
 }
 
-void config_manager::read_config() {
+void config_manager::read_config(const std::string &path) {
   RCPLANE_ENTER();
 
-  std::ifstream f("config.json");
+  std::ifstream f(path);
   _config = nlohmann::json::parse(f);
 }
 

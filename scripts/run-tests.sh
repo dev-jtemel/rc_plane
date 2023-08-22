@@ -6,13 +6,11 @@ ROOT_DIR="$1"
 COMPILE_ONLY="$2"
 
 run_tests() {
-    # DISABLED
     ./build/impl/test/rcplane_unit_test
-    #[ -d coverage ] && rm -rf coverage
-    #mkdir coverage && pushd coverage
-    #gcovr -r .. -e "../som" -e "../common/test/" -e "../third_party"  --html-details -o coverage.html
-    #popd
-    echo "DISABLED"
+    [ -d coverage ] && rm -rf coverage
+    mkdir coverage && pushd coverage
+    gcovr -r .. -e "../som" -e "../common/test/" -e "../third_party"  --html-details -o coverage.html
+    popd
 }
 
 echo "***************************"
