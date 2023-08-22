@@ -11,8 +11,11 @@ namespace rcplane {
 namespace autopilot {
 namespace interface {
 
-autopilot_interface::autopilot_interface(std::string tag)
-  : rcplane::interface::fsm_base_controller(tag) {
+autopilot_interface::autopilot_interface(
+    std::string tag,
+    rcplane::io::config_manager &config_manager)
+  : rcplane::interface::fsm_base_controller(tag), _cs_manager(config_manager),
+    _imu_manager(config_manager) {
   RCPLANE_ENTER();
 }
 autopilot_interface::~autopilot_interface() { RCPLANE_ENTER(); }
@@ -23,7 +26,8 @@ boost::signals2::signal<void()> &autopilot_interface::write_signal() {
   return _write_signal;
 }
 
-void autopilot_interface::set_write_signal(boost::signals2::signal<void()> &write_signal) {
+void autopilot_interface::set_write_signal(
+    boost::signals2::signal<void()> &write_signal) {
   RCPLANE_ENTER();
 
   _write_signal = std::move(write_signal);

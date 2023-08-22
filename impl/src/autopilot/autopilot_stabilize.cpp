@@ -9,8 +9,9 @@
 namespace rcplane {
 namespace autopilot {
 
-autopilot_stabilize::autopilot_stabilize()
-  : interface::autopilot_interface("autopilot_stabilize") {
+autopilot_stabilize::autopilot_stabilize(
+    rcplane::io::config_manager &config_manager)
+  : interface::autopilot_interface("autopilot_stabilize", config_manager) {
   RCPLANE_ENTER();
 }
 autopilot_stabilize::~autopilot_stabilize() { RCPLANE_ENTER(); }

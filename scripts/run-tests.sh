@@ -7,7 +7,7 @@ COMPILE_ONLY="$2"
 
 run_tests() {
     # DISABLED
-    # ./build/common/test/rcplane_common_tests
+    ./build/impl/test/rcplane_unit_test
     #[ -d coverage ] && rm -rf coverage
     #mkdir coverage && pushd coverage
     #gcovr -r .. -e "../som" -e "../common/test/" -e "../third_party"  --html-details -o coverage.html

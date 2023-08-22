@@ -19,8 +19,9 @@ class autopilot_stabilize : public interface::autopilot_interface {
 public:
   /**
    * @brief Construct a new autopilot stabilize object
+   * @param config_manager The config manager to grab config values from.
    */
-  explicit autopilot_stabilize();
+  autopilot_stabilize(rcplane::io::config_manager &config_manager);
   ~autopilot_stabilize();
 
   /**

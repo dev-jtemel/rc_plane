@@ -10,8 +10,8 @@
 namespace rcplane {
 namespace autopilot {
 
-autopilot_manual::autopilot_manual()
-  : interface::autopilot_interface("autopilot_manual") {
+autopilot_manual::autopilot_manual(rcplane::io::config_manager &config_manager)
+  : interface::autopilot_interface("autopilot_manual", config_manager) {
   RCPLANE_ENTER();
 }
 autopilot_manual::~autopilot_manual() { RCPLANE_ENTER(); }

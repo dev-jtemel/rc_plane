@@ -15,6 +15,7 @@
 #include "rcplane/autopilot/autopilot_stabilize.hpp"
 #include "rcplane/base_controller.hpp"
 #include "rcplane/common/packet.hpp"
+#include "rcplane/io/config_manager.hpp"
 
 namespace rcplane {
 namespace autopilot {
@@ -31,9 +32,11 @@ public:
   /**
    * @brief Construct a new autopilot manager object.
    * 
+   * @param config_manager The config manager to grab config values from.
    * @param io Shared io context.
    */
-  explicit autopilot_manager(boost::asio::io_context &io);
+  explicit autopilot_manager(rcplane::io::config_manager &config_manager,
+                             boost::asio::io_context &io);
   ~autopilot_manager();
 
   /**

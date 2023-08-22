@@ -1,3 +1,9 @@
+/**
+ * @file control_surface_manager.hpp
+ * @author Jonathon Temelkovski (dev.jtemel@gmail.com)
+ * @version 0.1
+ * @date 2023-08-22
+ */
 #ifndef __RCPLANE__HW__CONTROL_SURFACE_MANAGER_HPP__
 #define __RCPLANE__HW__CONTROL_SURFACE_MANAGER_HPP__
 
@@ -20,8 +26,9 @@ class control_surface_manager : public interface::base_controller,
 public:
   /**
    * @brief Construct a new control surface manager object.
+   * @param config_manager The config manager to grab config values from.
    */
-  explicit control_surface_manager();
+  explicit control_surface_manager(rcplane::io::config_manager &config_manager);
   ~control_surface_manager();
 
   /**

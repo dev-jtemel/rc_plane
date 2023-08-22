@@ -11,16 +11,16 @@
 namespace rcplane {
 namespace io {
 
-serial_controller::serial_controller(boost::asio::io_context &io)
+serial_controller::serial_controller(config_manager &config_manager,
+                                     boost::asio::io_context &io)
   : interface::base_controller("serial_controller"), _io(io), _serial(_io) {
   RCPLANE_ENTER();
 
-  cBLACKBOX = config_manager::instance().get<std::string>(
+  cBLACKBOX = config_manager.get<std::string>(
       "rcplane.io.serial_controller.blackbox_destination");
-  cTTY = config_manager::instance().get<std::string>(
-      "rcplane.io.serial_controller.dev");
-  cBAUDRATE = config_manager::instance().get<uint32_t>(
-      "rcplane.io.serial_controller.baudrate");
+  cTTY = config_manager.get<std::string>("rcplane.io.serial_controller.dev");
+  cBAUDRATE =
+      config_manager.get<uint32_t>("rcplane.io.serial_controller.baudrate");
 }
 
 serial_controller::~serial_controller() { RCPLANE_ENTER(); }

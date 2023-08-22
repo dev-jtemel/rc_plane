@@ -31,8 +31,10 @@ public:
    * @brief Construct a new autopilot interface object.
    * 
    * @param tag The logging tag of the underlying autopilot system.
+   * @param config_manager The config manager to grab config values from.
    */
-  explicit autopilot_interface(std::string tag);
+  explicit autopilot_interface(std::string tag,
+                               rcplane::io::config_manager &config_manager);
   ~autopilot_interface();
 
   /**

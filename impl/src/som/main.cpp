@@ -28,17 +28,21 @@ void termination_handler(int signum) {
 }
 
 int main() {
-  RCPLANE_LOG_INIT();
+  rcplane::io::config_manager config_manager;
+  (void)config_manager.init();
+
+  RCPLANE_LOG_INIT(config_manager);
   RCPLANE_LOG(info, kTAG, "starting");
 
   signal(SIGINT, termination_handler);
   RCPLANE_LOG(info, kTAG, "termination handler set");
 
   std::unique_ptr<rcplane::io::serial_controller> serial_controller =
-      std::make_unique<rcplane::io::serial_controller>(io);
+      std::make_unique<rcplane::io::serial_controller>(config_manager, io);
 
   std::unique_ptr<rcplane::autopilot::autopilot_manager> autopilot_manager =
-      std::make_unique<rcplane::autopilot::autopilot_manager>(io);
+      std::make_unique<rcplane::autopilot::autopilot_manager>(config_manager,
+                                                              io);
 
   serial_controller->state_signal().connect(
       boost::bind(&rcplane::autopilot::autopilot_manager::on_state_signal,

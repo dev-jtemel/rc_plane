@@ -1,3 +1,9 @@
+/**
+ * @file config_manager.cpp
+ * @author Jonathon Temelkovski (dev.jtemel@gmail.com)
+ * @version 0.1
+ * @date 2023-08-22
+ */
 #include <algorithm>
 #include <boost/algorithm/string.hpp>
 #include <boost/noncopyable.hpp>
@@ -13,24 +19,42 @@
 namespace rcplane {
 namespace io {
 
-config_manager &config_manager::instance() {
-  static config_manager c;
-  return c;
+config_manager::config_manager()
+  : rcplane::interface::base_controller("config_manager") {
+  RCPLANE_ENTER();
 }
 
-void config_manager::init() {
+bool config_manager::init() {
+  RCPLANE_ENTER();
+
   read_config();
 
   set_log_severity(
       _config["rcplane"]["io"]["journal"]["severity"].get<std::string>());
+  RCPLANE_LOG(info, _tag, "initialized");
+  return true;
+}
+
+void config_manager::start() {
+  RCPLANE_ENTER();
+  RCPLANE_LOG(info, _tag, "started");
+}
+
+void config_manager::terminate() {
+  RCPLANE_ENTER();
+  RCPLANE_LOG(info, _tag, "started");
 }
 
 void config_manager::dump() {
+  RCPLANE_ENTER();
+
   RCPLANE_LOG(trace, "config_manager", "\n" << _config.dump(2));
 }
 
 template<typename T>
 T config_manager::get(const std::string &&path) {
+  RCPLANE_ENTER();
+
   std::vector<std::string> split_paths;
   boost::split(split_paths, path, boost::is_any_of("."));
 
@@ -42,14 +66,16 @@ T config_manager::get(const std::string &&path) {
   return sub_config.at(split_paths[split_paths.size() - 1]).get<T>();
 }
 
-config_manager::config_manager() {}
-
 void config_manager::read_config() {
+  RCPLANE_ENTER();
+
   std::ifstream f("config.json");
   _config = nlohmann::json::parse(f);
 }
 
 void config_manager::set_log_severity(const std::string &&severity) {
+  RCPLANE_ENTER();
+
   if (severity == "trace") {
     RCPLANE_SEVERITY_UPDATE(trace);
   } else if (severity == "debug") {

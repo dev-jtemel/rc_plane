@@ -32,10 +32,12 @@ class serial_controller : public ::rcplane::interface::base_controller,
                           public ::boost::noncopyable {
 public:
   /**
-   * @brief Construct a serial controller and hold the io_service reference.=
+   * @brief Construct a serial controller and hold the io_service reference.
+   * @param config_manager The config manager to grab config values from.
    * @param io The io_context of the main application.
    */
-  explicit serial_controller(boost::asio::io_context &io);
+  explicit serial_controller(config_manager &config_manager,
+                             boost::asio::io_context &io);
   ~serial_controller();
 
   /**

@@ -10,8 +10,11 @@
 namespace rcplane {
 namespace autopilot {
 
-autopilot_manager::autopilot_manager(boost::asio::io_context &io)
-  : rcplane::interface::base_controller("autopilot_manager"), _io(io) {
+autopilot_manager::autopilot_manager(
+    rcplane::io::config_manager &config_manager,
+    boost::asio::io_context &io)
+  : rcplane::interface::base_controller("autopilot_manager"), _io(io),
+    _ap_manual(config_manager), _ap_stabilize(config_manager) {
   RCPLANE_ENTER();
 }
 autopilot_manager::~autopilot_manager() { RCPLANE_ENTER(); }

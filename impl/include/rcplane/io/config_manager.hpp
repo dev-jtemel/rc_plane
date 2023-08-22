@@ -1,3 +1,9 @@
+/**
+ * @file config_manager.hpp
+ * @author Jonathon Temelkovski (dev.jtemel@gmail.com)
+ * @version 0.1
+ * @date 2023-08-22
+ */
 #ifndef __RCPLANE__IO__CONFIG_MANAGER_HPP__
 #define __RCPLANE__IO__CONFIG_MANAGER_HPP__
 
@@ -7,28 +13,44 @@
 
 #include "json/json.hpp"
 
+#include "rcplane/base_controller.hpp"
+
 namespace rcplane {
 namespace io {
 
 /**
- * @brief Singleton that manages the distrubtion of config file data.
+ * @brief Manages the distrubtion of config file data.
  *
  * Parse, validate and propagate the configuration JSON data to the rest
  * of the components in the system.
- *
- * @warning This is a singleton class.
  */
-class config_manager : public ::boost::noncopyable {
+class config_manager : public rcplane::interface::base_controller,
+                       public ::boost::noncopyable {
 public:
   /**
-   * @brief Retreive the instance or create one if required.
+   * @breif Private constructor for singleton.
+   * 
+   * Set the severity level specified in the config manifest.
+   *
+   * @throws nlohmann::json::parse_error if manifest is invalid json.
    */
-  static config_manager &instance();
+  explicit config_manager();
 
   /**
    * @brief Read the config file.
+   * @return Initialization status.
    */
-  void init();
+  bool init() override;
+
+  /**
+   * @brief nop.
+   */
+  void start() override;
+
+  /**
+   * @brief nop.
+   */
+  void terminate() override;
 
   /**
    * @brief Dump the config file to log.
@@ -46,15 +68,6 @@ public:
   T get(const std::string &&path);
 
 private:
-  /**
-   * @breif Private constructor for singleton.
-   * 
-   * Set the severity level specified in the config manifest.
-   *
-   * @throws nlohmann::json::parse_error if manifest is invalid json.
-   */
-  explicit config_manager();
-
   /**
    * @brief Read the config manifest to json.
    * @warning Looks at parent path which must be top of the repo!

@@ -1,3 +1,9 @@
+/**
+ * @file imu_manager.hpp
+ * @author Jonathon Temelkovski (dev.jtemel@gmail.com)
+ * @version 0.1
+ * @date 2023-08-22
+ */
 #ifndef __RCPLANE__HW__IMU_MANAGER_HPP__
 #define __RCPLANE__HW__IMU_MANAGER_HPP__
 
@@ -20,8 +26,9 @@ class imu_manager : public interface::base_controller,
 public:
   /**
   * @brief Construct a new imu manager object.
+  * @param config_manager The config manager to grab config values from.
   */
-  explicit imu_manager();
+  explicit imu_manager(rcplane::io::config_manager &config_manager);
   ~imu_manager();
 
   /**

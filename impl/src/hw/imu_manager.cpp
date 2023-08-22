@@ -1,3 +1,9 @@
+/**
+ * @file imu_manager.cpp
+ * @author Jonathon Temelkovski (dev.jtemel@gmail.com)
+ * @version 0.1
+ * @date 2023-08-22
+ */
 #include "rcplane/hw/imu_manager.hpp"
 #include "rcplane/io/config_manager.hpp"
 #include "rcplane/io/journal.hpp"
@@ -5,19 +11,18 @@
 namespace rcplane {
 namespace hw {
 
-imu_manager::imu_manager() : interface::base_controller("imu_manager") {
+imu_manager::imu_manager(rcplane::io::config_manager &config_manager)
+  : interface::base_controller("imu_manager") {
   RCPLANE_ENTER();
 
-  cROLL_MAX_POS = io::config_manager::instance().get<int8_t>(
-      "rcplane.hw.imu_manager.roll_max_pos");
-  cROLL_MAX_NEG = io::config_manager::instance().get<int8_t>(
-                      "rcplane.hw.imu_manager.roll_max_neg")
-      * -1;
-  cPTICH_MAX_POS = io::config_manager::instance().get<int8_t>(
-      "rcplane.hw.imu_manager.pitch_max_pos");
-  cPTICH_MAX_NEG = io::config_manager::instance().get<int8_t>(
-                       "rcplane.hw.imu_manager.pitch_max_neg")
-      * -1;
+  cROLL_MAX_POS =
+      config_manager.get<int8_t>("rcplane.hw.imu_manager.roll_max_pos");
+  cROLL_MAX_NEG =
+      config_manager.get<int8_t>("rcplane.hw.imu_manager.roll_max_neg") * -1;
+  cPTICH_MAX_POS =
+      config_manager.get<int8_t>("rcplane.hw.imu_manager.pitch_max_pos");
+  cPTICH_MAX_NEG =
+      config_manager.get<int8_t>("rcplane.hw.imu_manager.pitch_max_neg") * -1;
 }
 imu_manager::~imu_manager() { RCPLANE_ENTER(); }
 

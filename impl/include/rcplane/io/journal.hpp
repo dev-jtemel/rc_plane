@@ -1,3 +1,9 @@
+/**
+ * @file journal.hpp
+ * @author Jonathon Temelkovski (dev.jtemel@gmail.com)
+ * @version 0.1
+ * @date 2023-08-22
+ */
 #ifndef __RCPLANE__IO__JOURNAL_HPP__
 #define __RCPLANE__IO__JOURNAL_HPP__
 
@@ -52,19 +58,18 @@ typedef boost::log::sinks::synchronous_sink<rcplane::io::journal_sink>
 static boost::shared_ptr<colored_sink> _journal_sink =
     boost::make_shared<colored_sink>();
 
-#define RCPLANE_LOG_INIT()                                                     \
+#define RCPLANE_LOG_INIT(config_manager)                                       \
   do {                                                                         \
     boost::log::add_common_attributes();                                       \
     boost::log::core::get()->add_sink(rcplane::io::_journal_sink);             \
-    rcplane::io::config_manager::instance().init();                            \
     boost::log::add_file_log(                                                  \
         boost::log::keywords::file_name =                                      \
-            rcplane::io::config_manager::instance().get<std::string>(          \
+            config_manager.get<std::string>(                                   \
                 "rcplane.io.journal.log_destination")                          \
             + "%d_%m_%Y_%I_%M_%S.log",                                         \
         boost::log::keywords::format =                                         \
             "[%TimeStamp%] [%ThreadID%] [%Severity%] %Message%");              \
-    rcplane::io::config_manager::instance().dump();                            \
+    config_manager.dump();                                                     \
   } while (false)
 
 #define RCPLANE_SEVERITY_UPDATE(lvl)                                           \
