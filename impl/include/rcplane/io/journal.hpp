@@ -72,6 +72,12 @@ static boost::shared_ptr<colored_sink> _journal_sink =
     config_manager.dump();                                                     \
   } while (false)
 
+#define RCPLANE_LOG_INIT_TEST()                                                \
+  do {                                                                         \
+    boost::log::add_common_attributes();                                       \
+    boost::log::core::get()->add_sink(rcplane::io::_journal_sink);             \
+  } while (false)
+
 #define RCPLANE_SEVERITY_UPDATE(lvl)                                           \
   do {                                                                         \
     boost::log::core::get()->set_filter(boost::log::trivial::severity          \
@@ -81,7 +87,7 @@ static boost::shared_ptr<colored_sink> _journal_sink =
 #define RCPLANE_LOG(lvl, tag, str)                                             \
   do { BOOST_LOG_TRIVIAL(lvl) << "[" << tag << "] " << str; } while (false)
 
-#define RCPLANE_ENTER(tag)                                                     \
+#define RCPLANE_ENTER()                                                     \
   do { BOOST_LOG_TRIVIAL(trace) << __PRETTY_FUNCTION__; } while (false)
 
 #define RCPLANE_ENABLE_LOGGING()                                               \

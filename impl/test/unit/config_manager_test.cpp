@@ -22,9 +22,8 @@ protected:
   void SetUp() override {}
 
   void TearDown() override {
-    RCPLANE_SEVERITY_UPDATE(trace);
     _config_manager_mock->terminate();
-    _config_manager_mock.reset();
+    RCPLANE_SEVERITY_UPDATE(trace);
   }
 
   void load_config(const std::string &path) {
@@ -183,41 +182,97 @@ TEST_F(config_manager_fixture, get_u32) {
 TEST_F(config_manager_fixture, set_trace) {
   const std::string kTEST_CONFIG = "configs/trace.json";
   load_config(kTEST_CONFIG);
+
+  RCPLANE_LOG(trace, "test", "trace");
+  RCPLANE_LOG(debug, "test", "debug");
+  RCPLANE_LOG(info, "test", "info");
+  RCPLANE_LOG(warning, "test", "warning");
+  RCPLANE_LOG(error, "test", "error");
+  RCPLANE_LOG(fatal, "test", "fatal");
 }
 
 TEST_F(config_manager_fixture, set_debug) {
   const std::string kTEST_CONFIG = "configs/debug.json";
   load_config(kTEST_CONFIG);
+  
+  RCPLANE_LOG(trace, "test", "trace");
+  RCPLANE_LOG(debug, "test", "debug");
+  RCPLANE_LOG(info, "test", "info");
+  RCPLANE_LOG(warning, "test", "warning");
+  RCPLANE_LOG(error, "test", "error");
+  RCPLANE_LOG(fatal, "test", "fatal");
 }
 
 TEST_F(config_manager_fixture, set_info) {
   const std::string kTEST_CONFIG = "configs/info.json";
   load_config(kTEST_CONFIG);
+  
+  RCPLANE_LOG(trace, "test", "trace");
+  RCPLANE_LOG(debug, "test", "debug");
+  RCPLANE_LOG(info, "test", "info");
+  RCPLANE_LOG(warning, "test", "warning");
+  RCPLANE_LOG(error, "test", "error");
+  RCPLANE_LOG(fatal, "test", "fatal");
 }
 
 TEST_F(config_manager_fixture, set_warning) {
   const std::string kTEST_CONFIG = "configs/warning.json";
   load_config(kTEST_CONFIG);
+  
+  RCPLANE_LOG(trace, "test", "trace");
+  RCPLANE_LOG(debug, "test", "debug");
+  RCPLANE_LOG(info, "test", "info");
+  RCPLANE_LOG(warning, "test", "warning");
+  RCPLANE_LOG(error, "test", "error");
+  RCPLANE_LOG(fatal, "test", "fatal");
 }
 
 TEST_F(config_manager_fixture, set_error) {
   const std::string kTEST_CONFIG = "configs/error.json";
   load_config(kTEST_CONFIG);
+  
+  RCPLANE_LOG(trace, "test", "trace");
+  RCPLANE_LOG(debug, "test", "debug");
+  RCPLANE_LOG(info, "test", "info");
+  RCPLANE_LOG(warning, "test", "warning");
+  RCPLANE_LOG(error, "test", "error");
+  RCPLANE_LOG(fatal, "test", "fatal");
 }
 
 TEST_F(config_manager_fixture, set_fatal) {
   const std::string kTEST_CONFIG = "configs/fatal.json";
   load_config(kTEST_CONFIG);
+  
+  RCPLANE_LOG(trace, "test", "trace");
+  RCPLANE_LOG(debug, "test", "debug");
+  RCPLANE_LOG(info, "test", "info");
+  RCPLANE_LOG(warning, "test", "warning");
+  RCPLANE_LOG(error, "test", "error");
+  RCPLANE_LOG(fatal, "test", "fatal");
 }
 
 TEST_F(config_manager_fixture, set_invalid) {
   const std::string kTEST_CONFIG = "configs/invalid.json";
   load_config(kTEST_CONFIG);
+  
+  RCPLANE_LOG(trace, "test", "trace");
+  RCPLANE_LOG(debug, "test", "debug");
+  RCPLANE_LOG(info, "test", "info");
+  RCPLANE_LOG(warning, "test", "warning");
+  RCPLANE_LOG(error, "test", "error");
+  RCPLANE_LOG(fatal, "test", "fatal");
 }
 
 TEST_F(config_manager_fixture, invalid_json) {
   const std::string kTEST_CONFIG = "configs/bad_json.json";
   EXPECT_THROW({ load_config(kTEST_CONFIG); }, nlohmann::json::parse_error);
+  
+  RCPLANE_LOG(trace, "test", "trace");
+  RCPLANE_LOG(debug, "test", "debug");
+  RCPLANE_LOG(info, "test", "info");
+  RCPLANE_LOG(warning, "test", "warning");
+  RCPLANE_LOG(error, "test", "error");
+  RCPLANE_LOG(fatal, "test", "fatal");
 }
 
 }  // namespace test
