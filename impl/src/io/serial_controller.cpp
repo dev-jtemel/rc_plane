@@ -174,7 +174,6 @@ void serial_controller::flush() {
     boost::asio::read_until(_serial, _streambuffer, '\n');
     std::istream is(&_streambuffer);
     std::getline(is, res);
-  RCPLANE_LOG(info, _tag, res);
   }
   _streambuffer.consume(1000);
   RCPLANE_LOG(info, _tag, "flushed");

@@ -35,6 +35,8 @@ public:
    */
   explicit autopilot_interface(std::string tag,
                                rcplane::io::config_manager &config_manager);
+
+
   ~autopilot_interface();
 
   /**
@@ -53,7 +55,7 @@ public:
    * @brief Post an io event to handle the incoming packets.
    * 
    * This internally calls handler_impl() allow the dervied autopilot system to
-   * handle the packets accordingly. 
+   * handle the packets accordingly.
    * 
    * Fires _write_signal() on exiting.
    * 

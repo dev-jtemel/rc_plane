@@ -46,7 +46,9 @@ protected:
   std::unique_ptr<serial_controller_mock> _serial_controller_mock;
 };
 
-TEST_F(serial_controller_fixture, dump) {}
+TEST_F(serial_controller_fixture, dump) {
+  
+}
 
 }  // namespace test
 }  // namespace rcplane

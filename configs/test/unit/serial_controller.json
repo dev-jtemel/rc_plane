@@ -6,7 +6,7 @@
         "log_destination": "./logs/"
       },
       "serial_controller": {
-        "dev": "./tty",
+        "dev": "/tmp/tty",
         "baudrate": 9600,
         "blackbox_destination": "./logs/"
       }

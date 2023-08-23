@@ -65,14 +65,17 @@ public:
    * @throws nlohmann::json_cast_error if path is invalid or not of type T
    * @returns Value at path in the manifest casted to type T
    */
+  /// <T> T get(const std::string &path);
+  /// @tparam T T get(const std::string &path);
+  /**
+   * @brief Get a value from the config manifest.
+   * @param path The path to the value via dot notation as an rvalue
+   * @throws nlohmann::json_cast_error if path is invalid or not of type T
+   * @tparam  T Type to cast to
+   * @returns Value at path in the manifest casted to type T.
+  */
   template<typename T>
   T get(const std::string &&path);
-
-  /**
-   * @brief Set the severity as specified in the manifest.
-   * @param severity the severity in the manfiest as an rvalue.
-   */
-  void set_log_severity(const std::string &&severity);
 
   /**
    * @brief Read the config manifest to json.
