@@ -6,8 +6,8 @@
         "log_destination": "./logs/"
       },
       "serial_controller": {
-        "dev": "/dev/ttyACM0",
-        "baudrate": 115200,
+        "dev": "./tty",
+        "baudrate": 9600,
         "blackbox_destination": "./logs/"
       }
     },

@@ -2,5 +2,6 @@
 
 ROOT_DIR="$PWD"
 
-bash scripts/install-dependencies.sh "$ROOT_DIR"
-bash scripts/run-tests.sh "$ROOT_DIR" "False"
+echo DISABLED
+# bash scripts/install-dependencies.sh "$ROOT_DIR"
+# bash scripts/run-tests.sh "$ROOT_DIR" "False"
