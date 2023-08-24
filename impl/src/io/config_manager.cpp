@@ -31,15 +31,15 @@ void config_manager::dump() {
 
 template<typename T>
 T config_manager::get(const std::string &&path) {
-  std::vector<std::string> split_paths;
-  boost::split(split_paths, path, boost::is_any_of("."));
+  std::vector<std::string> splitPaths;
+  boost::split(splitPaths, path, boost::is_any_of("."));
 
-  auto sub_config = _config;
-  std::for_each(split_paths.begin(),
-                split_paths.end() - 1,
-                [&sub_config](auto &s) { sub_config = sub_config[s]; });
+  nlohmann::json subConfig = _config;
+  for (const auto &pathSegment : splitPaths) {
+    subConfig = subConfig[pathSegment];
+  }
 
-  return sub_config.at(split_paths[split_paths.size() - 1]).get<T>();
+  return subConfig.get<T>();
 }
 
 config_manager::config_manager() {}

@@ -40,15 +40,15 @@ package rcplane.io {
 
     + bool open();
     + bool flushBuffer(const std::string &);
-    + PACKET_TYPE readPacket<<typename PACKET_TYPE>>();
-    + bool writePacket<<typename PACKET_TYPE>>(const PACKET_TYPE &packet);
+    + PACKET_TYPE readPacket<<PACKET_TYPE>>();
+    + bool writePacket<<PACKET_TYPE>>(const PACKET_TYPE &packet);
   }
 
   class ConfigManager {
     - nlohmann::json m_configJson;
     - constexpr const char *k_defaultConfigPath;
     + bool loadConfig(const std::string &);
-    + T getValue<<typename T>>(const std::string &);
+    + T getValue<<T>>(const std::string &);
     + void dumpConfig();
   }
 }

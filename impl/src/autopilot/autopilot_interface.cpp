@@ -23,7 +23,8 @@ boost::signals2::signal<void()> &autopilot_interface::write_signal() {
   return _write_signal;
 }
 
-void autopilot_interface::set_write_signal(boost::signals2::signal<void()> &write_signal) {
+void autopilot_interface::set_write_signal(
+    boost::signals2::signal<void()> &write_signal) {
   RCPLANE_ENTER();
 
   _write_signal = std::move(write_signal);

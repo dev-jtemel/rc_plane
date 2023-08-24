@@ -52,3 +52,16 @@ target_link_libraries(som_controller
     boost_thread
     pthread
 )
+
+add_library(rcplane_io_new
+  io/ConfigManager.cpp
+)
+
+add_executable(SomController
+  som/SomController.cpp
+)
+
+target_link_libraries(SomController
+  PUBLIC
+    rcplane_io_new
+)

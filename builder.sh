@@ -93,7 +93,7 @@ do
     elif [ "$opt" = "Run" ];
     then
       [ $MODE == "PC" ] && {
-        ./build/impl/src/som_controller
+        ./build/impl/src/SomController
         break
       }
       echo "Nothing to do on $MODE..."
