@@ -43,9 +43,7 @@ T ConfigManager::getValue(const std::string &jsonPath) const {
   return subJson.get<T>();
 }
 
-void ConfigManager::dumpConfig() const {
-  std::cout << m_json.dump(2) << std::endl;
-}
+std::string ConfigManager::dumpConfig() const { return m_json.dump(2); }
 
 // Template specializations
 

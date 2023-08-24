@@ -43,8 +43,9 @@ public:
 
   /**
    * @brief Dump the JSON configuration file to the log.
+   * @return The JSON configuration file as a string (indent: 2 spaces).
    */
-  void dumpConfig() const;
+  std::string dumpConfig() const;
 
 private:
   static const std::string k_defaultConfigPath;
