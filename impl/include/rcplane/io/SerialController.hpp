@@ -1,3 +1,6 @@
+#ifndef RCPLANE_IO_SERIAL_CONTROLLER_HPP
+#define RCPLANE_IO_SERIAL_CONTROLLER_HPP
+
 #include <boost/asio.hpp>
 #include <boost/noncopyable.hpp>
 #include <cstdint>
@@ -10,6 +13,9 @@
 namespace rcplane {
 namespace io {
 
+/**
+ * @brief Control communication with a serial device.
+ */
 class SerialController : public ::boost::noncopyable {
 public:
   /**
@@ -29,7 +35,6 @@ public:
 
   /**
    * @brief Read a packet from the serial port.
-   * 
    * @tparam PACKET_TYPE Packet type derived from rcplane::common::BasePacket.
    * @tparam std::enable_if_t<
    * std::is_base_of_v<common::BasePacket, PACKET_TYPE>> 
@@ -50,8 +55,8 @@ public:
    * @return bool True if the packet was written successfully.
    */
   template<typename PACKET_TYPE,
-           typename = typename std::enable_if<
-               std::is_base_of<common::BasePacket, PACKET_TYPE>::value>::type>
+           typename = typename std::enable_if_t<
+               std::is_base_of_v<common::BasePacket, PACKET_TYPE>>>
   bool writePacket(const PACKET_TYPE &packet);
 
 private:
@@ -67,3 +72,5 @@ private:
 
 }  // namespace io
 }  // namespace rcplane
+
+#endif  // RCPLANE_IO_SERIAL_CONTROLLER_HPP

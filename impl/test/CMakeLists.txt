@@ -8,7 +8,7 @@ add_executable(RcplaneTests
 
 target_link_libraries(RcplaneTests
   PUBLIC
-    rcplane_io_new
+    rcplane_io
   PRIVATE
     gmock
     gtest

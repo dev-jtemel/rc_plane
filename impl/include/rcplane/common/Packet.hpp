@@ -13,6 +13,10 @@ namespace common {
  */
 struct BasePacket {};
 
+/**
+ * @brief Packet definition of handshake value to coordinate with 
+ * mcu/som.
+ */
 struct __attribute((packed)) HandshakePacket : public BasePacket {
   HandshakePacket() = default;
   HandshakePacket(uint8_t handshake_) : handshake(handshake_) {}

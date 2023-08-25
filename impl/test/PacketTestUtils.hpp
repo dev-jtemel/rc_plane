@@ -28,18 +28,21 @@ inline T getRandomValue() {
   }
 }
 
-template<typename T>
-inline T createPacket() {
-  if constexpr (std::is_same_v<T, common::HandshakePacket>) {
+template<typename PACKET_TYPE,
+         typename = typename std::enable_if_t<
+             std::is_base_of_v<common::BasePacket, PACKET_TYPE>>>
+inline PACKET_TYPE createPacket() {
+  if constexpr (std::is_same_v<PACKET_TYPE, common::HandshakePacket>) {
     return {getRandomValue<uint8_t>()};
-  } else if constexpr (std::is_same_v<T, common::StatePacket>) {
+  } else if constexpr (std::is_same_v<PACKET_TYPE, common::StatePacket>) {
     return {getRandomValue<uint32_t>(), getRandomValue<uint8_t>()};
-  } else if constexpr (std::is_same_v<T, common::ControlSurfacePacket>) {
+  } else if constexpr (std::is_same_v<PACKET_TYPE,
+                                      common::ControlSurfacePacket>) {
     return {getRandomValue<uint8_t>(),
             getRandomValue<int8_t>(),
             getRandomValue<int8_t>(),
             getRandomValue<int8_t>()};
-  } else if constexpr (std::is_same_v<T, common::ImuPacket>) {
+  } else if constexpr (std::is_same_v<PACKET_TYPE, common::ImuPacket>) {
     return {getRandomValue<float>(),
             getRandomValue<float>(),
             getRandomValue<float>(),
