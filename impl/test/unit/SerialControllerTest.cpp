@@ -6,32 +6,11 @@
 #include <gtest/gtest.h>
 #include <memory>
 
-#include <random>
-
+#include "PacketTestUtils.hpp"
 #include "rcplane/io/ConfigManager.hpp"
 
 namespace rcplane {
 namespace test {
-
-template<typename T>
-inline T getRandomValue() {
-  static_assert(std::is_arithmetic_v<T>, "T must be an arithmetic type");
-
-  static std::random_device rd;
-  static std::mt19937 gen(rd());
-
-  if constexpr (std::is_integral_v<T>) {
-    std::uniform_int_distribution<T> distribution(
-        std::numeric_limits<T>::min(),
-        std::numeric_limits<T>::max());
-    return distribution(gen);
-  } else {
-    std::uniform_real_distribution<T> distribution(
-        std::numeric_limits<T>::min(),
-        std::numeric_limits<T>::max());
-    return distribution(gen);
-  }
-}
 
 class SerialControllerFixture : public ::testing::Test {
 protected:
@@ -80,7 +59,7 @@ TEST_F(SerialControllerFixture, open) {
   ASSERT_TRUE(m_serialControllerWrite->open());
 }
 
-TEST_F(SerialControllerFixture, open_Fail) {
+TEST_F(SerialControllerFixture, open_fail) {
   const std::string kReadConfigFile = "configs/config.json";
   m_configManagerRead.loadConfig(kReadConfigFile);
 
@@ -91,8 +70,8 @@ TEST_F(SerialControllerFixture, open_Fail) {
 
 TEST_F(SerialControllerFixture, readPacket_FailNotOpen) {
   ASSERT_TRUE(m_serialControllerWrite->open());
-  common::HandshakePacket expectedPacket;
-  expectedPacket.handshake = getRandomValue<uint8_t>();
+  common::HandshakePacket expectedPacket =
+      util::createPacket<common::HandshakePacket>();
 
   ASSERT_TRUE(m_serialControllerWrite->writePacket<common::HandshakePacket>(
       expectedPacket));
@@ -107,8 +86,8 @@ TEST_F(SerialControllerFixture, readPacket_FailNotOpen) {
 }
 
 TEST_F(SerialControllerFixture, writePacket_FailNotOpen) {
-  common::HandshakePacket expectedPacket;
-  expectedPacket.handshake = getRandomValue<uint8_t>();
+  common::HandshakePacket expectedPacket =
+      util::createPacket<common::HandshakePacket>();
 
   ASSERT_FALSE(m_serialControllerWrite->writePacket<common::HandshakePacket>(
       expectedPacket));
@@ -120,8 +99,8 @@ TEST_F(SerialControllerFixture, writePacket_readPacket_handshake) {
 
   constexpr int kIterations = 100;
   for (int i = 0; i < kIterations; ++i) {
-    common::HandshakePacket expectedPacket;
-    expectedPacket.handshake = getRandomValue<uint8_t>();
+    common::HandshakePacket expectedPacket =
+        util::createPacket<common::HandshakePacket>();
 
     ASSERT_TRUE(m_serialControllerWrite->writePacket<common::HandshakePacket>(
         expectedPacket));
@@ -138,9 +117,8 @@ TEST_F(SerialControllerFixture, writePacket_readPacket_state) {
 
   constexpr int kIterations = 100;
   for (int i = 0; i < kIterations; ++i) {
-    common::StatePacket expectedPacket;
-    expectedPacket.timestamp = getRandomValue<uint32_t>();
-    expectedPacket.state = getRandomValue<uint8_t>();
+    common::StatePacket expectedPacket =
+        util::createPacket<common::StatePacket>();
 
     ASSERT_TRUE(m_serialControllerWrite->writePacket<common::StatePacket>(
         expectedPacket));
@@ -157,12 +135,8 @@ TEST_F(SerialControllerFixture, writePacket_readPacket_controlSurfacePacket) {
 
   constexpr int kIterations = 100;
   for (int i = 0; i < kIterations; ++i) {
-    common::ControlSurfacePacket expectedPacket;
-    expectedPacket.motorSpeed = getRandomValue<uint8_t>();
-    expectedPacket.aileronDeflection = getRandomValue<int8_t>();
-    expectedPacket.elevatorDeflection = getRandomValue<int8_t>();
-    expectedPacket.rudderDeflection = getRandomValue<int8_t>();
-
+    common::ControlSurfacePacket expectedPacket =
+        util::createPacket<common::ControlSurfacePacket>();
     ASSERT_TRUE(
         m_serialControllerWrite->writePacket<common::ControlSurfacePacket>(
             expectedPacket));
@@ -179,18 +153,31 @@ TEST_F(SerialControllerFixture, writePacket_readPacket_imuPacket) {
 
   constexpr int kIterations = 100;
   for (int i = 0; i < kIterations; ++i) {
-    common::ImuPacket expectedPacket;
-    expectedPacket.accX = getRandomValue<float>();
-    expectedPacket.accY = getRandomValue<float>();
-    expectedPacket.accZ = getRandomValue<float>();
-    expectedPacket.gyroX = getRandomValue<float>();
-    expectedPacket.gyroY = getRandomValue<float>();
-    expectedPacket.gyroZ = getRandomValue<float>();
-    expectedPacket.temperature = getRandomValue<float>();
+    common::ImuPacket expectedPacket = util::createPacket<common::ImuPacket>();
 
     ASSERT_TRUE(m_serialControllerWrite->writePacket<common::ImuPacket>(
         expectedPacket));
 
+    auto actualPacket = m_serialControllerRead->readPacket<common::ImuPacket>();
+    ASSERT_EQ(expectedPacket, actualPacket);
+  }
+}
+
+TEST_F(SerialControllerFixture, writePacket_before_readPacketStress) {
+  ASSERT_TRUE(m_serialControllerRead->open());
+  ASSERT_TRUE(m_serialControllerWrite->open());
+
+  constexpr int kIterations = 100;
+  std::vector<common::ImuPacket> expectedPackets;
+  for (int i = 0; i < kIterations; ++i) {
+    common::ImuPacket expectedPacket = util::createPacket<common::ImuPacket>();
+
+    ASSERT_TRUE(m_serialControllerWrite->writePacket<common::ImuPacket>(
+        expectedPacket));
+    expectedPackets.push_back(expectedPacket);
+  }
+
+  for (const auto &expectedPacket : expectedPackets) {
     auto actualPacket = m_serialControllerRead->readPacket<common::ImuPacket>();
     ASSERT_EQ(expectedPacket, actualPacket);
   }

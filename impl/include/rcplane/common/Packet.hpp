@@ -14,7 +14,8 @@ namespace common {
 struct BasePacket {};
 
 struct __attribute((packed)) HandshakePacket : public BasePacket {
-  uint8_t handshake{};
+  HandshakePacket() = default;
+  HandshakePacket(uint8_t handshake_) : handshake(handshake_) {}
 
   bool operator==(const HandshakePacket &other) const {
     return handshake == other.handshake;
@@ -23,6 +24,8 @@ struct __attribute((packed)) HandshakePacket : public BasePacket {
   bool operator!=(const HandshakePacket &other) const {
     return handshake != other.handshake;
   }
+
+  uint8_t handshake{};
 };
 
 /**
@@ -30,14 +33,18 @@ struct __attribute((packed)) HandshakePacket : public BasePacket {
  * @warning This packet is packed to avoid compiler padding.
  */
 struct __attribute((packed)) StatePacket : public BasePacket {
-  uint32_t timestamp{};
-  uint8_t state{};
+  StatePacket() = default;
+  StatePacket(uint32_t timestamp_, uint8_t state_)
+    : timestamp(timestamp_), state(state_) {}
 
   bool operator==(const StatePacket &other) const {
     return timestamp == other.timestamp && state == other.state;
   }
 
   bool operator!=(const StatePacket &other) const { return !(*this == other); }
+
+  uint32_t timestamp{};
+  uint8_t state{};
 };
 
 /**
@@ -49,10 +56,14 @@ struct __attribute((packed)) StatePacket : public BasePacket {
  * @warning This packet is packed to avoid compiler padding.
  */
 struct __attribute__((packed)) ControlSurfacePacket : public BasePacket {
-  uint8_t motorSpeed{};
-  int8_t aileronDeflection{};
-  int8_t elevatorDeflection{};
-  int8_t rudderDeflection{};
+  ControlSurfacePacket() = default;
+  ControlSurfacePacket(uint8_t motorSpeed_,
+                       int8_t aileronDeflection_,
+                       int8_t elevatorDeflection_,
+                       int8_t rudderDeflection_)
+    : motorSpeed(motorSpeed_), aileronDeflection(aileronDeflection_),
+      elevatorDeflection(elevatorDeflection_),
+      rudderDeflection(rudderDeflection_) {}
 
   bool operator==(const ControlSurfacePacket &other) const {
     return motorSpeed == other.motorSpeed
@@ -64,6 +75,11 @@ struct __attribute__((packed)) ControlSurfacePacket : public BasePacket {
   bool operator!=(const ControlSurfacePacket &other) const {
     return !(*this == other);
   }
+
+  uint8_t motorSpeed{};
+  int8_t aileronDeflection{};
+  int8_t elevatorDeflection{};
+  int8_t rudderDeflection{};
 };
 
 /**
@@ -75,13 +91,16 @@ struct __attribute__((packed)) ControlSurfacePacket : public BasePacket {
  * @warning This packet is packed to avoid compiler padding.
  */
 struct __attribute__((packed)) ImuPacket : public BasePacket {
-  float gyroX{};
-  float gyroY{};
-  float gyroZ{};
-  float accX{};
-  float accY{};
-  float accZ{};
-  float temperature{};
+  ImuPacket() = default;
+  ImuPacket(float gyroX_,
+            float gyroY_,
+            float gyroZ_,
+            float accX_,
+            float accY_,
+            float accZ_,
+            float temperature_)
+    : gyroX(gyroX_), gyroY(gyroY_), gyroZ(gyroZ_), accX(accX_), accY(accY_),
+      accZ(accZ_), temperature(temperature_) {}
 
   bool operator==(const ImuPacket &other) const {
     return gyroX == other.gyroX && gyroY == other.gyroY && gyroZ == other.gyroZ
@@ -90,6 +109,14 @@ struct __attribute__((packed)) ImuPacket : public BasePacket {
   }
 
   bool operator!=(const ImuPacket &other) const { return !(*this == other); }
+
+  float gyroX{};
+  float gyroY{};
+  float gyroZ{};
+  float accX{};
+  float accY{};
+  float accZ{};
+  float temperature{};
 };
 
 #ifdef ARDUINO_ARCH_AVR

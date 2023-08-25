@@ -1,4 +1,4 @@
-include_directories(mock)
+include_directories(.)
 
 add_executable(RcplaneTests
   main.cpp
