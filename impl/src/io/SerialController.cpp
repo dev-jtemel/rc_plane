@@ -79,10 +79,10 @@ PACKET_TYPE SerialController::readPacket() {
 }
 
 template<typename PACKET_TYPE,
-         typename = typename std::enable_if<
-             std::is_base_of<common::BasePacket, PACKET_TYPE>::value>::type>
+         typename = typename std::enable_if_t<
+             std::is_base_of_v<common::BasePacket, PACKET_TYPE>>>
 bool SerialController::writePacket(const PACKET_TYPE &packet) {
-  RCPLANE_LOG_METHOD();
+  RCPLANE_LOG_METHOD()
 
   std::promise<void> writePromise;
   auto writeFuture = writePromise.get_future();
@@ -114,7 +114,6 @@ template common::StatePacket SerialController::readPacket<
     common::StatePacket>();
 template common::ControlSurfacePacket SerialController::readPacket<
     common::ControlSurfacePacket>();
-
 template common::ImuPacket SerialController::readPacket<common::ImuPacket>();
 
 template bool SerialController::writePacket<common::HandshakePacket>(
