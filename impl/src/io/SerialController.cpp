@@ -42,11 +42,6 @@ bool SerialController::open() {
   }
 }
 
-bool SerialController::flushBuffer(const std::string &) {
-  RCPLANE_LOG_METHOD();
-  return false;
-}
-
 template<typename PACKET_TYPE,
          typename = std::enable_if_t<
              std::is_base_of_v<common::BasePacket, PACKET_TYPE>>>

@@ -19,6 +19,10 @@ struct __attribute((packed)) HandshakePacket : public BasePacket {
   bool operator==(const HandshakePacket &other) const {
     return handshake == other.handshake;
   }
+
+  bool operator!=(const HandshakePacket &other) const {
+    return handshake != other.handshake;
+  }
 };
 
 /**
@@ -32,6 +36,8 @@ struct __attribute((packed)) StatePacket : public BasePacket {
   bool operator==(const StatePacket &other) const {
     return timestamp == other.timestamp && state == other.state;
   }
+
+  bool operator!=(const StatePacket &other) const { return !(*this == other); }
 };
 
 /**
@@ -53,6 +59,10 @@ struct __attribute__((packed)) ControlSurfacePacket : public BasePacket {
         && aileronDeflection == other.aileronDeflection
         && elevatorDeflection == other.elevatorDeflection
         && rudderDeflection == other.rudderDeflection;
+  }
+
+  bool operator!=(const ControlSurfacePacket &other) const {
+    return !(*this == other);
   }
 };
 
@@ -78,6 +88,8 @@ struct __attribute__((packed)) ImuPacket : public BasePacket {
         && accX == other.accX && accY == other.accY && accZ == other.accZ
         && temperature == other.temperature;
   }
+
+  bool operator!=(const ImuPacket &other) const { return !(*this == other); }
 };
 
 #ifdef ARDUINO_ARCH_AVR

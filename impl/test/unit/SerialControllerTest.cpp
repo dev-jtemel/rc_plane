@@ -80,6 +80,40 @@ TEST_F(SerialControllerFixture, open) {
   ASSERT_TRUE(m_serialControllerWrite->open());
 }
 
+TEST_F(SerialControllerFixture, open_Fail) {
+  const std::string kReadConfigFile = "configs/config.json";
+  m_configManagerRead.loadConfig(kReadConfigFile);
+
+  m_serialControllerRead =
+      std::make_unique<io::SerialController>(m_configManagerRead, m_ioService);
+  ASSERT_FALSE(m_serialControllerRead->open());
+}
+
+TEST_F(SerialControllerFixture, readPacket_FailNotOpen) {
+  ASSERT_TRUE(m_serialControllerWrite->open());
+  common::HandshakePacket expectedPacket;
+  expectedPacket.handshake = getRandomValue<uint8_t>();
+
+  ASSERT_TRUE(m_serialControllerWrite->writePacket<common::HandshakePacket>(
+      expectedPacket));
+
+  common::HandshakePacket actualPacket;
+  actualPacket = m_serialControllerRead->readPacket<common::HandshakePacket>();
+  ASSERT_NE(expectedPacket, actualPacket);
+
+  ASSERT_TRUE(m_serialControllerRead->open());
+  actualPacket = m_serialControllerRead->readPacket<common::HandshakePacket>();
+  ASSERT_EQ(expectedPacket, actualPacket);
+}
+
+TEST_F(SerialControllerFixture, writePacket_FailNotOpen) {
+  common::HandshakePacket expectedPacket;
+  expectedPacket.handshake = getRandomValue<uint8_t>();
+
+  ASSERT_FALSE(m_serialControllerWrite->writePacket<common::HandshakePacket>(
+      expectedPacket));
+}
+
 TEST_F(SerialControllerFixture, writePacket_readPacket_handshake) {
   ASSERT_TRUE(m_serialControllerRead->open());
   ASSERT_TRUE(m_serialControllerWrite->open());

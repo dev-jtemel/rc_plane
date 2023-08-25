@@ -7,10 +7,10 @@ COMPILE_ONLY="$2"
 
 run_tests() {
     ./build/impl/test/RcplaneTests
-    #[ -d coverage ] && rm -rf coverage
-    #mkdir coverage && pushd coverage
-    #gcovr -r .. -e "../som" -e "../common/test/" -e "../third_party"  --html-details -o coverage.html
-    #popd
+    [ -d coverage ] && rm -rf coverage
+    mkdir coverage && pushd coverage
+    gcovr -r .. -e "../impl/test"  --html-details -o coverage.html 2>/dev/null
+    popd
 }
 
 echo "***************************"
