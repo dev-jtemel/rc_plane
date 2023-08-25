@@ -47,9 +47,16 @@ public:
    */
   std::string dumpConfig() const;
 
+  /**
+   * @brief Check if the configuration file is loaded.
+   * @return bool True if the JSON configuration file is valid and loaded.
+   */
+  bool isConfigLoaded() const;
+
 private:
   static const std::string k_defaultConfigPath;
   nlohmann::json m_json{};
+  bool m_configLoaded{false};
 };
 
 }  // namespace io

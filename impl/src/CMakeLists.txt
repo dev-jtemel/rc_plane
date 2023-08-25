@@ -55,6 +55,7 @@ target_link_libraries(som_controller
 
 add_library(rcplane_io_new
   io/ConfigManager.cpp
+  io/SerialController.cpp
 )
 target_link_libraries(rcplane_io_new
   PRIVATE

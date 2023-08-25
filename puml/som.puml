@@ -23,7 +23,7 @@ package rcplane.shared {
     + uint8_t motorSpeed;
     + int8_t aileronDeflection;
     + int8_t elevatorDeflection;
-    + int8_t rudderonDeflection;
+    + int8_t rudderDeflection;
   }
 }
 

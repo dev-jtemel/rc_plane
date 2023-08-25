@@ -60,7 +60,7 @@ static boost::shared_ptr<colored_sink> g_journalSink =
     boost::log::add_common_attributes();                                       \
     boost::log::core::get()->add_sink(rcplane::io::g_journalSink);             \
     boost::log::core::get()->set_filter(boost::log::trivial::severity          \
-                                        >= boost::log::trivial::trace);          \
+                                        >= boost::log::trivial::trace);        \
   } while (false)
 
 #define RCPLANE_LOG(lvl, msg)                                                  \
@@ -73,7 +73,7 @@ static boost::shared_ptr<colored_sink> g_journalSink =
 #define RCPLANE_LOG_METHOD()                                                   \
   do {                                                                         \
     BOOST_LOG_TRIVIAL(trace)                                                   \
-        << boost::core::demangle(typeid(*this).name()) << "::" << __func__;  \
+        << boost::core::demangle(typeid(*this).name()) << "::" << __func__;    \
   } while (false)
 
 #define RCPLANE_LOG_ENABLE()                                                   \

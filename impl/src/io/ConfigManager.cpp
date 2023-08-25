@@ -30,7 +30,7 @@ bool ConfigManager::loadConfig(const std::string &configPath) {
   // throws nlohmann::json::parse_error.
   m_json = nlohmann::json::parse(configStream);
 
-  // log success
+  m_configLoaded = true;
   return true;
 }
 
@@ -55,6 +55,11 @@ T ConfigManager::getValue(const std::string &jsonPath) const {
 std::string ConfigManager::dumpConfig() const {
   RCPLANE_LOG_METHOD();
   return m_json.dump(2);
+}
+
+bool ConfigManager::isConfigLoaded() const {
+  RCPLANE_LOG_METHOD();
+  return m_configLoaded;
 }
 
 // Template specializations
