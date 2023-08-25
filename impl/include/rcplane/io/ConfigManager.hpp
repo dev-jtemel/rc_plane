@@ -17,8 +17,8 @@ namespace io {
  */
 class ConfigManager : public ::boost::noncopyable {
 public:
-  ConfigManager() = default;
-  ~ConfigManager() = default;
+  ConfigManager();
+  ~ConfigManager();
 
   /**
    * @brief Load the JSON configuration file.

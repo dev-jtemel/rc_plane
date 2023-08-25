@@ -2,21 +2,28 @@
 
 #include <boost/algorithm/string.hpp>
 #include <fstream>
-#include <iostream>  // rm
 #include <numeric>
 #include <string>
 
 #include "json/json.hpp"
+
+#include "rcplane/io/Journal.hpp"
 
 namespace rcplane {
 namespace io {
 
 const std::string ConfigManager::k_defaultConfigPath = "configs/config.json";
 
+ConfigManager::ConfigManager() { RCPLANE_LOG_METHOD(); }
+
+ConfigManager::~ConfigManager() { RCPLANE_LOG_METHOD(); }
+
 bool ConfigManager::loadConfig(const std::string &configPath) {
+  RCPLANE_LOG_METHOD();
+
   std::ifstream configStream(configPath);
   if (!configStream.is_open()) {
-    std::cerr << "Failed to open config file: " << configPath << std::endl;
+    RCPLANE_LOG(error, "Failed to open config file: " << configPath);
     return false;
   }
 
@@ -29,6 +36,8 @@ bool ConfigManager::loadConfig(const std::string &configPath) {
 
 template<typename T>
 T ConfigManager::getValue(const std::string &jsonPath) const {
+  RCPLANE_LOG_METHOD();
+
   std::vector<std::string> splitPaths;
   boost::split(splitPaths, jsonPath, boost::is_any_of("."));
 
@@ -43,7 +52,10 @@ T ConfigManager::getValue(const std::string &jsonPath) const {
   return subJson.get<T>();
 }
 
-std::string ConfigManager::dumpConfig() const { return m_json.dump(2); }
+std::string ConfigManager::dumpConfig() const {
+  RCPLANE_LOG_METHOD();
+  return m_json.dump(2);
+}
 
 // Template specializations
 
