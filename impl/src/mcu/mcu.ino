@@ -3,7 +3,7 @@
 #include <Wire.h>
 
 #include <state.hpp>
-#include <packet.hpp>
+#include <Packet.hpp>
 
 const uint8_t kMOTOR_IN = 5U;
 const uint8_t kAILERON_IN = 2U;
@@ -25,9 +25,7 @@ bool has_user_input(int8_t &value) {
   return value >= 3 || value <= -3;
 }
 
-rcplane::common::state_packet state_packet;
-rcplane::common::control_surface_packet cs_packet;
-rcplane::common::imu_packet imu_packet;
+rcplane::common::HandshakePacket packet;
 
 MPU6050 mpu(Wire);
 
@@ -39,18 +37,25 @@ void setup() {
    * we continue. This is to avoid the som incorrectly parsing old data on the serial 
    * buffer and breaking preconditions.
    */
-  Serial.flush();
-  Serial.println("to be flushed");
-  Serial.println("rcplane");
-  while (Serial.available() == 0);
-  Serial.read();
-  Serial.flush();
+  //Serial.flush();
+  //rcplane::common::read_packet<rcplane::common::HandshakePacket>(packet);
+  packet.handshake = 4U;
+  rcplane::common::write_packet<rcplane::common::HandshakePacket>(packet);
+  delay(3000);
+  packet.handshake = 2U;
+  rcplane::common::write_packet<rcplane::common::HandshakePacket>(packet);
+  packet.handshake = 1U;
+  rcplane::common::write_packet<rcplane::common::HandshakePacket>(packet);
+}
 
+void loop() {
+  delay(1000);
+}
+/*
   state_packet.state = 0U;
 
   /**
    * Setup required pins.
-   */
   pinMode(kMOTOR_IN, INPUT);
   pinMode(kAILERON_IN, INPUT);
   pinMode(kELEVATOR_IN, INPUT);
@@ -67,7 +72,6 @@ void setup() {
 void loop() {
   /**
    * Populate the control surface packet and wrtie to the som.
-   */
   cs_packet.motor = toRange(pulseIn(kMOTOR_IN, HIGH), 0, 255);
   cs_packet.aileron = static_cast<uint8_t>(toRange(pulseIn(kAILERON_IN, HIGH), -100, 100));
   cs_packet.elevator = static_cast<uint8_t>(toRange(pulseIn(kELEVATOR_IN, HIGH), -100, 100));
@@ -98,3 +102,4 @@ void loop() {
   analogWrite(kELEVATOR_OUT, cs_packet.elevator + 115);
   analogWrite(kELEVATOR_OUT, cs_packet.elevator + 115);
 }
+*/

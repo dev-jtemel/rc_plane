@@ -71,7 +71,11 @@ PACKET_TYPE SerialController::readPacket() {
   const std::future_status status =
       readFuture.wait_for(std::chrono::milliseconds(c_readTimeoutMs));
   if (status == std::future_status::timeout) {
-    RCPLANE_LOG(warning, "Read operation timed out.");
+    // Attempt to cancel the read operation, can throw if serial disconnects between
+    // the read and now.
+    try {
+      m_serialPort.cancel();
+    } catch (...) {}
     return {};
   }
 
@@ -82,7 +86,7 @@ template<typename PACKET_TYPE,
          typename = typename std::enable_if_t<
              std::is_base_of_v<common::BasePacket, PACKET_TYPE>>>
 bool SerialController::writePacket(const PACKET_TYPE &packet) {
-  RCPLANE_LOG_METHOD()
+  RCPLANE_LOG_METHOD();
 
   std::promise<void> writePromise;
   auto writeFuture = writePromise.get_future();
@@ -103,6 +107,9 @@ bool SerialController::writePacket(const PACKET_TYPE &packet) {
       writeFuture.wait_for(std::chrono::milliseconds(c_writeTimeoutMs));
   if (status == std::future_status::timeout) {
     RCPLANE_LOG(warning, "Write operation timed out.");
+    try {
+      m_serialPort.cancel();
+    } catch (...) {}
     return false;
   }
   return true;
