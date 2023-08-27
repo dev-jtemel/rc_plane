@@ -11,11 +11,21 @@ target_link_libraries(rcplane_io
     pthread
 )
 
-add_executable(SomController
+add_library(rcplane_som
   som/SomController.cpp
+)
+
+target_link_libraries(rcplane_som
+  PUBLIC
+    rcplane_io
+)
+
+add_executable(SomController
+  som/main.cpp
 )
 
 target_link_libraries(SomController
   PUBLIC
     rcplane_io
+    rcplane_som
 )

@@ -14,93 +14,49 @@
 namespace rcplane {
 namespace som {
 
+/**
+ * @brief Main controller for the SoM. Handles reading and writing to the
+ * MCU and applying any processing or filtering to incoming/outgoing data.
+ */
 class SomController : public boost::noncopyable {
 public:
-  SomController() {
-    RCPLANE_LOG_METHOD();
+  /**
+   * @brief Config the SerialController and underlying data structs.
+   */
+  SomController();
+  ~SomController();
 
-    m_signalSet.async_wait([&](boost::system::error_code ec, int sig) {
-      RCPLANE_LOG(warning, "Termination signal received!");
-      m_worker.reset();
-    });
+  /**
+   * @brief Run the main loop of the SoM.
+   * 
+   * Loop:
+   * Read the 3 incoming packets, apply any filtering/processing and
+   * write a control packet to the MCU.
+   */
+  void runMainLoop();
 
-    m_configManager = std::make_unique<io::ConfigManager>();
-    assert(m_configManager->loadConfig());
-    RCPLANE_LOG(debug, m_configManager->dumpConfig());
+  /**
+   * @brief Start a thread to run the m_ioService.
+   */
+  void startIoThread();
 
-    RCPLANE_LOG(info, "ConfigManager initialized!");
+  /**
+   * @brief Stop the thread running the m_ioService. 
+   * @warning This may hang until one loop cycle in runMainLoop has completed.
+   */
+  void stopIoThread();
 
-    m_serialController =
-        std::make_unique<io::SerialController>(*m_configManager.get(),
-                                               m_ioService);
-    assert(m_serialController->open());
-
-    RCPLANE_LOG(info, "SerialController initialized!");
-  }
-
-  ~SomController() {
-    RCPLANE_LOG_METHOD();
-
-    stopIoThread();
-  }
-
-  void runMainLoop() {
-    RCPLANE_LOG_METHOD();
-    assert(!m_ioService.stopped());
-
-    while (!m_ioService.stopped()) {
-      const auto statePacket = m_serialController->readPacket<common::StatePacket>();
-      const auto controlSurfacePacket = m_serialController->readPacket<common::ControlSurfacePacket>();
-      
-      std::this_thread::sleep_for(std::chrono::milliseconds(200));
-      RCPLANE_LOG(debug, "main loop");
-    }
-  }
-
-  void startIoThread() {
-    RCPLANE_LOG_METHOD();
-
-    m_ioThread = boost::thread([&]() { m_ioService.run(); });
-  }
-
-  void stopIoThread() {
-    RCPLANE_LOG_METHOD();
-
-    m_worker.reset();
-    m_ioThread.join();
-  }
-
-  bool handshakeMCU() {
-    RCPLANE_LOG_METHOD();
-
-    const common::HandshakePacket kHandshakePacket{1U};
-    if (!m_serialController->writePacket<common::HandshakePacket>(
-            kHandshakePacket)) {
-      RCPLANE_LOG(error, "Failed to write handshake packet!");
-      return false;
-    }
-
-    constexpr uint8_t kHandshakeAttempts = 5U;
-    for (uint8_t i = 0; i < kHandshakeAttempts; ++i) {
-      std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-      const auto handshakePacket =
-          m_serialController->readPacket<common::HandshakePacket>();
-      RCPLANE_LOG(error, +handshakePacket.handshake);
-      if (kHandshakePacket == handshakePacket) {
-        RCPLANE_LOG(info, "MCU handshake succeeded!");
-        return true;
-      } else if (handshakePacket == common::HandshakePacket()) {
-        RCPLANE_LOG(debug, "Timeout waiting for handshake packet!");
-      } else {
-        RCPLANE_LOG(info,
-                    "Flushed invalid handshake packet :: "
-                        << +handshakePacket.handshake);
-      }
-    }
-
-    RCPLANE_LOG(error, "Handshake never acknowledged!");
-    return false;
-  }
+  /**
+   * @brief Flush the serial buffer and perform a handshake with the MCU.
+   * 
+   * To ensure data is read in the correct order (and any old data is removed),
+   * flush the SerialController buffer and write a handshake packet to the MCU.
+   * The MCU should immediately respond with the same packet to complete the
+   * handshake.
+   * 
+   * @return bool True if the handshake was completed, false if it timedout.
+   */
+  bool handshakeMCU();
 
 private:
   boost::thread m_ioThread{};
