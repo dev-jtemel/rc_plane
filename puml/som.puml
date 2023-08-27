@@ -1,0 +1,117 @@
+@startuml System On Module
+
+package rcplane.shared {
+  interface Packet {
+  }
+
+  struct StatePacket {
+    + uint32_t timestamp;
+    + uint8_t state;
+  }
+
+  struct ImuPacket {
+    + float gyroX;
+    + float gyroY;
+    + float gyroZ;
+    + float accX;
+    + float accY;
+    + float accZ;
+    + float temperature;
+  }
+
+  struct ControlSurfacesPacket {
+    + uint8_t motorSpeed;
+    + int8_t aileronDeflection;
+    + int8_t elevatorDeflection;
+    + int8_t rudderDeflection;
+  }
+}
+
+package rcplane.io {
+  class SerialController {
+    - std::string c_ttyDev;
+    - uint32_t c_baudRate;
+    - uint32_t c_readTimeoutMs;
+    - uint32_t c_writeTimeoutMs;
+
+    - boost::asio::streambuf m_streamBuffer;
+    - boost::asio::serial_port m_serialPort;
+    - boost::asio::io_service& m_ioService;
+
+    + bool open();
+    + bool flushBuffer(const std::string &);
+    + PACKET_TYPE readPacket<<PACKET_TYPE>>();
+    + bool writePacket<<PACKET_TYPE>>(const PACKET_TYPE &packet);
+  }
+
+  class ConfigManager {
+    - nlohmann::json m_configJson;
+    - constexpr const char *k_defaultConfigPath;
+    + bool loadConfig(const std::string &);
+    + T getValue<<T>>(const std::string &);
+    + void dumpConfig();
+  }
+}
+
+package rcplane.autopilot {
+  class AutopilotManager {
+    - uint8_t m_prevState;
+    - AutopilotInferace *m_autopilot;
+    - ManualAutopilot m_manualAutopilot;
+    - StabilizeAutopilot m_stabilizeAutopilot;
+    + void onStatePacket(StatePacket &);
+    + void onSignal();
+    + AutopilotInferace *getCurrentAutopilot() const;
+  }
+
+  interface IAutopilot {
+    # ImuController &m_imuController;
+    + virtual void onExit() = 0;
+    + virtual void onEntry() = 0;
+    + virtual void onSignal() = 0;
+  }
+
+  class StabilizeAutopilot {
+    + void onExit() override;
+    + void onEntry() override;
+    + void onSignal() override;
+  }
+
+  class ManualAutopilot {
+    + void onExit() override;
+    + void onEntry() override;
+    + void onSignal() override;
+  }
+}
+
+package rcplane.hw {
+  class ImuController {
+    + void onImuPacket(ImuPacket &);
+  }
+}
+
+Packet <|.. StatePacket
+Packet <|.. ImuPacket
+Packet <|.. ControlSurfacesPacket
+
+SerialController <.. ConfigManager
+AutopilotManager <.. ConfigManager
+StabilizeAutopilot <.. ConfigManager
+ManualAutopilot <.. ConfigManager
+ImuController <.. ConfigManager
+
+AutopilotManager *-- StabilizeAutopilot
+AutopilotManager *-- ManualAutopilot
+AutopilotManager o-- IAutopilot
+
+IAutopilot <|-- StabilizeAutopilot
+IAutopilot <|-- ManualAutopilot
+
+IAutopilot o-- ImuController
+ImuController <-- ImuPacket : <<uses>>
+SerialController <-- Packet : <<uses derived>>
+SerialController <-- Packet : <<uses derived>>
+AutopilotManager <-- StatePacket : <<uses>>
+
+
+@enduml

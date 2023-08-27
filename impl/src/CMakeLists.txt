@@ -1,8 +1,7 @@
 add_library(rcplane_io
-  io/config_manager.cpp
-  io/serial_controller.cpp
+  io/ConfigManager.cpp
+  io/SerialController.cpp
 )
-
 target_link_libraries(rcplane_io
   PRIVATE
     boost_log
@@ -12,43 +11,11 @@ target_link_libraries(rcplane_io
     pthread
 )
 
-add_library(rcplane_hw
-  hw/control_surface_manager.cpp
-  hw/imu_manager.cpp
+add_executable(SomController
+  som/SomController.cpp
 )
 
-target_link_libraries(rcplane_hw
+target_link_libraries(SomController
   PUBLIC
     rcplane_io
-)
-
-add_library(rcplane_autopilot
-  autopilot/autopilot_manager.cpp
-  autopilot/autopilot_interface.cpp
-  autopilot/autopilot_manual.cpp
-  autopilot/autopilot_stabilize.cpp
-)
-
-target_link_libraries(rcplane_autopilot
-  PUBLIC
-    rcplane_io
-    rcplane_hw
-)
-
-
-add_executable(som_controller
-  som/main.cpp
-)
-
-target_link_libraries(som_controller
-  PUBLIC
-    rcplane_io
-    rcplane_hw
-    rcplane_autopilot
-  PRIVATE
-    boost_log
-    boost_log_setup
-    boost_system
-    boost_thread
-    pthread
 )

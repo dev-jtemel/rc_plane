@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 project(rc-plane)
 
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS "-O3 -g -Wall")
+set(CMAKE_CXX_FLAGS "-O3 -g -Wall -Wpedantic")
 
 ADD_DEFINITIONS(-DBOOST_LOG_DYN_LINK)
 find_package(Threads REQUIRED)
