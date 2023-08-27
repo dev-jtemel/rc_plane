@@ -8,8 +8,8 @@
       "serial_controller": {
         "tty_dev": "/dev/ttyACM0",
         "baud_rate": 115200,
-        "read_timeout_ms": 10,
-        "write_timeout_ms": 10
+        "read_timeout_ms": 10000,
+        "write_timeout_ms": 10000
       }
     },
     "hw": {

@@ -10,17 +10,19 @@
 namespace rcplane {
 namespace io {
 
-SerialController::SerialController(ConfigManager &cm,
+SerialController::SerialController(const ConfigManager &configManager,
                                    boost::asio::io_service &io_service)
   : m_serialPort(io_service), m_ioService(io_service) {
   RCPLANE_LOG_METHOD();
 
-  c_ttyDev = cm.getValue<std::string>("rcplane.io.serial_controller.tty_dev");
-  c_baudRate = cm.getValue<uint32_t>("rcplane.io.serial_controller.baud_rate");
-  c_readTimeoutMs =
-      cm.getValue<uint32_t>("rcplane.io.serial_controller.read_timeout_ms");
-  c_writeTimeoutMs =
-      cm.getValue<uint32_t>("rcplane.io.serial_controller.write_timeout_ms");
+  c_ttyDev = configManager.getValue<std::string>(
+      "rcplane.io.serial_controller.tty_dev");
+  c_baudRate = configManager.getValue<uint32_t>(
+      "rcplane.io.serial_controller.baud_rate");
+  c_readTimeoutMs = configManager.getValue<uint32_t>(
+      "rcplane.io.serial_controller.read_timeout_ms");
+  c_writeTimeoutMs = configManager.getValue<uint32_t>(
+      "rcplane.io.serial_controller.write_timeout_ms");
 }
 
 SerialController::~SerialController() { RCPLANE_LOG_METHOD(); }
@@ -45,17 +47,17 @@ bool SerialController::open() {
 template<typename PACKET_TYPE,
          typename = std::enable_if_t<
              std::is_base_of_v<common::BasePacket, PACKET_TYPE>>>
-PACKET_TYPE SerialController::readPacket() {
+SerialController::ReadResult<PACKET_TYPE> SerialController::readPacket() {
   RCPLANE_LOG_METHOD();
 
-  std::promise<PACKET_TYPE> readPromise;
+  std::promise<ReadResult<PACKET_TYPE>> readPromise;
   auto readFuture = readPromise.get_future();
 
   boost::asio::async_read(
       m_serialPort,
       m_streamBuffer,
       boost::asio::transfer_exactly(sizeof(PACKET_TYPE)),
-      [&](const boost::system::error_code &error, std::size_t) {
+      [&](const boost::system::error_code &error, std::size_t bytesRead) {
         if (error) {
           RCPLANE_LOG(error, "Failed to read packet :: " << error.message());
           return;
@@ -64,7 +66,10 @@ PACKET_TYPE SerialController::readPacket() {
         const auto *packetPtr = boost::asio::buffer_cast<const PACKET_TYPE *>(
             m_streamBuffer.data());
         m_streamBuffer.consume(sizeof(PACKET_TYPE));
-        readPromise.set_value(*packetPtr);
+        ReadResult<PACKET_TYPE> readResult;
+        readResult.packet = *packetPtr;
+        readResult.didTimeout = false;
+        readPromise.set_value(readResult);
       });
 
   // Wait for the read operation to complete with a timeout
@@ -76,7 +81,7 @@ PACKET_TYPE SerialController::readPacket() {
     try {
       m_serialPort.cancel();
     } catch (...) {}
-    return {};
+    return ReadResult<PACKET_TYPE>();
   }
 
   return readFuture.get();
@@ -115,13 +120,49 @@ bool SerialController::writePacket(const PACKET_TYPE &packet) {
   return true;
 }
 
-template common::HandshakePacket SerialController::readPacket<
+bool SerialController::flush() {
+    RCPLANE_LOG_METHOD();
+
+    std::promise<boost::system::error_code> readPromise;
+    auto readFuture = readPromise.get_future();
+
+    boost::asio::async_read_until(
+        m_serialPort,
+        m_streamBuffer,
+        '\n',
+        [&](const boost::system::error_code &error, std::size_t size) {
+          if (error) {
+            RCPLANE_LOG(error, "Failed to read packet :: " << error.message());
+            return;
+          }
+          readPromise.set_value(error);
+          m_streamBuffer.consume(size);
+        });
+
+    // Wait for the read operation to complete with a timeout
+    constexpr uint16_t kDelayMultiplier = 20U;
+    const std::future_status status =
+        readFuture.wait_for(std::chrono::milliseconds(c_readTimeoutMs * kDelayMultiplier));
+    if (status == std::future_status::timeout) {
+      // Attempt to cancel the read operation, can throw if serial disconnects between
+      // the read and now.
+      try {
+        m_serialPort.cancel();
+      } catch (...) {}
+      return false;
+    }
+
+    return readFuture.get().value() == boost::system::errc::success;
+  }
+
+template SerialController::ReadResult<common::HandshakePacket> SerialController::readPacket<
     common::HandshakePacket>();
-template common::StatePacket SerialController::readPacket<
+template SerialController::ReadResult<common::StatePacket> SerialController::readPacket<
     common::StatePacket>();
-template common::ControlSurfacePacket SerialController::readPacket<
-    common::ControlSurfacePacket>();
-template common::ImuPacket SerialController::readPacket<common::ImuPacket>();
+template SerialController::ReadResult<common::ControlSurfacePacket> SerialController::
+    readPacket<common::ControlSurfacePacket>();
+template SerialController::ReadResult<common::ImuPacket> SerialController::readPacket<
+    common::ImuPacket>();
 
 template bool SerialController::writePacket<common::HandshakePacket>(
     const common::HandshakePacket &);

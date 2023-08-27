@@ -130,7 +130,7 @@ struct __attribute__((packed)) ImuPacket : public BasePacket {
  * @param packet The packet (lvalue) to write.
  */
 template<typename PACKET>
-void write_packet(PACKET &packet) {
+void writePacket(PACKET &packet) {
   Serial.write((byte *)&packet, sizeof(packet));
 }
 
@@ -140,7 +140,7 @@ void write_packet(PACKET &packet) {
  * @param packet The packet (lvalue) to read into.
  */
 template<typename PACKET>
-size_t read_packet(PACKET &packet) {
+size_t readPacket(PACKET &packet) {
   return Serial.readBytes((uint8_t *)&packet, sizeof(packet));
 }
 #endif
