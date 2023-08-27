@@ -121,48 +121,48 @@ bool SerialController::writePacket(const PACKET_TYPE &packet) {
 }
 
 bool SerialController::flush() {
-    RCPLANE_LOG_METHOD();
+  RCPLANE_LOG_METHOD();
 
-    std::promise<boost::system::error_code> readPromise;
-    auto readFuture = readPromise.get_future();
+  std::promise<boost::system::error_code> readPromise;
+  auto readFuture = readPromise.get_future();
 
-    boost::asio::async_read_until(
-        m_serialPort,
-        m_streamBuffer,
-        '\n',
-        [&](const boost::system::error_code &error, std::size_t size) {
-          if (error) {
-            RCPLANE_LOG(error, "Failed to read packet :: " << error.message());
-            return;
-          }
-          readPromise.set_value(error);
-          m_streamBuffer.consume(size);
-        });
+  boost::asio::async_read_until(
+      m_serialPort,
+      m_streamBuffer,
+      '\n',
+      [&](const boost::system::error_code &error, std::size_t size) {
+        if (error) {
+          RCPLANE_LOG(error, "Failed to read packet :: " << error.message());
+          return;
+        }
+        readPromise.set_value(error);
+        m_streamBuffer.consume(size);
+      });
 
-    // Wait for the read operation to complete with a timeout
-    constexpr uint16_t kDelayMultiplier = 20U;
-    const std::future_status status =
-        readFuture.wait_for(std::chrono::milliseconds(c_readTimeoutMs * kDelayMultiplier));
-    if (status == std::future_status::timeout) {
-      // Attempt to cancel the read operation, can throw if serial disconnects between
-      // the read and now.
-      try {
-        m_serialPort.cancel();
-      } catch (...) {}
-      return false;
-    }
-
-    return readFuture.get().value() == boost::system::errc::success;
+  // Wait for the read operation to complete with a timeout
+  constexpr uint16_t kDelayMultiplier = 20U;
+  const std::future_status status = readFuture.wait_for(
+      std::chrono::milliseconds(c_readTimeoutMs * kDelayMultiplier));
+  if (status == std::future_status::timeout) {
+    // Attempt to cancel the read operation, can throw if serial disconnects between
+    // the read and now.
+    try {
+      m_serialPort.cancel();
+    } catch (...) {}
+    return false;
   }
 
-template SerialController::ReadResult<common::HandshakePacket> SerialController::readPacket<
-    common::HandshakePacket>();
-template SerialController::ReadResult<common::StatePacket> SerialController::readPacket<
-    common::StatePacket>();
-template SerialController::ReadResult<common::ControlSurfacePacket> SerialController::
-    readPacket<common::ControlSurfacePacket>();
-template SerialController::ReadResult<common::ImuPacket> SerialController::readPacket<
-    common::ImuPacket>();
+  return readFuture.get().value() == boost::system::errc::success;
+}
+
+template SerialController::ReadResult<common::HandshakePacket>
+SerialController::readPacket<common::HandshakePacket>();
+template SerialController::ReadResult<common::StatePacket> SerialController::
+    readPacket<common::StatePacket>();
+template SerialController::ReadResult<common::ControlSurfacePacket>
+SerialController::readPacket<common::ControlSurfacePacket>();
+template SerialController::ReadResult<common::ImuPacket> SerialController::
+    readPacket<common::ImuPacket>();
 
 template bool SerialController::writePacket<common::HandshakePacket>(
     const common::HandshakePacket &);

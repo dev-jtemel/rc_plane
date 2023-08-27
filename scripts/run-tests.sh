@@ -8,6 +8,12 @@ COMPILE_ONLY="$2"
 run_tests() {
     socat -d -d pty,raw,echo=0,link=/tmp/rcplane_test_tty_dev_read pty,raw,echo=0,link=/tmp/rcplane_test_tty_dev_write &
     tty=$!
+    res=$?
+    if [ ! $res -eq 0 ]
+    then
+      echo "Failed to start socat!"
+      exit 1
+    fi
     ./build/impl/test/RcplaneTests
     [ -d coverage ] && rm -rf coverage
     mkdir coverage && pushd coverage

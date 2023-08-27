@@ -73,11 +73,11 @@ TEST_F(SerialControllerFixture, open_flush) {
   common::HandshakePacket packet =
       util::createPacket<common::HandshakePacket>();
   packet.handshake = '\r';
-  ASSERT_TRUE(m_serialControllerWrite->writePacket<common::HandshakePacket>(
-      packet));
+  ASSERT_TRUE(
+      m_serialControllerWrite->writePacket<common::HandshakePacket>(packet));
   packet.handshake = '\n';
-  ASSERT_TRUE(m_serialControllerWrite->writePacket<common::HandshakePacket>(
-      packet));
+  ASSERT_TRUE(
+      m_serialControllerWrite->writePacket<common::HandshakePacket>(packet));
 
   ASSERT_TRUE(m_serialControllerRead->open());
   ASSERT_TRUE(m_serialControllerRead->flush());
@@ -111,10 +111,12 @@ TEST_F(SerialControllerFixture, readPacket_FailNotOpen) {
 
   actualHandshakePacket =
       m_serialControllerRead->readPacket<common::HandshakePacket>().packet;
-  actualStatePacket = m_serialControllerRead->readPacket<common::StatePacket>().packet;
+  actualStatePacket =
+      m_serialControllerRead->readPacket<common::StatePacket>().packet;
   actualControlSurfacePacket =
       m_serialControllerRead->readPacket<common::ControlSurfacePacket>().packet;
-  actualImuPacket = m_serialControllerRead->readPacket<common::ImuPacket>().packet;
+  actualImuPacket =
+      m_serialControllerRead->readPacket<common::ImuPacket>().packet;
 
   ASSERT_NE(kExpectedHandshakePacket, actualHandshakePacket);
   ASSERT_NE(kExpectedStatePacket, actualStatePacket);
@@ -124,10 +126,12 @@ TEST_F(SerialControllerFixture, readPacket_FailNotOpen) {
   ASSERT_TRUE(m_serialControllerRead->open());
   actualHandshakePacket =
       m_serialControllerRead->readPacket<common::HandshakePacket>().packet;
-  actualStatePacket = m_serialControllerRead->readPacket<common::StatePacket>().packet;
+  actualStatePacket =
+      m_serialControllerRead->readPacket<common::StatePacket>().packet;
   actualControlSurfacePacket =
       m_serialControllerRead->readPacket<common::ControlSurfacePacket>().packet;
-  actualImuPacket = m_serialControllerRead->readPacket<common::ImuPacket>().packet;
+  actualImuPacket =
+      m_serialControllerRead->readPacket<common::ImuPacket>().packet;
 
   ASSERT_EQ(kExpectedHandshakePacket, actualHandshakePacket);
   ASSERT_EQ(kExpectedStatePacket, actualStatePacket);
@@ -192,7 +196,8 @@ TEST_F(SerialControllerFixture, writePacket_readPacket_controlSurfacePacket) {
             kExpectedPacket));
 
     const auto kActualPacket =
-        m_serialControllerRead->readPacket<common::ControlSurfacePacket>().packet;
+        m_serialControllerRead->readPacket<common::ControlSurfacePacket>()
+            .packet;
     ASSERT_EQ(kExpectedPacket, kActualPacket);
   }
 }

@@ -2,14 +2,14 @@
 #include <MPU6050_tockn.h>
 #include <Wire.h>
 
-#include <state.hpp>
+#include <State.hpp>
 #include <Packet.hpp>
 
 const uint8_t kMOTOR_IN = 5U;
 const uint8_t kAILERON_IN = 2U;
 const uint8_t kELEVATOR_IN = 3U;
 const uint8_t kRUDDER_IN = 4U;
-const uint8_t kASSITANCE_IN = 6U;
+const uint8_t kASSISTANCE_IN = 6U;
 const uint8_t kAUTOPILOT_IN = 7U;
 const uint8_t kELEVATOR_OUT = 8U;
 
@@ -47,7 +47,7 @@ void setup() {
   pinMode(kAILERON_IN, INPUT);
   pinMode(kELEVATOR_IN, INPUT);
   pinMode(kRUDDER_IN, INPUT);
-  pinMode(kASSITANCE_IN, INPUT);
+  pinMode(kASSISTANCE_IN, INPUT);
 
   pinMode(kELEVATOR_OUT, OUTPUT);
 
@@ -68,7 +68,7 @@ void loop() {
 
   statePacket.timestamp = millis();
   statePacket.state = 0x0;
-  statePacket.state |= pulseIn(kASSITANCE_IN, HIGH) > 1600 ? rcplane::common::state::kASSISTANCE_FLAG : 0x0;
+  statePacket.state |= pulseIn(kASSISTANCE_IN, HIGH) > 1600 ? rcplane::common::state::kASSISTANCE_FLAG : 0x0;
   statePacket.state |= has_user_input(csPacket.aileronDeflection) ? rcplane::common::state::kUSER_ROLL : 0x0;
   statePacket.state |= has_user_input(csPacket.elevatorDeflection) ? rcplane::common::state::kUSER_PITCH : 0x0;
 
@@ -79,6 +79,10 @@ void loop() {
   imuPacket.gyroX = mpu.getAngleX();
   imuPacket.gyroY = mpu.getAngleY();
   imuPacket.gyroZ = mpu.getAngleZ();
+  imuPacket.accX = mpu.getAccX();
+  imuPacket.accY = mpu.getAccY();
+  imuPacket.accZ = mpu.getAccZ();
+  imuPacket.temperature = mpu.getTemp();
 
   rcplane::common::writePacket<rcplane::common::ImuPacket>(imuPacket);
 
