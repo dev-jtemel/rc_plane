@@ -26,6 +26,9 @@ SomController::SomController() {
 
   RCPLANE_LOG(info, "ConfigManager initialized!");
 
+  c_handshakeAttempts = m_configManager->getValue<uint32_t>("rcplane.som.som_controller.handshake_attempts");
+  c_mainLoopDelay = m_configManager->getValue<uint32_t>("rcplane.som.som_controller.main_loop_delay_ms");
+
   m_serialController =
       std::make_unique<io::SerialController>(*m_configManager.get(),
                                              m_ioService);
@@ -43,7 +46,7 @@ SomController::~SomController() {
 void SomController::runMainLoop() {
   RCPLANE_LOG_METHOD();
 
-  std::this_thread::sleep_for(std::chrono::milliseconds(200));
+  std::this_thread::sleep_for(std::chrono::milliseconds(c_mainLoopDelay));
   assert(!m_ioService.stopped());
 
   while (!m_ioService.stopped()) {
@@ -90,12 +93,11 @@ bool SomController::handshakeMCU() {
     return false;
   }
 
-  constexpr uint8_t kHandshakeAttempts = 5U;
-  for (uint8_t i = 0; i < kHandshakeAttempts; ++i) {
+  for (uint32_t i = 0; i < c_handshakeAttempts; ++i) {
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     const auto handshakePacket =
         m_serialController->readPacket<common::HandshakePacket>().packet;
-        
+
     if (kHandshakePacket == handshakePacket) {
       RCPLANE_LOG(info, "MCU handshake succeeded!");
       return true;

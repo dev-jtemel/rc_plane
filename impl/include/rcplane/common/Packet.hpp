@@ -159,10 +159,10 @@ inline std::ostream &operator<<(std::ostream &os,
 }
 
 inline std::ostream &operator<<(std::ostream &os, const ImuPacket &packet) {
-  return os << "gyroX = " << packet.gyroX << "| gyroY = " << packet.gyroY
-            << "| gyroZ = " << packet.gyroZ << "| accX = " << packet.accX
-            << "| accY = " << packet.accY << "| accZ = " << packet.accZ
-            << "| temperature = " << packet.temperature;
+  return os << "gyroX = " << packet.gyroX << " | gyroY = " << packet.gyroY
+            << "| gyroZ = " << packet.gyroZ << " | accX = " << packet.accX
+            << " | accY = " << packet.accY << " | accZ = " << packet.accZ
+            << " | temperature = " << packet.temperature;
 }
 #endif
 

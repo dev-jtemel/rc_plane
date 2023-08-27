@@ -8,24 +8,14 @@
       "serial_controller": {
         "tty_dev": "/dev/ttyACM0",
         "baud_rate": 115200,
-        "read_timeout_ms": 10000,
-        "write_timeout_ms": 10000
+        "read_timeout_ms": 500,
+        "write_timeout_ms": 500
       }
     },
-    "hw": {
-      "control_surface_manager": {
-        "aileron_max_pos": 20,
-        "aileron_max_neg": 20,
-        "elevator_max_pos": 20,
-        "elevator_max_neg": 45,
-        "rudder_max_pos": 20,
-        "rudder_max_neg": 20
-      },
-      "imu_manager": {
-        "roll_max_pos": 20,
-        "roll_max_neg": 20,
-        "pitch_max_pos": 30,
-        "pitch_max_neg": 10
+    "som": {
+      "som_controller": {
+        "handshake_attempts": 20,
+        "main_loop_delay_ms": 5000
       }
     }
   }
