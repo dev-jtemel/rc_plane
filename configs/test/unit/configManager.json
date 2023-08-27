@@ -1,0 +1,9 @@
+{
+  "rcplane": {
+    "test": {
+      "string": "test string",
+      "int": -100,
+      "uint": 100
+    }
+  }
+}

@@ -1,15 +1,15 @@
-include_directories(mock)
+include_directories(.)
 
-add_executable(rcplane_unit_test
+add_executable(RcplaneTests
   main.cpp
-  unit/packet_test.cpp
-  unit/config_manager_test.cpp
-  unit/serial_controller_test.cpp
+  unit/ConfigManagerTest.cpp
+  unit/SerialControllerTest.cpp
 )
 
-target_link_libraries(rcplane_unit_test
+target_link_libraries(RcplaneTests
   PUBLIC
     rcplane_io
-    gtest
+  PRIVATE
     gmock
+    gtest
 )

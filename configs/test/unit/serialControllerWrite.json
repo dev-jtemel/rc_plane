@@ -1,0 +1,12 @@
+{
+  "rcplane": {
+    "io": {
+      "serial_controller": {
+        "tty_dev": "/tmp/rcplane_test_tty_dev_write",
+        "baud_rate": 115200,
+        "read_timeout_ms": 10,
+        "write_timeout_ms": 10
+      }
+    }
+  }
+}

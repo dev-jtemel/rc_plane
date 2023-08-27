@@ -1,0 +1,80 @@
+@startuml MCU to SoM Sequence
+
+!pragma teoz true
+
+autonumber "<b>[000]"
+hide footbox
+skinparam maxMessageSize 150
+
+box Microcontroller Hardware #WHITE
+  participant Servos as srv #PHYSICAL
+  participant IMU as imu #PHYSICAL
+  participant RX as rx #PHYSICAL
+end box 
+
+box Microcontroller #WHITE 
+  participant Microcontroller as mcu #IMPLEMENTATION
+end box
+
+box System On Module #WHITE
+  box HAL #WHITE
+    participant SerialController as serial #IMPLEMENTATION
+    participant IMUController as imuctr #IMPLEMENTATION
+    participant CSController as csctr #IMPLEMENTATION
+  end box
+  box Autopilot #WHITE
+    participant AutopilotManager as apm #IMPLEMENTATION
+    participant AutopilotInterface as api #IMPLEMENTATION
+  end box
+end box
+
+== Initialization ==
+note over mcu, serial : Buffers are flushed
+mcu -> serial : Write handshake
+serial --> mcu : Write ACK
+
+== Main Loop ==
+note over mcu, serial : All implicit read calls are blocking\ncarry a time out.\nTimeout behavior is not modelled here.
+
+activate mcu
+activate serial
+
+rx <- mcu ++ : Read RC RX data
+rx --> mcu -- : RX input data
+
+mcu -> mcu : Compute state and control surface data
+
+mcu -> serial : Write state data
+serial -> apm ++ : Handle state data
+
+& imu <- mcu ++ : Read IMU data
+imu --> mcu -- : IMU data
+
+& apm -> api -- : Transition autopilot if requested
+
+mcu -> serial : Write IMU data
+serial -> imuctr ++ : Store IMU data
+
+mcu -> serial : Write control surface data
+& imuctr -> imuctr : Apply KF\n & PID
+
+serial -> csctr ++ : Store control surface data
+
+serial -> api ++ : Signal data collected
+
+api -> imuctr : Get current IMU data
+imuctr --> api -- : IMU data
+
+api -> csctr : Set current CS data
+csctr -> csctr : Apply limiters
+csctr --> api -- : CS data
+
+serial <- api -- : Signal servo data
+
+serial -> mcu : Write servo data
+mcu -> srv : Write servo data
+
+deactivate mcu
+deactivate serial
+
+@enduml
