@@ -2,7 +2,7 @@
 #include <MPU6050_tockn.h>
 #include <Wire.h>
 
-#include <state.hpp>
+#include <State.hpp>
 #include <Packet.hpp>
 
 const uint8_t kMOTOR_IN = 5U;
