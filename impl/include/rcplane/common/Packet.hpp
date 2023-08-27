@@ -2,6 +2,7 @@
 #define RCPLANE_COMMON_PACKET_HPP
 
 #ifndef ARDUINO_ARCH_AVR
+#  include <bitset>
 #  include <cstdint>
 #endif
 
@@ -142,6 +143,26 @@ void writePacket(PACKET &packet) {
 template<typename PACKET>
 size_t readPacket(PACKET &packet) {
   return Serial.readBytes((uint8_t *)&packet, sizeof(packet));
+}
+#else
+inline std::ostream &operator<<(std::ostream &os, const StatePacket &packet) {
+  return os << "timestamp = " << packet.timestamp
+            << " | state = " << std::bitset<8>(packet.state);
+}
+
+inline std::ostream &operator<<(std::ostream &os,
+                                const ControlSurfacePacket &packet) {
+  return os << "motorSpeed = " << +packet.motorSpeed
+            << " | aileronDeflection = " << +packet.aileronDeflection
+            << " | elevatorDeflection = " << +packet.elevatorDeflection
+            << " | rudderDeflection = " << +packet.rudderDeflection;
+}
+
+inline std::ostream &operator<<(std::ostream &os, const ImuPacket &packet) {
+  return os << "gyroX = " << packet.gyroX << "| gyroY = " << packet.gyroY
+            << "| gyroZ = " << packet.gyroZ << "| accX = " << packet.accX
+            << "| accY = " << packet.accY << "| accZ = " << packet.accZ
+            << "| temperature = " << packet.temperature;
 }
 #endif
 
