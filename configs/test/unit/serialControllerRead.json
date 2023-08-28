@@ -1,5 +1,8 @@
 {
   "rcplane": {
+    "common": {
+      "handshake_termination_string": "rcplane\r\n"
+    },
     "io": {
       "serial_controller": {
         "tty_dev": "/tmp/rcplane_test_tty_dev_read",

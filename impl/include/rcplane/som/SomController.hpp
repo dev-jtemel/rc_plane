@@ -61,7 +61,7 @@ public:
 private:
   uint32_t c_handshakeAttempts{};
   uint32_t c_mainLoopDelay{};
-  
+
   boost::thread m_ioThread{};
   boost::asio::io_service m_ioService{};
   boost::asio::executor_work_guard<boost::asio::io_context::executor_type>

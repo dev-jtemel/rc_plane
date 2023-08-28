@@ -26,8 +26,10 @@ SomController::SomController() {
 
   RCPLANE_LOG(info, "ConfigManager initialized!");
 
-  c_handshakeAttempts = m_configManager->getValue<uint32_t>("rcplane.som.som_controller.handshake_attempts");
-  c_mainLoopDelay = m_configManager->getValue<uint32_t>("rcplane.som.som_controller.main_loop_delay_ms");
+  c_handshakeAttempts = m_configManager->getValue<uint32_t>(
+      "rcplane.som.som_controller.handshake_attempts");
+  c_mainLoopDelay = m_configManager->getValue<uint32_t>(
+      "rcplane.som.som_controller.main_loop_delay_ms");
 
   m_serialController =
       std::make_unique<io::SerialController>(*m_configManager.get(),

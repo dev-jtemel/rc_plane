@@ -1,5 +1,8 @@
 {
   "rcplane": {
+    "common": {
+      "handshake_termination_string": "flush\r\n"
+    },
     "io": {
       "journal": {
         "severity": "trace",

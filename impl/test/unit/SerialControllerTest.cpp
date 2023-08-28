@@ -70,14 +70,17 @@ TEST_F(SerialControllerFixture, open_fail) {
 
 TEST_F(SerialControllerFixture, open_flush) {
   ASSERT_TRUE(m_serialControllerWrite->open());
-  common::HandshakePacket packet =
-      util::createPacket<common::HandshakePacket>();
-  packet.handshake = '\r';
-  ASSERT_TRUE(
-      m_serialControllerWrite->writePacket<common::HandshakePacket>(packet));
-  packet.handshake = '\n';
-  ASSERT_TRUE(
-      m_serialControllerWrite->writePacket<common::HandshakePacket>(packet));
+
+  // We need to write the string value specified in the config. So, we write char
+  // by char in a HandshakePacket since it stores exactly one char (i.e. uint8_t).
+  std::string cFlushTerminationStr = m_configManagerWrite.getValue<std::string>(
+      "rcplane.common.handshake_termination_string");
+  for (auto &c : cFlushTerminationStr) {
+    common::HandshakePacket charPacket;
+    charPacket.handshake = static_cast<uint8_t>(c);
+    ASSERT_TRUE(m_serialControllerWrite->writePacket<common::HandshakePacket>(
+        charPacket));
+  }
 
   ASSERT_TRUE(m_serialControllerRead->open());
   ASSERT_TRUE(m_serialControllerRead->flush());

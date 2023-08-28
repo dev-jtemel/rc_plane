@@ -2,7 +2,6 @@
 
 ROOT_DIR="$PWD"
 DEV="/dev/ttyACM0"
-SOMIP="192.168.0.30"
 MODE="PC"
 
 OPTIONS="\
@@ -13,7 +12,6 @@ OPTIONS="\
   Debug \
   Compile-Test \
   Test \
-  GPS-Fake \
   Read-Serial \
   Install-Dependencies \
   Run-Clang-Format \
@@ -23,13 +21,11 @@ OPTIONS="\
 "
 usage() {
   echo "Usage:"
-  echo "  ./builder.sh -d [dev] -i [IP]"
+  echo "  ./builder.sh -d [dev]"
   echo ""
   echo "  where:"
   echo "    -d [dev] : The tty port the microcontroller is connected to."
   echo "               Default: /dev/ttyACM0"
-  echo "    -i       : SoM IP address."
-  echo "               Default: 192.168.0.13"
   echo ""
   echo "COMMANDS:"
   echo "  1) Change-Mode            : Cycle between MCU, SOM and PC (default: PC)."
@@ -39,20 +35,17 @@ usage() {
   echo "  5) Debug                  : Run gdb on the PC code."
   echo "  6) Comple-Test            : Compile tests."
   echo "  7) Test                   : Run the tests for the appropiate device."
-  echo "  8) GPS-Fake               : Start a simulated GPSd instance."
-  echo "  9) Read-Serial            : Read the serial output of the microcontroller."
-  echo "  10) Install-Dependencies  : Install the required dependencies."
-  echo "  11) Run-Clang-Format      : Run clang-format on the project."
-  echo "  12) Documentation         : Run doxygen on the project."
-  echo "  13) Help                  : Display this message."
-  echo "  14) Quit                  : Exit the builder script."
+  echo "  8) Read-Serial            : Read the serial output of the microcontroller."
+  echo "  9) Install-Dependencies   : Install the required dependencies."
+  echo "  10) Run-Clang-Format      : Run clang-format on the project."
+  echo "  11) Documentation         : Run doxygen on the project."
+  echo "  12) Help                  : Display this message."
+  echo "  13) Quit                  : Exit the builder script."
 }
 
 while getopts "d:i:h" opt; do
     case "$opt" in
         d) DEV="$OPTARG";
-            ;;
-        i) SOMIP="$OPTARG";
             ;;
         h) usage; exit 0
             ;;
@@ -63,7 +56,7 @@ done
 
 while true;
 do
-  echo "MODE = ${MODE} | DEV = ${DEV} | SOMIP = ${SOMIP}"
+  echo "MODE = ${MODE} | DEV = ${DEV}"
 
   select opt in ${OPTIONS};
   do
@@ -117,14 +110,6 @@ do
     then
       [ $MODE == "PC" ] && {
         bash scripts/run-tests.sh "$ROOT_DIR"
-        break
-      }
-      echo "Nothing to do on $MODE..."
-      break
-    elif [ "$opt" = "GPS-Fake" ];
-    then
-      [ $MODE == "PC" ] && {
-        killall gpsfake ; sudo gpsfake -P 2000 -S ./logs/gps.nmea
         break
       }
       echo "Nothing to do on $MODE..."
