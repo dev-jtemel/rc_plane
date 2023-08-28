@@ -136,7 +136,7 @@ bool SerialController::flush() {
       [&](const boost::system::error_code &error, std::size_t size) {
         if (error) {
           RCPLANE_LOG(error, "Failed to read packet :: " << error.message());
-          return; 
+          return;
         }
         readPromise.set_value(error);
         // Consume everything + more
