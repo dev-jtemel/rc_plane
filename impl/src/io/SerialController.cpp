@@ -144,7 +144,7 @@ bool SerialController::flush() {
       });
 
   // Wait for the read operation to complete with a timeout
-  constexpr uint16_t kDelayMultiplier = 20U;
+  constexpr uint16_t kDelayMultiplier = 2U;
   const std::future_status status = readFuture.wait_for(
       std::chrono::milliseconds(c_readTimeoutMs * kDelayMultiplier));
   if (status == std::future_status::timeout) {

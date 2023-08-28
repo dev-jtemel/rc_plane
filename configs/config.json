@@ -1,7 +1,7 @@
 {
   "rcplane": {
     "common": {
-      "handshake_termination_string": "rcplane\r\n"
+      "handshake_termination_string": "flush\r\n"
     },
     "io": {
       "journal": {
