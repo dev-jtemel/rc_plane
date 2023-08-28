@@ -163,7 +163,7 @@ size_t readPacket(PACKET &packet) {
 }
 #else
 inline std::ostream &operator<<(std::ostream &os, const HandshakePacket &packet) {
-  return os << "timestamp = " << packet.handshake;
+  return os << "handshake = " << +packet.handshake;
 }
 
 inline std::ostream &operator<<(std::ostream &os, const RcRxPacket &packet) {
