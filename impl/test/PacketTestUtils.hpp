@@ -34,8 +34,13 @@ template<typename PACKET_TYPE,
 inline PACKET_TYPE createPacket() {
   if constexpr (std::is_same_v<PACKET_TYPE, common::HandshakePacket>) {
     return {getRandomValue<uint8_t>()};
-  } else if constexpr (std::is_same_v<PACKET_TYPE, common::StatePacket>) {
-    return {getRandomValue<uint32_t>(), getRandomValue<uint8_t>()};
+  } else if constexpr (std::is_same_v<PACKET_TYPE, common::RcRxPacket>) {
+    return {getRandomValue<uint32_t>(),
+            getRandomValue<uint8_t>(),
+            getRandomValue<uint8_t>(),
+            getRandomValue<int8_t>(),
+            getRandomValue<int8_t>(),
+            getRandomValue<int8_t>()};
   } else if constexpr (std::is_same_v<PACKET_TYPE,
                                       common::ControlSurfacePacket>) {
     return {getRandomValue<uint8_t>(),

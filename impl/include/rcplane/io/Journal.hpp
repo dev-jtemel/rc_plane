@@ -70,6 +70,14 @@ static boost::shared_ptr<colored_sink> g_journalSink =
                            << "] " << msg;                                     \
   } while (false)
 
+#define RCPLANE_LOG_TEST(lvl, msg)                                             \
+  do {                                                                         \
+    BOOST_LOG_TRIVIAL(lvl)                                                     \
+        << "["                                                                 \
+        << ::testing::UnitTest::GetInstance()->current_test_info()->name()     \
+        << "] " << msg;                                                        \
+  } while (false)
+
 #define RCPLANE_LOG_METHOD()                                                   \
   do {                                                                         \
     BOOST_LOG_TRIVIAL(trace)                                                   \

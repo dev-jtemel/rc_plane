@@ -162,6 +162,10 @@ size_t readPacket(PACKET &packet) {
   return Serial.readBytes((uint8_t *)&packet, sizeof(packet));
 }
 #else
+inline std::ostream &operator<<(std::ostream &os, const HandshakePacket &packet) {
+  return os << "timestamp = " << packet.handshake;
+}
+
 inline std::ostream &operator<<(std::ostream &os, const RcRxPacket &packet) {
   return os << "timestamp = " << packet.timestamp
             << " | state = " << std::bitset<8>(packet.state)
