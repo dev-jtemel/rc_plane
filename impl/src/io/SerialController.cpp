@@ -161,8 +161,8 @@ bool SerialController::flush() {
 
 template SerialController::ReadResult<common::HandshakePacket>
 SerialController::readPacket<common::HandshakePacket>();
-template SerialController::ReadResult<common::StatePacket> SerialController::
-    readPacket<common::StatePacket>();
+template SerialController::ReadResult<common::RcRxPacket> SerialController::
+    readPacket<common::RcRxPacket>();
 template SerialController::ReadResult<common::ControlSurfacePacket>
 SerialController::readPacket<common::ControlSurfacePacket>();
 template SerialController::ReadResult<common::ImuPacket> SerialController::
@@ -170,8 +170,8 @@ template SerialController::ReadResult<common::ImuPacket> SerialController::
 
 template bool SerialController::writePacket<common::HandshakePacket>(
     const common::HandshakePacket &);
-template bool SerialController::writePacket<common::StatePacket>(
-    const common::StatePacket &);
+template bool SerialController::writePacket<common::RcRxPacket>(
+    const common::RcRxPacket &);
 template bool SerialController::writePacket<common::ControlSurfacePacket>(
     const common::ControlSurfacePacket &);
 template bool SerialController::writePacket<common::ImuPacket>(
