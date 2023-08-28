@@ -52,16 +52,21 @@ void SomController::runMainLoop() {
   assert(!m_ioService.stopped());
 
   while (!m_ioService.stopped()) {
-    const auto statePacket =
-        m_serialController->readPacket<common::StatePacket>().packet;
-    const auto controlSurfacePacket =
-        m_serialController->readPacket<common::ControlSurfacePacket>().packet;
+    const auto rcRxPacket =
+        m_serialController->readPacket<common::RcRxPacket>().packet;
     const auto imuPacket =
         m_serialController->readPacket<common::ImuPacket>().packet;
 
-    RCPLANE_LOG(debug, statePacket);
-    RCPLANE_LOG(debug, controlSurfacePacket);
+    RCPLANE_LOG(debug, rcRxPacket);
     RCPLANE_LOG(debug, imuPacket);
+
+    common::ControlSurfacePacket controlSurfacePacket;
+    controlSurfacePacket.motorSpeed = rcRxPacket.motorStickPosition;
+    controlSurfacePacket.aileronDeflection = rcRxPacket.aileronStickPosition;
+    controlSurfacePacket.elevatorDeflection = rcRxPacket.elevatorStickPosition;
+    controlSurfacePacket.rudderDeflection = rcRxPacket.rudderStickPosition;
+
+    RCPLANE_LOG(debug, controlSurfacePacket);
 
     if (!m_serialController->writePacket<common::ControlSurfacePacket>(
             controlSurfacePacket)) {
@@ -96,7 +101,6 @@ bool SomController::handshakeMCU() {
   }
 
   for (uint32_t i = 0; i < c_handshakeAttempts; ++i) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     const auto handshakePacket =
         m_serialController->readPacket<common::HandshakePacket>().packet;
 

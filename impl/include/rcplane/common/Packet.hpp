@@ -34,29 +34,46 @@ struct __attribute((packed)) HandshakePacket : public BasePacket {
 };
 
 /**
- * @brief Packet definition of time and state of the application. 
+ * @brief Packet definition of time and state of the RX controller. 
  * @warning This packet is packed to avoid compiler padding.
  */
-struct __attribute((packed)) StatePacket : public BasePacket {
-  StatePacket() = default;
-  StatePacket(uint32_t timestamp_, uint8_t state_)
-    : timestamp(timestamp_), state(state_) {}
+struct __attribute((packed)) RcRxPacket : public BasePacket {
+  RcRxPacket() = default;
+  RcRxPacket(uint32_t timestamp_,
+             uint8_t state_,
+             uint8_t motorStickPosition_,
+             int8_t aileronStickPosition_,
+             int8_t elevatorStickPosition_,
+             int8_t rudderStickPosition_)
+    : timestamp(timestamp_), state(state_),
+      motorStickPosition(motorStickPosition_),
+      aileronStickPosition(aileronStickPosition_),
+      elevatorStickPosition(elevatorStickPosition_),
+      rudderStickPosition(rudderStickPosition_) {}
 
-  bool operator==(const StatePacket &other) const {
-    return timestamp == other.timestamp && state == other.state;
+  bool operator==(const RcRxPacket &other) const {
+    return timestamp == other.timestamp && state == other.state
+        && motorStickPosition == other.motorStickPosition
+        && aileronStickPosition == other.aileronStickPosition
+        && elevatorStickPosition == other.elevatorStickPosition
+        && rudderStickPosition == other.rudderStickPosition;
   }
 
-  bool operator!=(const StatePacket &other) const { return !(*this == other); }
+  bool operator!=(const RcRxPacket &other) const { return !(*this == other); }
 
   uint32_t timestamp{};
   uint8_t state{};
+  uint8_t motorStickPosition{};
+  int8_t aileronStickPosition{};
+  int8_t elevatorStickPosition{};
+  int8_t rudderStickPosition{};
 };
 
 /**
  * @brief Packet definition of control surface values.
  * 
  * This packet defines the control surface data to be communicated
- * to and from the mcu and som.
+ * to the mcu from som.
  * 
  * @warning This packet is packed to avoid compiler padding.
  */
@@ -145,9 +162,13 @@ size_t readPacket(PACKET &packet) {
   return Serial.readBytes((uint8_t *)&packet, sizeof(packet));
 }
 #else
-inline std::ostream &operator<<(std::ostream &os, const StatePacket &packet) {
+inline std::ostream &operator<<(std::ostream &os, const RcRxPacket &packet) {
   return os << "timestamp = " << packet.timestamp
-            << " | state = " << std::bitset<8>(packet.state);
+            << " | state = " << std::bitset<8>(packet.state)
+            << " | motorStickPosition = " << +packet.motorStickPosition
+            << " | aileronStickPosition = " << +packet.aileronStickPosition
+            << " | elevatorStickPosition = " << +packet.elevatorStickPosition
+            << " | rudderStickPosition = " << +packet.rudderStickPosition;
 }
 
 inline std::ostream &operator<<(std::ostream &os,
