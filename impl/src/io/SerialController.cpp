@@ -23,6 +23,8 @@ SerialController::SerialController(const ConfigManager &configManager,
       "rcplane.io.serial_controller.read_timeout_ms");
   c_writeTimeoutMs = configManager.getValue<uint32_t>(
       "rcplane.io.serial_controller.write_timeout_ms");
+  c_handshakeTerminationStr = configManager.getValue<std::string>(
+      "rcplane.common.handshake_termination_string");
 }
 
 SerialController::~SerialController() { RCPLANE_LOG_METHOD(); }
@@ -66,10 +68,7 @@ SerialController::ReadResult<PACKET_TYPE> SerialController::readPacket() {
         const auto *packetPtr = boost::asio::buffer_cast<const PACKET_TYPE *>(
             m_streamBuffer.data());
         m_streamBuffer.consume(sizeof(PACKET_TYPE));
-        ReadResult<PACKET_TYPE> readResult;
-        readResult.packet = *packetPtr;
-        readResult.didTimeout = false;
-        readPromise.set_value(readResult);
+        readPromise.set_value(ReadResult<PACKET_TYPE>{*packetPtr, false});
       });
 
   // Wait for the read operation to complete with a timeout
@@ -80,8 +79,10 @@ SerialController::ReadResult<PACKET_TYPE> SerialController::readPacket() {
     // the read and now.
     try {
       m_serialPort.cancel();
-    } catch (...) {}
-    return ReadResult<PACKET_TYPE>();
+    } catch (...) {
+      // Intentially empty.
+    }
+    return {};
   }
 
   return readFuture.get();
@@ -114,7 +115,9 @@ bool SerialController::writePacket(const PACKET_TYPE &packet) {
     RCPLANE_LOG(warning, "Write operation timed out.");
     try {
       m_serialPort.cancel();
-    } catch (...) {}
+    } catch (...) {
+      // Intentially empty.
+    }
     return false;
   }
   return true;
@@ -129,14 +132,15 @@ bool SerialController::flush() {
   boost::asio::async_read_until(
       m_serialPort,
       m_streamBuffer,
-      '\n',
+      c_handshakeTerminationStr,
       [&](const boost::system::error_code &error, std::size_t size) {
         if (error) {
           RCPLANE_LOG(error, "Failed to read packet :: " << error.message());
-          return;
+          return; 
         }
         readPromise.set_value(error);
-        m_streamBuffer.consume(size);
+        // Consume everything + more
+        m_streamBuffer.consume(size * 2U);
       });
 
   // Wait for the read operation to complete with a timeout

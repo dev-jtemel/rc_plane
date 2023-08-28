@@ -89,6 +89,7 @@ private:
   uint32_t c_baudRate;
   uint32_t c_readTimeoutMs;
   uint32_t c_writeTimeoutMs;
+  std::string c_handshakeTerminationStr;
 
   boost::asio::streambuf m_streamBuffer;
   boost::asio::serial_port m_serialPort;
