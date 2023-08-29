@@ -4,6 +4,7 @@
 #ifndef ARDUINO_ARCH_AVR
 #  include <bitset>
 #  include <cstdint>
+#  include <ostream>
 #endif
 
 namespace rcplane {
@@ -162,7 +163,8 @@ size_t readPacket(PACKET &packet) {
   return Serial.readBytes((uint8_t *)&packet, sizeof(packet));
 }
 #else
-inline std::ostream &operator<<(std::ostream &os, const HandshakePacket &packet) {
+inline std::ostream &operator<<(std::ostream &os,
+                                const HandshakePacket &packet) {
   return os << "handshake = " << +packet.handshake;
 }
 

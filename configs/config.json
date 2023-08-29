@@ -15,6 +15,12 @@
         "write_timeout_ms": 500
       }
     },
+    "autopilot": {
+      "max_throttle_speed": 255,
+      "max_aileron_deflection": 35,
+      "max_elevator_deflection": 40,
+      "max_rudder_deflection": 20
+    },
     "som": {
       "som_controller": {
         "handshake_attempts": 20,

@@ -60,19 +60,19 @@ void loop() {
   /**
    * Populate the control surface packet and write to the som.
    */
-  rcRxSPacket.motorSpeed = toRange(pulseIn(kMOTOR_IN, HIGH), 0, 255);
-  rcRxSPacket.aileronDeflection = static_cast<uint8_t>(toRange(pulseIn(kAILERON_IN, HIGH), -100, 100));
-  rcRxSPacket.elevatorDeflection = static_cast<uint8_t>(toRange(pulseIn(kELEVATOR_IN, HIGH), -100, 100));
-  rcRxSPacket.rudderDeflection = static_cast<uint8_t>(toRange(pulseIn(kRUDDER_IN, HIGH), -100, 100));
+  rcRxSPacket.motorStickPosition = toRange(pulseIn(kMOTOR_IN, HIGH), 0, 100);
+  rcRxSPacket.aileronStickPosition = static_cast<uint8_t>(toRange(pulseIn(kAILERON_IN, HIGH), -100, 100));
+  rcRxSPacket.elevatorStickPosition = static_cast<uint8_t>(toRange(pulseIn(kELEVATOR_IN, HIGH), -100, 100));
+  rcRxSPacket.rudderStickPosition = static_cast<uint8_t>(toRange(pulseIn(kRUDDER_IN, HIGH), -100, 100));
 
 
   rcRxSPacket.timestamp = millis();
   rcRxSPacket.state = 0x0;
   rcRxSPacket.state |= pulseIn(kASSISTANCE_IN, HIGH) > 1600 ? rcplane::common::state::kASSISTANCE_FLAG : 0x0;
-  rcRxSPacket.state |= has_user_input(csPacket.aileronDeflection) ? rcplane::common::state::kUSER_ROLL : 0x0;
-  rcRxSPacket.state |= has_user_input(csPacket.elevatorDeflection) ? rcplane::common::state::kUSER_PITCH : 0x0;
+  rcRxSPacket.state |= has_user_input(rcRxSPacket.aileronStickPosition) ? rcplane::common::state::kUSER_ROLL : 0x0;
+  rcRxSPacket.state |= has_user_input(rcRxSPacket.elevatorStickPosition) ? rcplane::common::state::kUSER_PITCH : 0x0;
 
-  rcplane::common::writePacket<rcplane::common::rcRxSPacket>(rcRxSPacket);
+  rcplane::common::writePacket<rcplane::common::RcRxPacket>(rcRxSPacket);
 
   mpu.update();
   imuPacket.gyroX = mpu.getAngleX();

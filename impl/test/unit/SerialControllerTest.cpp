@@ -8,8 +8,8 @@
 
 #include "PacketTestUtils.hpp"
 #include "rcplane/common/Packet.hpp"
-#include "rcplane/io/Journal.hpp"
 #include "rcplane/io/ConfigManager.hpp"
+#include "rcplane/io/Journal.hpp"
 
 namespace rcplane {
 namespace test {

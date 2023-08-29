@@ -68,6 +68,7 @@ template std::string ConfigManager::getValue<std::string>(
     const std::string &) const;
 template uint32_t ConfigManager::getValue<uint32_t>(const std::string &) const;
 template int8_t ConfigManager::getValue<int8_t>(const std::string &) const;
+template uint8_t ConfigManager::getValue<uint8_t>(const std::string &) const;
 
 }  // namespace io
 }  // namespace rcplane
