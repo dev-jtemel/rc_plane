@@ -37,6 +37,9 @@ SomController::SomController() {
   assert(m_serialController->open());
 
   RCPLANE_LOG(info, "SerialController initialized!");
+
+  m_autopilotManager = std::make_unique<autopilot::AutopilotManager>();
+  RCPLANE_LOG(info, "Autopilot initialized!");
 }
 
 SomController::~SomController() {
@@ -60,11 +63,8 @@ void SomController::runMainLoop() {
     RCPLANE_LOG(debug, rcRxPacket);
     RCPLANE_LOG(debug, imuPacket);
 
-    common::ControlSurfacePacket controlSurfacePacket;
-    controlSurfacePacket.motorSpeed = rcRxPacket.motorStickPosition;
-    controlSurfacePacket.aileronDeflection = rcRxPacket.aileronStickPosition;
-    controlSurfacePacket.elevatorDeflection = rcRxPacket.elevatorStickPosition;
-    controlSurfacePacket.rudderDeflection = rcRxPacket.rudderStickPosition;
+    common::ControlSurfacePacket controlSurfacePacket =
+        m_autopilotManager->trigger(rcRxPacket);
 
     RCPLANE_LOG(debug, controlSurfacePacket);
 
