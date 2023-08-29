@@ -11,11 +11,20 @@
 namespace rcplane {
 namespace autopilot {
 
+/**
+ * @brief Maintain the different autopilots and trigger the appropriate autopilot
+ * based on the received packet.
+ */
 class AutopilotManager : public ::boost::noncopyable {
 public:
   AutopilotManager();
   ~AutopilotManager();
 
+  /**
+   * @brief Trigger the appropriate autopilot based on the received packet.
+   * @param rcRxPacket The received packet.
+   * @return The control surface packet to send to the MCU.
+   */
   common::ControlSurfacePacket trigger(const common::RcRxPacket &rcRxPacket);
 
 private:
