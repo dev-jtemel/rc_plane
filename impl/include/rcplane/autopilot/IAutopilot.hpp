@@ -14,7 +14,6 @@ namespace autopilot {
  */
 class IAutopilot : public ::boost::noncopyable {
 public:
-
   /**
    * @brief Execute the autopilot implementation.
    * @param controlSurfacePacket The control surface packet to modify.
