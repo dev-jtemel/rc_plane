@@ -20,6 +20,16 @@ class AutopilotManager : public ::boost::noncopyable {
 public:
   AutopilotManager();
   ~AutopilotManager();
+  
+  /**
+   * @return bool True if the active autopilot is a manual autopilot.
+   */
+  bool isInManualMode() const;
+
+  /**
+   * @return bool True if the active autopilot is a stabilized autopilot.
+   */
+  bool isInStabilizeMode() const;
 
   /**
    * @brief Trigger the appropriate autopilot based on the received packet.

@@ -13,6 +13,16 @@ AutopilotManager::AutopilotManager()
 
 AutopilotManager::~AutopilotManager() { RCPLANE_LOG_METHOD(); }
 
+bool AutopilotManager::isInManualMode() const {
+  RCPLANE_LOG_METHOD();
+  return m_autopilot == &m_manualAutopilot;
+}
+
+bool AutopilotManager::isInStabilizeMode() const {
+  RCPLANE_LOG_METHOD();
+  return m_autopilot == &m_stabilizeAutopilot;
+}
+
 common::ControlSurfacePacket AutopilotManager::trigger(
     const common::RcRxPacket &rcRxPacket,
     const common::ImuPacket &imuPacket) {

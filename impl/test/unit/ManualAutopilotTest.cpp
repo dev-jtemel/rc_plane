@@ -19,9 +19,11 @@ protected:
 };
 
 TEST_F(ManualAutopilotFixture, zeroToZero) {
+  const common::ImuPacket kImuPacket;
   common::ControlSurfacePacket controlSurfacePacket;
   const common::RcRxPacket kRcRxPacket;
-  m_manualAutopilot->trigger(controlSurfacePacket, kRcRxPacket);
+
+  m_manualAutopilot->trigger(controlSurfacePacket, kRcRxPacket, kImuPacket);
 
   EXPECT_EQ(0, controlSurfacePacket.motorSpeed);
   EXPECT_EQ(0, controlSurfacePacket.aileronDeflection);
@@ -30,10 +32,12 @@ TEST_F(ManualAutopilotFixture, zeroToZero) {
 }
 
 TEST_F(ManualAutopilotFixture, aileronBind) {
+  const common::ImuPacket kImuPacket;
   common::ControlSurfacePacket controlSurfacePacket;
   common::RcRxPacket kRcRxPacket;
   kRcRxPacket.aileronStickPosition = 100;
-  m_manualAutopilot->trigger(controlSurfacePacket, kRcRxPacket);
+
+  m_manualAutopilot->trigger(controlSurfacePacket, kRcRxPacket, kImuPacket);
 
   EXPECT_EQ(0, controlSurfacePacket.motorSpeed);
   EXPECT_EQ(30, controlSurfacePacket.aileronDeflection);
@@ -42,10 +46,12 @@ TEST_F(ManualAutopilotFixture, aileronBind) {
 }
 
 TEST_F(ManualAutopilotFixture, elevatorBind) {
+  const common::ImuPacket kImuPacket;
   common::ControlSurfacePacket controlSurfacePacket;
   common::RcRxPacket kRcRxPacket;
   kRcRxPacket.elevatorStickPosition = -100;
-  m_manualAutopilot->trigger(controlSurfacePacket, kRcRxPacket);
+
+  m_manualAutopilot->trigger(controlSurfacePacket, kRcRxPacket, kImuPacket);
 
   EXPECT_EQ(0, controlSurfacePacket.motorSpeed);
   EXPECT_EQ(0, controlSurfacePacket.aileronDeflection);
@@ -54,10 +60,12 @@ TEST_F(ManualAutopilotFixture, elevatorBind) {
 }
 
 TEST_F(ManualAutopilotFixture, rudderBind) {
+  const common::ImuPacket kImuPacket;
   common::ControlSurfacePacket controlSurfacePacket;
   common::RcRxPacket kRcRxPacket;
   kRcRxPacket.rudderStickPosition = 50;
-  m_manualAutopilot->trigger(controlSurfacePacket, kRcRxPacket);
+
+  m_manualAutopilot->trigger(controlSurfacePacket, kRcRxPacket, kImuPacket);
 
   EXPECT_EQ(0, controlSurfacePacket.motorSpeed);
   EXPECT_EQ(0, controlSurfacePacket.aileronDeflection);
@@ -66,13 +74,15 @@ TEST_F(ManualAutopilotFixture, rudderBind) {
 }
 
 TEST_F(ManualAutopilotFixture, allBind) {
+  const common::ImuPacket kImuPacket;
   common::ControlSurfacePacket controlSurfacePacket;
   common::RcRxPacket kRcRxPacket;
   kRcRxPacket.motorStickPosition = 100;
   kRcRxPacket.aileronStickPosition = -10;
   kRcRxPacket.elevatorStickPosition = 50;
   kRcRxPacket.rudderStickPosition = -25;
-  m_manualAutopilot->trigger(controlSurfacePacket, kRcRxPacket);
+
+  m_manualAutopilot->trigger(controlSurfacePacket, kRcRxPacket, kImuPacket);
 
   EXPECT_EQ(100, controlSurfacePacket.motorSpeed);
   EXPECT_EQ(-3, controlSurfacePacket.aileronDeflection);
