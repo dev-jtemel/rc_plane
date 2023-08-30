@@ -7,8 +7,8 @@
 #include <boost/thread.hpp>
 #include <memory>
 
-#include "rcplane/autopilot/AutopilotUtility.hpp"
 #include "rcplane/autopilot/AutopilotManager.hpp"
+#include "rcplane/autopilot/AutopilotUtility.hpp"
 #include "rcplane/io/ConfigManager.hpp"
 #include "rcplane/io/Journal.hpp"
 #include "rcplane/io/SerialController.hpp"

@@ -20,9 +20,11 @@ void ManualAutopilot::trigger(
   controlSurfacePacket.motorSpeed =
       m_autopilotUtility.bindRcThrottle(rcRxPacket.motorStickPosition);
   controlSurfacePacket.aileronDeflection =
-      m_autopilotUtility.bindRcAileronDeflection(rcRxPacket.aileronStickPosition);
+      m_autopilotUtility.bindRcAileronDeflection(
+          rcRxPacket.aileronStickPosition);
   controlSurfacePacket.elevatorDeflection =
-      m_autopilotUtility.bindRcElevatorDeflection(rcRxPacket.elevatorStickPosition);
+      m_autopilotUtility.bindRcElevatorDeflection(
+          rcRxPacket.elevatorStickPosition);
   controlSurfacePacket.rudderDeflection =
       m_autopilotUtility.bindRcRudderDeflection(rcRxPacket.rudderStickPosition);
 }

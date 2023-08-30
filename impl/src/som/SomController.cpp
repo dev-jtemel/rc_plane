@@ -38,7 +38,8 @@ SomController::SomController() {
 
   RCPLANE_LOG(info, "SerialController initialized!");
 
-  m_autopilotUtility = std::make_unique<autopilot::AutopilotUtility>(*m_configManager.get());
+  m_autopilotUtility =
+      std::make_unique<autopilot::AutopilotUtility>(*m_configManager.get());
   m_autopilotManager =
       std::make_unique<autopilot::AutopilotManager>(*m_autopilotUtility.get());
   RCPLANE_LOG(info, "Autopilot initialized!");

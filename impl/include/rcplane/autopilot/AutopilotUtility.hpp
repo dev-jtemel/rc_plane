@@ -21,6 +21,8 @@ public:
   AutopilotUtility(const io::ConfigManager &configManager);
   ~AutopilotUtility();
 
+  const io::ConfigManager &getConfigManager() const { return m_configManager; }
+
   /**
    * @brief Bind the rc stick position to the configured output range.
    * @param value The value of the rc stick position.
@@ -49,6 +51,20 @@ public:
    */
   int8_t bindRcRudderDeflection(const int8_t &value) const;
 
+  /**
+   * @brief Bind the pid controller output to the configured aileron output range.
+   * @param value The value of the pid controller output.
+   * @return uint8_t The bounded value.
+   */
+  int8_t bindPidAileronDeflection(const int8_t &value) const;
+
+  /**
+   * @brief Bind the pid controller output to the configured elevator output range.
+   * @param value The value of the pid controller output.
+   * @return uint8_t The bounded value.
+   */
+  int8_t bindPidElevatorDeflection(const int8_t &value) const;
+
 private:
   /**
    * @brief Helper function to map a value from one range to another.
@@ -62,10 +78,10 @@ private:
    */
   template<typename T>
   inline T bindToRange(const T value,
-                const T inputMin,
-                const T inputMax,
-                const T outputMin,
-                const T outputMax) const {
+                       const T inputMin,
+                       const T inputMax,
+                       const T outputMin,
+                       const T outputMax) const {
     return (value - inputMin) * (outputMax - outputMin) / (inputMax - inputMin)
         + outputMin;
   }
@@ -74,6 +90,8 @@ private:
   int8_t c_maxAileronDeflection{};
   int8_t c_maxElevatorDeflection{};
   int8_t c_maxRudderDeflection{};
+
+  const io::ConfigManager &m_configManager;
 };
 
 }  // namespace autopilot

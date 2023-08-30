@@ -8,13 +8,13 @@ StabilizeAutopilot::StabilizeAutopilot(const AutopilotUtility &autopilotUtility)
   : IAutopilot(), m_autopilotUtility(autopilotUtility) {
   RCPLANE_LOG_METHOD();
 
-/*
-  c_kp = configManager.getValue<double>("rcplane.autopilot.stabilize.kp");
-  c_ki = configManager.getValue<double>("rcplane.autopilot.stabilize.ki");
-  c_kd = configManager.getValue<double>("rcplane.autopilot.stabilize.kd");
-  c_maxIntegralError = configManager.getValue<double>(
+  const auto &kConfigManager = m_autopilotUtility.getConfigManager();
+
+  c_kp = kConfigManager.getValue<double>("rcplane.autopilot.stabilize.kp");
+  c_ki = kConfigManager.getValue<double>("rcplane.autopilot.stabilize.ki");
+  c_kd = kConfigManager.getValue<double>("rcplane.autopilot.stabilize.kd");
+  c_maxIntegralError = kConfigManager.getValue<double>(
       "rcplane.autopilot.stabilize.max_integral_error");
-      */
 }
 
 StabilizeAutopilot::~StabilizeAutopilot() { RCPLANE_LOG_METHOD(); }
@@ -41,19 +41,13 @@ void StabilizeAutopilot::trigger(
 
   m_prevError = error;
 
-  if (output > 30) {
-    output = 30;
-  } else if (output < -30) {
-    output = -30;
-  }
-
-  RCPLANE_LOG(warning, output);
-  
   controlSurfacePacket.motorSpeed =
       m_autopilotUtility.bindRcThrottle(rcRxPacket.motorStickPosition);
-  controlSurfacePacket.aileronDeflection = static_cast<int8_t>(output);
+  controlSurfacePacket.aileronDeflection =
+      m_autopilotUtility.bindPidAileronDeflection(static_cast<int8_t>(output));
   controlSurfacePacket.elevatorDeflection =
-      m_autopilotUtility.bindRcElevatorDeflection(rcRxPacket.elevatorStickPosition);
+      m_autopilotUtility.bindRcElevatorDeflection(
+          rcRxPacket.elevatorStickPosition);
   controlSurfacePacket.rudderDeflection =
       m_autopilotUtility.bindRcRudderDeflection(rcRxPacket.rudderStickPosition);
 }

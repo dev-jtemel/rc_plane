@@ -5,7 +5,8 @@
 namespace rcplane {
 namespace autopilot {
 
-AutopilotUtility::AutopilotUtility(const io::ConfigManager &configManager) {
+AutopilotUtility::AutopilotUtility(const io::ConfigManager &configManager)
+  : m_configManager(configManager) {
   RCPLANE_LOG_METHOD();
 
   c_maxThrottle =
@@ -53,6 +54,22 @@ int8_t AutopilotUtility::bindRcRudderDeflection(const int8_t &value) const {
                              100,
                              -c_maxRudderDeflection,
                              c_maxRudderDeflection);
+}
+
+int8_t AutopilotUtility::bindPidAileronDeflection(const int8_t &value) const {
+  RCPLANE_LOG_METHOD();
+
+  if (value > c_maxAileronDeflection) { return c_maxAileronDeflection; }
+  if (value < -c_maxAileronDeflection) { return -c_maxAileronDeflection; }
+  return value;
+}
+
+int8_t AutopilotUtility::bindPidElevatorDeflection(const int8_t &value) const {
+  RCPLANE_LOG_METHOD();
+
+  if (value > c_maxElevatorDeflection) { return c_maxElevatorDeflection; }
+  if (value < -c_maxElevatorDeflection) { return -c_maxElevatorDeflection; }
+  return value;
 }
 
 }  // namespace autopilot
