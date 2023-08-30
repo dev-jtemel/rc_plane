@@ -64,7 +64,7 @@ void SomController::runMainLoop() {
     RCPLANE_LOG(debug, imuPacket);
 
     common::ControlSurfacePacket controlSurfacePacket =
-        m_autopilotManager->trigger(rcRxPacket);
+        m_autopilotManager->trigger(rcRxPacket, imuPacket);
 
     RCPLANE_LOG(debug, controlSurfacePacket);
 

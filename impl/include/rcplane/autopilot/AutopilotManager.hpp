@@ -5,6 +5,7 @@
 
 #include "rcplane/autopilot/IAutopilot.hpp"
 #include "rcplane/autopilot/ManualAutopilot.hpp"
+#include "rcplane/autopilot/StabilizeAutopilot.hpp"
 #include "rcplane/common/Packet.hpp"
 #include "rcplane/io/ConfigManager.hpp"
 
@@ -25,11 +26,21 @@ public:
    * @param rcRxPacket The received packet.
    * @return The control surface packet to send to the MCU.
    */
-  common::ControlSurfacePacket trigger(const common::RcRxPacket &rcRxPacket);
+  common::ControlSurfacePacket trigger(const common::RcRxPacket &rcRxPacket,
+                                       const common::ImuPacket &imuPacket);
 
 private:
+  /**
+   * @brief Change the underlying autopilot, if necessary.
+   * @param state The state reported by the RC RX.
+   */
+  void handleState(const uint8_t state);
+
+  StabilizeAutopilot m_stabilizeAutopilot;
   ManualAutopilot m_manualAutopilot;
   IAutopilot *m_autopilot;
+
+  uint8_t m_prevState{};
 };
 
 }  // namespace autopilot

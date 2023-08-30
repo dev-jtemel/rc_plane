@@ -19,6 +19,8 @@ const uint8_t kUSER_PITCH = 0x02;
 // If set, apply flight stabilization
 const uint8_t kASSISTANCE_FLAG = 0x80;
 
+const uint8_t kAUTOPILOT_MASK = kASSISTANCE_FLAG;
+
 }  // namespace state
 }  // namespace common
 }  // namespace rcplane

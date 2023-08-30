@@ -10,7 +10,8 @@ ManualAutopilot::~ManualAutopilot() { RCPLANE_LOG_METHOD(); }
 
 void ManualAutopilot::trigger(
     common::ControlSurfacePacket &controlSurfacePacket,
-    const common::RcRxPacket &rcRxPacket) {
+    const common::RcRxPacket &rcRxPacket,
+    const common::ImuPacket &) {
   RCPLANE_LOG_METHOD();
 
   controlSurfacePacket.motorSpeed =

@@ -88,8 +88,8 @@ void loop() {
   rcplane::common::readPacket<rcplane::common::ControlSurfacePacket>(csPacket);
 
   // Simulate writing to servos
-  analogWrite(kELEVATOR_OUT, csPacket.elevatorDeflection + 115);
-  analogWrite(kELEVATOR_OUT, csPacket.elevatorDeflection + 115);
-  analogWrite(kELEVATOR_OUT, csPacket.elevatorDeflection + 115);
-  analogWrite(kELEVATOR_OUT, csPacket.elevatorDeflection + 115);
+  analogWrite(kELEVATOR_OUT, csPacket.aileronDeflection + 115);
+  //analogWrite(kELEVATOR_OUT, csPacket.elevatorDeflection + 115);
+  //analogWrite(kELEVATOR_OUT, csPacket.elevatorDeflection + 115);
+  //analogWrite(kELEVATOR_OUT, csPacket.elevatorDeflection + 115);
 }

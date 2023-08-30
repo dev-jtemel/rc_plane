@@ -20,9 +20,11 @@ public:
    * @brief nop. Bind the values and return.
    * @param controlSurfacePacket  The control surface packet to modify.
    * @param rcRxPacket The rc rx packet of stick input values.
+   * @param imuPacket The imu packet of gyroscope and accelerometer values.
    */
   void trigger(common::ControlSurfacePacket &controlSurfacePacket,
-               const common::RcRxPacket &rcRxPacket);
+               const common::RcRxPacket &rcRxPacket,
+               const common::ImuPacket &imuPacket);
 };
 
 }  // namespace autopilot

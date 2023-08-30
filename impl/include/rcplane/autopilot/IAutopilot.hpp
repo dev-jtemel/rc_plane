@@ -18,9 +18,11 @@ public:
    * @brief Execute the autopilot implementation.
    * @param controlSurfacePacket The control surface packet to modify.
    * @param rcRxPacket The received rc packet.
+   * @param imuPacket The imu packet of gyroscope and accelerometer values.
    */
   virtual void trigger(common::ControlSurfacePacket &controlSurfacePacket,
-                       const common::RcRxPacket &rcRxPacket) = 0;
+                       const common::RcRxPacket &rcRxPacket,
+                       const common::ImuPacket &imuPacket) = 0;
 
 protected:
   /**

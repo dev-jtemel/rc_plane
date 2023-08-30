@@ -24,7 +24,7 @@
     "som": {
       "som_controller": {
         "handshake_attempts": 20,
-        "main_loop_delay_ms": 5000
+        "main_loop_delay_ms": 4000
       }
     }
   }
