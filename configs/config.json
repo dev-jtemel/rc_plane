@@ -16,10 +16,16 @@
       }
     },
     "autopilot": {
-      "max_throttle_speed": 255,
+      "max_throttle": 255,
       "max_aileron_deflection": 35,
       "max_elevator_deflection": 40,
-      "max_rudder_deflection": 20
+      "max_rudder_deflection": 20,
+      "stabilize": {
+        "kp": 0.8,
+        "ki": 0.05,
+        "kd": 0.02,
+        "max_integral_error": 4
+      }
     },
     "som": {
       "som_controller": {

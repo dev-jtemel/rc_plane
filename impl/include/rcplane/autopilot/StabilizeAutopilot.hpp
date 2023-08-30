@@ -3,6 +3,7 @@
 
 #include <boost/noncopyable.hpp>
 
+#include "rcplane/autopilot/AutopilotUtility.hpp"
 #include "rcplane/autopilot/IAutopilot.hpp"
 
 namespace rcplane {
@@ -13,7 +14,7 @@ namespace autopilot {
  */
 class StabilizeAutopilot : public IAutopilot {
 public:
-  StabilizeAutopilot();
+  StabilizeAutopilot(const AutopilotUtility &autopilotUtility);
   virtual ~StabilizeAutopilot();
 
   /**
@@ -27,13 +28,17 @@ public:
                const common::ImuPacket &imuPacket);
 
 private:
+  double c_kp{};
+  double c_ki{};
+  double c_kd{};
+  double c_maxIntegralError{};
+
   double m_timeStamp{0.0};
-  double c_kp{1.0};
-  double c_ki{0.05};
-  double c_kd{0.001};
   double m_prevError{0.0};
   double m_integralError{0.0};
   double m_desiredRollAngle{0.0};
+
+  const AutopilotUtility &m_autopilotUtility;
 };
 
 }  // namespace autopilot

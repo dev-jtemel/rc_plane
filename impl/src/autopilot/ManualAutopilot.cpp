@@ -4,7 +4,10 @@
 namespace rcplane {
 namespace autopilot {
 
-ManualAutopilot::ManualAutopilot() : IAutopilot() { RCPLANE_LOG_METHOD(); }
+ManualAutopilot::ManualAutopilot(const AutopilotUtility &autopilotUtility)
+  : IAutopilot(), m_autopilotUtility(autopilotUtility) {
+  RCPLANE_LOG_METHOD();
+}
 
 ManualAutopilot::~ManualAutopilot() { RCPLANE_LOG_METHOD(); }
 
@@ -15,13 +18,13 @@ void ManualAutopilot::trigger(
   RCPLANE_LOG_METHOD();
 
   controlSurfacePacket.motorSpeed =
-      bindThrottleToRange(rcRxPacket.motorStickPosition);
+      m_autopilotUtility.bindRcThrottle(rcRxPacket.motorStickPosition);
   controlSurfacePacket.aileronDeflection =
-      bindAileronDeflectionToRange(rcRxPacket.aileronStickPosition);
+      m_autopilotUtility.bindRcAileronDeflection(rcRxPacket.aileronStickPosition);
   controlSurfacePacket.elevatorDeflection =
-      bindElevatorDeflectionToRange(rcRxPacket.elevatorStickPosition);
+      m_autopilotUtility.bindRcElevatorDeflection(rcRxPacket.elevatorStickPosition);
   controlSurfacePacket.rudderDeflection =
-      bindRudderDeflectionToRange(rcRxPacket.rudderStickPosition);
+      m_autopilotUtility.bindRcRudderDeflection(rcRxPacket.rudderStickPosition);
 }
 
 }  // namespace autopilot

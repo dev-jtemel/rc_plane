@@ -7,6 +7,7 @@
 #include <boost/thread.hpp>
 #include <memory>
 
+#include "rcplane/autopilot/AutopilotUtility.hpp"
 #include "rcplane/autopilot/AutopilotManager.hpp"
 #include "rcplane/io/ConfigManager.hpp"
 #include "rcplane/io/Journal.hpp"
@@ -71,6 +72,7 @@ private:
 
   std::unique_ptr<io::ConfigManager> m_configManager{};
   std::unique_ptr<io::SerialController> m_serialController{};
+  std::unique_ptr<autopilot::AutopilotUtility> m_autopilotUtility{};
   std::unique_ptr<autopilot::AutopilotManager> m_autopilotManager{};
 };
 

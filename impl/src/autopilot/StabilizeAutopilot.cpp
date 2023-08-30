@@ -4,8 +4,17 @@
 namespace rcplane {
 namespace autopilot {
 
-StabilizeAutopilot::StabilizeAutopilot() : IAutopilot() {
+StabilizeAutopilot::StabilizeAutopilot(const AutopilotUtility &autopilotUtility)
+  : IAutopilot(), m_autopilotUtility(autopilotUtility) {
   RCPLANE_LOG_METHOD();
+
+/*
+  c_kp = configManager.getValue<double>("rcplane.autopilot.stabilize.kp");
+  c_ki = configManager.getValue<double>("rcplane.autopilot.stabilize.ki");
+  c_kd = configManager.getValue<double>("rcplane.autopilot.stabilize.kd");
+  c_maxIntegralError = configManager.getValue<double>(
+      "rcplane.autopilot.stabilize.max_integral_error");
+      */
 }
 
 StabilizeAutopilot::~StabilizeAutopilot() { RCPLANE_LOG_METHOD(); }
@@ -19,10 +28,10 @@ void StabilizeAutopilot::trigger(
   double error = m_desiredRollAngle - imuPacket.gyroX;
   m_integralError += error;
 
-  if (m_integralError > 5) {
-    m_integralError = 5;
-  } else if (m_integralError < -5) {
-    m_integralError = -5;
+  if (m_integralError > c_maxIntegralError) {
+    m_integralError = c_maxIntegralError;
+  } else if (m_integralError < -c_maxIntegralError) {
+    m_integralError = -c_maxIntegralError;
   }
 
   double derivativeError = (error - m_prevError);
@@ -39,14 +48,14 @@ void StabilizeAutopilot::trigger(
   }
 
   RCPLANE_LOG(warning, output);
-
+  
   controlSurfacePacket.motorSpeed =
-      bindThrottleToRange(rcRxPacket.motorStickPosition);
+      m_autopilotUtility.bindRcThrottle(rcRxPacket.motorStickPosition);
   controlSurfacePacket.aileronDeflection = static_cast<int8_t>(output);
   controlSurfacePacket.elevatorDeflection =
-      bindElevatorDeflectionToRange(rcRxPacket.elevatorStickPosition);
+      m_autopilotUtility.bindRcElevatorDeflection(rcRxPacket.elevatorStickPosition);
   controlSurfacePacket.rudderDeflection =
-      bindRudderDeflectionToRange(rcRxPacket.rudderStickPosition);
+      m_autopilotUtility.bindRcRudderDeflection(rcRxPacket.rudderStickPosition);
 }
 
 }  // namespace autopilot

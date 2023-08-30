@@ -6,8 +6,9 @@
 namespace rcplane {
 namespace autopilot {
 
-AutopilotManager::AutopilotManager()
-  : m_manualAutopilot(), m_autopilot(&m_manualAutopilot) {
+AutopilotManager::AutopilotManager(const AutopilotUtility &autopilotUtility)
+  : m_manualAutopilot(autopilotUtility), m_stabilizeAutopilot(autopilotUtility),
+    m_autopilot(&m_manualAutopilot) {
   RCPLANE_LOG_METHOD();
 }
 

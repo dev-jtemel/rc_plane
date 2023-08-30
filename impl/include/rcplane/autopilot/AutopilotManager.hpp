@@ -3,11 +3,11 @@
 
 #include <boost/noncopyable.hpp>
 
+#include "rcplane/autopilot/AutopilotUtility.hpp"
 #include "rcplane/autopilot/IAutopilot.hpp"
 #include "rcplane/autopilot/ManualAutopilot.hpp"
 #include "rcplane/autopilot/StabilizeAutopilot.hpp"
 #include "rcplane/common/Packet.hpp"
-#include "rcplane/io/ConfigManager.hpp"
 
 namespace rcplane {
 namespace autopilot {
@@ -18,9 +18,14 @@ namespace autopilot {
  */
 class AutopilotManager : public ::boost::noncopyable {
 public:
-  AutopilotManager();
+  /**
+   * @brief Construct a new AutopilotManager and supported autopilot systems
+   * (ManualAutopilot is default).
+   * @param autopilotUtility The autopilot configuration and helper functions.
+   */
+  AutopilotManager(const AutopilotUtility &autopilotUtility);
   ~AutopilotManager();
-  
+
   /**
    * @return bool True if the active autopilot is a manual autopilot.
    */
@@ -46,8 +51,8 @@ private:
    */
   void handleState(const uint8_t state);
 
-  StabilizeAutopilot m_stabilizeAutopilot;
   ManualAutopilot m_manualAutopilot;
+  StabilizeAutopilot m_stabilizeAutopilot;
   IAutopilot *m_autopilot;
 
   uint8_t m_prevState{};

@@ -3,6 +3,7 @@
 
 #include <boost/noncopyable.hpp>
 
+#include "rcplane/autopilot/AutopilotUtility.hpp"
 #include "rcplane/autopilot/IAutopilot.hpp"
 
 namespace rcplane {
@@ -13,7 +14,7 @@ namespace autopilot {
  */
 class ManualAutopilot : public IAutopilot {
 public:
-  ManualAutopilot();
+  ManualAutopilot(const AutopilotUtility &autopilotUtility);
   virtual ~ManualAutopilot();
 
   /**
@@ -25,6 +26,9 @@ public:
   void trigger(common::ControlSurfacePacket &controlSurfacePacket,
                const common::RcRxPacket &rcRxPacket,
                const common::ImuPacket &imuPacket);
+
+private:
+  const AutopilotUtility &m_autopilotUtility;
 };
 
 }  // namespace autopilot
