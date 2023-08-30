@@ -21,7 +21,11 @@ public:
   AutopilotUtility(const io::ConfigManager &configManager);
   ~AutopilotUtility();
 
-  const io::ConfigManager &getConfigManager() const { return m_configManager; }
+  /**
+   * @brief Get the configuration manager.
+   * @return The configuration manager.
+   */
+  const io::ConfigManager &getConfigManager() const;
 
   /**
    * @brief Bind the rc stick position to the configured output range.

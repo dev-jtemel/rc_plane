@@ -25,31 +25,56 @@ void StabilizeAutopilot::trigger(
     const common::ImuPacket &imuPacket) {
   RCPLANE_LOG_METHOD();
 
-  double error = m_desiredRollAngle - imuPacket.gyroX;
-  m_integralError += error;
-
-  if (m_integralError > c_maxIntegralError) {
-    m_integralError = c_maxIntegralError;
-  } else if (m_integralError < -c_maxIntegralError) {
-    m_integralError = -c_maxIntegralError;
-  }
-
-  double derivativeError = (error - m_prevError);
-
-  double output =
-      (c_kp * error) + (c_ki * m_integralError) + (c_kd * derivativeError);
-
-  m_prevError = error;
-
   controlSurfacePacket.motorSpeed =
       m_autopilotUtility.bindRcThrottle(rcRxPacket.motorStickPosition);
   controlSurfacePacket.aileronDeflection =
-      m_autopilotUtility.bindPidAileronDeflection(static_cast<int8_t>(output));
+      m_autopilotUtility.bindPidAileronDeflection(
+          computeRollToAileronDeflection(imuPacket.gyroX));
   controlSurfacePacket.elevatorDeflection =
-      m_autopilotUtility.bindRcElevatorDeflection(
-          rcRxPacket.elevatorStickPosition);
+      m_autopilotUtility.bindPidElevatorDeflection(
+          computePitchToElevatorDeflection(imuPacket.gyroY));
   controlSurfacePacket.rudderDeflection =
       m_autopilotUtility.bindRcRudderDeflection(rcRxPacket.rudderStickPosition);
+}
+
+int8_t StabilizeAutopilot::computeRollToAileronDeflection(
+    const double &rollAngle) {
+  RCPLANE_LOG_METHOD();
+
+  double error = m_desiredRollAngle - rollAngle;
+  double derivative = error - m_prevRollError;
+  m_rollIntegralError += error;
+  m_rollIntegralError = bindIntegralError(m_rollIntegralError);
+
+  double output = c_kp * error + c_ki * m_rollIntegralError + c_kd * derivative;
+  m_prevRollError = error;
+
+  return static_cast<int8_t>(output);
+}
+
+int8_t StabilizeAutopilot::computePitchToElevatorDeflection(
+    const double &pitchAngle) {
+  RCPLANE_LOG_METHOD();
+
+  double error = m_desiredPitchAngle - pitchAngle;
+  double derivative = error - m_prevPitchError;
+  m_pitchIntegralError += error;
+  m_pitchIntegralError = bindIntegralError(m_pitchIntegralError);
+
+  double output =
+      c_kp * error + c_ki * m_pitchIntegralError + c_kd * derivative;
+  m_prevPitchError = error;
+
+  return static_cast<int8_t>(output);
+}
+
+int8_t StabilizeAutopilot::bindIntegralError(
+    const int8_t &integralError) const {
+  RCPLANE_LOG_METHOD();
+
+  if (integralError > c_maxIntegralError) { return c_maxIntegralError; }
+  if (integralError < -c_maxIntegralError) { return -c_maxIntegralError; }
+  return integralError;
 }
 
 }  // namespace autopilot

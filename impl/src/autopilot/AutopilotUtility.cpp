@@ -20,6 +20,11 @@ AutopilotUtility::AutopilotUtility(const io::ConfigManager &configManager)
 }
 AutopilotUtility::~AutopilotUtility() { RCPLANE_LOG_METHOD(); }
 
+const io::ConfigManager &AutopilotUtility::getConfigManager() const {
+  RCPLANE_LOG_METHOD();
+  return m_configManager;
+}
+
 uint8_t AutopilotUtility::bindRcThrottle(const uint8_t &value) const {
   RCPLANE_LOG_METHOD();
 

@@ -28,15 +28,40 @@ public:
                const common::ImuPacket &imuPacket);
 
 private:
+  /**
+   * @brief Apply PID control to the roll of the plane.
+   * @param rollAngle The current roll angle of the plane.
+   * @return int8_t The amount to deflect the ailerons.
+   */
+  int8_t computeRollToAileronDeflection(const double &rollAngle);
+
+  /**
+   * @brief Apply PID control to the pitch of the plane.
+   * @param pitchAngle The current pitch angle of the plane.
+   * @return int8_t The amount to deflect the elevators.
+   */
+  int8_t computePitchToElevatorDeflection(const double &pitchAngle);
+
+  /**
+   * @brief Bind the integral error within the configured range.
+   * @param integralError The integral error.
+   * @return int8_t The bound integral error.
+   */
+  int8_t bindIntegralError(const int8_t &integralError) const;
+
   double c_kp{};
   double c_ki{};
   double c_kd{};
   double c_maxIntegralError{};
 
   double m_timeStamp{0.0};
-  double m_prevError{0.0};
-  double m_integralError{0.0};
+  double m_prevRollError{0.0};
+  double m_prevPitchError{0.0};
+  double m_rollIntegralError{0.0};
+  double m_pitchIntegralError{0.0};
+
   double m_desiredRollAngle{0.0};
+  double m_desiredPitchAngle{0.0};
 
   const AutopilotUtility &m_autopilotUtility;
 };
