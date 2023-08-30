@@ -13,7 +13,9 @@ target_link_libraries(rcplane_io
 
 add_library(rcplane_autopilot
   autopilot/AutopilotManager.cpp
+  autopilot/AutopilotUtility.cpp
   autopilot/ManualAutopilot.cpp
+  autopilot/StabilizeAutopilot.cpp
 )
 target_link_libraries(rcplane_autopilot
   PUBLIC

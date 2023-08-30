@@ -3,7 +3,10 @@
 #include <gtest/gtest.h>
 #include <memory>
 
+#include "rcplane/autopilot/AutopilotUtility.hpp"
 #include "rcplane/common/Packet.hpp"
+#include "rcplane/common/State.hpp"
+#include "rcplane/io/ConfigManager.hpp"
 #include "rcplane/io/Journal.hpp"
 
 namespace rcplane {
@@ -11,75 +14,75 @@ namespace test {
 
 class AutopilotManagerFixture : public ::testing::Test {
 protected:
-  void SetUp() override {}
-  void TearDown() override { m_AutopilotManager.reset(); }
+  void SetUp() override {
+    const std::string kConfigFile = "configs/test/unit/generalConfig.json";
 
-  std::unique_ptr<autopilot::AutopilotManager> m_AutopilotManager =
-      std::make_unique<autopilot::AutopilotManager>();
+    ASSERT_TRUE(m_configManager.loadConfig(kConfigFile));
+
+    m_AutopilotUtility =
+        std::make_unique<autopilot::AutopilotUtility>(m_configManager);
+    m_AutopilotManager = std::make_unique<autopilot::AutopilotManager>(
+        *m_AutopilotUtility.get());
+  }
+
+  void TearDown() override {
+    m_AutopilotUtility.reset();
+    m_AutopilotManager.reset();
+  }
+
+  io::ConfigManager m_configManager;
+  std::unique_ptr<autopilot::AutopilotUtility> m_AutopilotUtility;
+  std::unique_ptr<autopilot::AutopilotManager> m_AutopilotManager;
 };
 
-TEST_F(AutopilotManagerFixture, zeroToZero) {
+TEST_F(AutopilotManagerFixture, handleState_noTransition) {
+  const common::ImuPacket kImuPacket;
   const common::RcRxPacket kRcRxPacket;
-  const common::ControlSurfacePacket controlSurfacePacket =
-      m_AutopilotManager->trigger(kRcRxPacket);
 
-  EXPECT_EQ(0, controlSurfacePacket.motorSpeed);
-  EXPECT_EQ(0, controlSurfacePacket.aileronDeflection);
-  EXPECT_EQ(0, controlSurfacePacket.elevatorDeflection);
-  EXPECT_EQ(0, controlSurfacePacket.rudderDeflection);
+  ASSERT_TRUE(m_AutopilotManager->isInManualMode());
+  (void)m_AutopilotManager->trigger(kRcRxPacket, kImuPacket);
+  ASSERT_TRUE(m_AutopilotManager->isInManualMode());
 }
 
-TEST_F(AutopilotManagerFixture, aileronBind) {
-  common::RcRxPacket kRcRxPacket;
-  kRcRxPacket.aileronStickPosition = 100;
-  const common::ControlSurfacePacket controlSurfacePacket =
-      m_AutopilotManager->trigger(kRcRxPacket);
+TEST_F(AutopilotManagerFixture, handleState_noTransitionUserInput) {
+  const common::ImuPacket kImuPacket;
+  const common::RcRxPacket kRcRxPacket;
+  common::RcRxPacket rcRxPacket;
+  rcRxPacket.state = common::state::kUSER_ROLL;
 
-  EXPECT_EQ(0, controlSurfacePacket.motorSpeed);
-  EXPECT_EQ(30, controlSurfacePacket.aileronDeflection);
-  EXPECT_EQ(0, controlSurfacePacket.elevatorDeflection);
-  EXPECT_EQ(0, controlSurfacePacket.rudderDeflection);
+  ASSERT_TRUE(m_AutopilotManager->isInManualMode());
+  (void)m_AutopilotManager->trigger(kRcRxPacket, kImuPacket);
+  ASSERT_TRUE(m_AutopilotManager->isInManualMode());
+  (void)m_AutopilotManager->trigger(rcRxPacket, kImuPacket);
+  ASSERT_TRUE(m_AutopilotManager->isInManualMode());
 }
 
-TEST_F(AutopilotManagerFixture, elevatorBind) {
-  common::RcRxPacket kRcRxPacket;
-  kRcRxPacket.elevatorStickPosition = -100;
-  const common::ControlSurfacePacket controlSurfacePacket =
-      m_AutopilotManager->trigger(kRcRxPacket);
+TEST_F(AutopilotManagerFixture, handleState_TransitionToStabilize) {
+  const common::ImuPacket kImuPacket;
+  const common::RcRxPacket kRcRxPacket;
+  common::RcRxPacket rcRxPacket;
+  rcRxPacket.state = common::state::kASSISTANCE_FLAG;
 
-  EXPECT_EQ(0, controlSurfacePacket.motorSpeed);
-  EXPECT_EQ(0, controlSurfacePacket.aileronDeflection);
-  EXPECT_EQ(-40, controlSurfacePacket.elevatorDeflection);
-  EXPECT_EQ(0, controlSurfacePacket.rudderDeflection);
+  ASSERT_TRUE(m_AutopilotManager->isInManualMode());
+  (void)m_AutopilotManager->trigger(kRcRxPacket, kImuPacket);
+  ASSERT_TRUE(m_AutopilotManager->isInManualMode());
+  (void)m_AutopilotManager->trigger(rcRxPacket, kImuPacket);
+  ASSERT_TRUE(m_AutopilotManager->isInStabilizeMode());
 }
 
-TEST_F(AutopilotManagerFixture, rudderBind) {
-  common::RcRxPacket kRcRxPacket;
-  kRcRxPacket.rudderStickPosition = 50;
-  m_AutopilotManager->trigger(kRcRxPacket);
-  const common::ControlSurfacePacket controlSurfacePacket =
-      m_AutopilotManager->trigger(kRcRxPacket);
+TEST_F(AutopilotManagerFixture, handleState_TransitionToStabilizeBackToManual) {
+  const common::ImuPacket kImuPacket;
+  const common::RcRxPacket kRcRxPacket;
+  common::RcRxPacket rcRxPacket;
+  rcRxPacket.state = common::state::kASSISTANCE_FLAG;
 
-  EXPECT_EQ(0, controlSurfacePacket.motorSpeed);
-  EXPECT_EQ(0, controlSurfacePacket.aileronDeflection);
-  EXPECT_EQ(0, controlSurfacePacket.elevatorDeflection);
-  EXPECT_EQ(10, controlSurfacePacket.rudderDeflection);
-}
-
-TEST_F(AutopilotManagerFixture, allBind) {
-  common::RcRxPacket kRcRxPacket;
-  kRcRxPacket.motorStickPosition = 100;
-  kRcRxPacket.aileronStickPosition = -10;
-  kRcRxPacket.elevatorStickPosition = 50;
-  kRcRxPacket.rudderStickPosition = -25;
-  m_AutopilotManager->trigger(kRcRxPacket);
-  const common::ControlSurfacePacket controlSurfacePacket =
-      m_AutopilotManager->trigger(kRcRxPacket);
-
-  EXPECT_EQ(100, controlSurfacePacket.motorSpeed);
-  EXPECT_EQ(-3, controlSurfacePacket.aileronDeflection);
-  EXPECT_EQ(20, controlSurfacePacket.elevatorDeflection);
-  EXPECT_EQ(-5, controlSurfacePacket.rudderDeflection);
+  ASSERT_TRUE(m_AutopilotManager->isInManualMode());
+  (void)m_AutopilotManager->trigger(kRcRxPacket, kImuPacket);
+  ASSERT_TRUE(m_AutopilotManager->isInManualMode());
+  (void)m_AutopilotManager->trigger(rcRxPacket, kImuPacket);
+  ASSERT_TRUE(m_AutopilotManager->isInStabilizeMode());
+  (void)m_AutopilotManager->trigger(kRcRxPacket, kImuPacket);
+  ASSERT_TRUE(m_AutopilotManager->isInManualMode());
 }
 
 }  // namespace test

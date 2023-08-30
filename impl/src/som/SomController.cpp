@@ -38,7 +38,10 @@ SomController::SomController() {
 
   RCPLANE_LOG(info, "SerialController initialized!");
 
-  m_autopilotManager = std::make_unique<autopilot::AutopilotManager>();
+  m_autopilotUtility =
+      std::make_unique<autopilot::AutopilotUtility>(*m_configManager.get());
+  m_autopilotManager =
+      std::make_unique<autopilot::AutopilotManager>(*m_autopilotUtility.get());
   RCPLANE_LOG(info, "Autopilot initialized!");
 }
 
@@ -64,7 +67,7 @@ void SomController::runMainLoop() {
     RCPLANE_LOG(debug, imuPacket);
 
     common::ControlSurfacePacket controlSurfacePacket =
-        m_autopilotManager->trigger(rcRxPacket);
+        m_autopilotManager->trigger(rcRxPacket, imuPacket);
 
     RCPLANE_LOG(debug, controlSurfacePacket);
 
