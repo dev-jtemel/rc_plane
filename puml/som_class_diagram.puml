@@ -1,0 +1,195 @@
+@startuml System On Module
+
+title SoM Software Architecture (P1.3)
+
+package rcplane.common {
+  interface BasePacket {
+  }
+
+  struct RcRxPacket {
+    + uint32_t timestamp;
+    + uint8_t state;
+    + uint8_t motorStickPosition;
+    + int8_t aileronStickPosition;
+    + int8_t elevatorStickPosition;
+    + int8_t rudderStickPosition;
+  }
+
+  struct ImuPacket {
+    + float gyroX;
+    + float gyroY;
+    + float gyroZ;
+    + float accX;
+    + float accY;
+    + float accZ;
+    + float temperature;
+  }
+
+  struct ControlSurfacePacket {
+    + uint8_t motorSpeed;
+    + int8_t aileronDeflection;
+    + int8_t elevatorDeflection;
+    + int8_t rudderDeflection;
+  }
+}
+
+package rcplane.io {
+  class SerialController {
+    - std::string c_ttyDev;
+    - uint32_t c_baudRate;
+    - uint32_t c_readTimeoutMs;
+    - uint32_t c_writeTimeoutMs;
+    - std::string c_handshakeTerminationStr;
+
+    - boost::asio::streambuf m_streamBuffer;
+    - boost::asio::serial_port m_serialPort;
+    - boost::asio::io_service &m_ioService;
+
+    + bool open();
+    + bool flush();
+
+    + ReadResult<PACKET_TYPE> readPacket<PACKET_TYPE>();
+    + bool writePacket<PACKET_TYPE>(const PACKET_TYPE &packet);
+
+  }
+
+  struct ReadResult {
+    + <PACKET_TYPE> packet;
+    + bool didTimeout;
+    + size_t bytesRead;
+  }
+
+  class ConfigManager {
+    - nlohmann::json m_configJson;
+    - constexpr const char *k_defaultConfigPath;
+    + bool loadConfig(const std::string &);
+    + bool isConfigLoaded();
+    + void dumpConfig();
+
+    + T getValue<<T>>(const std::string &);
+  }
+}
+
+package rcplane.autopilot {
+  class AutopilotManager {
+    - ManualAutopilot m_manualAutopilot;
+    - StabilizeAutopilot m_stabilizeAutopilot;
+    - IAutopilot *m_autopilot;
+    - uint8_t m_prevState;
+
+    + bool isInManualMode();
+    + bool isInStabilizeMode();
+
+    + ControlSurfacePacketPacketPacket trigger(RcRxPacket &, ImuPacket &);
+    
+    - void handleState(uint8_t state);
+  }
+
+  class AutopilotUtility {
+    - uint8_t c_maxThrottle;
+    - int8_t c_maxAileronDeflection;
+    - int8_t c_maxElevatorDeflection;
+    - int8_t c_maxRudderDeflection;
+    - io::ConfigManager &m_configManager;
+
+
+    + io::ConfigManager &getConfigManager();
+
+    + uint8_t bindRcThrottle(uint8_t &);
+    + int8_t bindRcAileronDeflection(int8_t &);
+    + int8_t bindRcElevatorDeflection(int8_t &);
+    + int8_t bindRcRudderDeflection(int8_t &);
+
+    + int8_t bindPidAileronDeflection(int8_t &);
+    + int8_t bindPidElevatorDeflection(int8_t &);
+
+    - <T> bindToRange(T, T, T, T, T);
+  }
+
+  interface IAutopilot {
+    + void trigger(ControlSurfacePacket &, RcRxPacket &, ImuPacket &);
+  }
+
+  class StabilizeAutopilot {
+    - double c_kp;
+    - double c_ki;
+    - double c_kd;
+    - double c_maxIntegralError;
+
+    - double m_timeStamp;
+    - double m_prevRollError;
+    - double m_prevPitchError;
+    - double m_rollIntegralError;
+    - double m_pitchIntegralError;
+
+    - double m_desiredRollAngle;
+    - double m_desiredPitchAngle;
+
+    - AutopilotUtility &m_autopilotUtility
+    + void trigger(ControlSurfacePacket &, RcRxPacket &, ImuPacket &);
+
+    - int8_t computeRollToAileronDeflection(double &);
+    - int8_t computePitchToElevatorDeflection(double &);
+    - int8_t bindIntegralError(int8_t &);
+  }
+
+  class ManualAutopilot {
+    - AutopilotUtility &m_autopilotUtility
+    + void trigger(ControlSurfacePacket &, RcRxPacket &, ImuPacket &);
+  }
+}
+
+package rcplane.som {
+  class SomController {
+    - uint32_t c_handshakeAttempts;
+    - uint32_t c_mainLoopDelay;
+
+    - boost::thread m_ioThread;
+    - boost::asio::io_service m_ioService;
+    - boost::asio::executor_work_guard m_worker;
+    - boost::asio::signal_set m_signalSet;
+
+    - ConfigManager m_configManager;
+    - SerialController m_serialController;
+    - AutopilotUtility m_autopilotUtility;
+    - AutopilotManager m_autopilotManager;
+    
+    + void runMainLoop();
+    + void startIoThread();
+    + void stopIoThread();
+    + bool handshakeMCU();
+
+  }
+}
+
+BasePacket <|.. RcRxPacket
+BasePacket <|.. ImuPacket
+BasePacket <|.. ControlSurfacePacket
+
+SerialController o.. ReadResult
+SerialController o-- ConfigManager
+
+IAutopilot <|.. ManualAutopilot
+IAutopilot <|.. StabilizeAutopilot
+AutopilotUtility o-- ManualAutopilot
+AutopilotUtility o-- StabilizeAutopilot 
+
+AutopilotManager o-- IAutopilot
+AutopilotManager o-- ManualAutopilot
+AutopilotManager o-- StabilizeAutopilot
+
+AutopilotUtility o-- ConfigManager
+StabilizeAutopilot o-- ConfigManager
+ManualAutopilot o-- ConfigManager
+
+AutopilotUtility o-- BasePacket
+StabilizeAutopilot o-- BasePacket
+ManualAutopilot o-- BasePacket
+AutopilotManager o-- BasePacket
+
+SomController o-- ConfigManager
+SomController o-- SerialController
+SomController o-- AutopilotUtility
+SomController o-- AutopilotManager
+
+@enduml

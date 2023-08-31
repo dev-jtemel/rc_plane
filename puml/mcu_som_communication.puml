@@ -1,5 +1,7 @@
 @startuml MCU to SoM Sequence
 
+title MCU <-> SoM (P1.3)
+
 !pragma teoz true
 
 autonumber "<b>[000]"
@@ -7,72 +9,69 @@ hide footbox
 skinparam maxMessageSize 150
 
 box Microcontroller Hardware #WHITE
-  participant Servos as srv #PHYSICAL
-  participant IMU as imu #PHYSICAL
-  participant RX as rx #PHYSICAL
+  participant Servos as srv << (H,#EB937F) >>
+  participant IMU as imu << (H,#EB937F) >>
+  participant RX as rx << (H,#EB937F) >>
 end box 
 
 box Microcontroller #WHITE 
-  participant Microcontroller as mcu #IMPLEMENTATION
+  participant Microcontroller as mcu << (C,#ADD1B2) >>
 end box
 
 box System On Module #WHITE
-  box HAL #WHITE
-    participant SerialController as serial #IMPLEMENTATION
-    participant IMUController as imuctr #IMPLEMENTATION
-    participant CSController as csctr #IMPLEMENTATION
-  end box
-  box Autopilot #WHITE
-    participant AutopilotManager as apm #IMPLEMENTATION
-    participant AutopilotInterface as api #IMPLEMENTATION
-  end box
+  participant SerialController as serial << (C,#ADD1B2) >>
+  participant AutopilotManager as apm << (C,#ADD1B2) >>
+  participant AutopilotInterface as api << (I,#B4A7E5) >>
+  participant ManualAutopilot as map << (C,#ADD1B2) >>
+  participant StabilzeAutopilot as sap << (C,#ADD1B2) >>
+  participant AutopilotUtility as apu << (C,#ADD1B2) >>
 end box
 
 == Initialization ==
 note over mcu, serial : Buffers are flushed
-mcu -> serial : Write handshake
-serial --> mcu : Write ACK
+mcu -> serial ++ : Write flush string
+serial -> mcu ++ : Write Handshake
+serial <-- mcu  : Write Handshake
 
 == Main Loop ==
-note over mcu, serial : All implicit read calls are blocking\ncarry a time out.\nTimeout behavior is not modelled here.
+note over mcu, serial : All implicit read calls are blocking\nand carry a time out.\nTimeout behavior is not modelled here.
 
-activate mcu
-activate serial
 
 rx <- mcu ++ : Read RC RX data
 rx --> mcu -- : RX input data
 
-mcu -> mcu : Compute state and control surface data
+mcu -> mcu : Compute state and stick position data
 
-mcu -> serial : Write state data
-serial -> apm ++ : Handle state data
+mcu -> serial : Write RxRcPacket
 
-& imu <- mcu ++ : Read IMU data
+imu <- mcu ++ : Read IMU data
 imu --> mcu -- : IMU data
 
-& apm -> api -- : Transition autopilot if requested
+mcu -> serial : Write ImuPacket data
 
-mcu -> serial : Write IMU data
-serial -> imuctr ++ : Store IMU data
+serial -> apm ++ : Trigger
+apm -> apm : Transition to correct autopilot (if necessary)
 
-mcu -> serial : Write control surface data
-& imuctr -> imuctr : Apply KF\n & PID
+apm -> api ++ : Trigger
 
-serial -> csctr ++ : Store control surface data
+alt ManualAutopilot
+  api -> map ++ : Trigger Impl
+  map -> apu ++ : Bind all values
+  apu --> map -- : Bound values
+  map --> api -- : ControlSurface data
+else StabilzeAutopilot
+  api -> sap ++ : Trigger impl
+  sap -> sap : Compute PID
+  sap -> apu ++ : Bind applicable values
+  apu --> sap -- : Bound values
+  sap --> api -- : ControlSurface data
+end
 
-serial -> api ++ : Signal data collected
+api --> apm -- : ControlSurface Data
+apm --> serial -- : ControlSurface data
 
-api -> imuctr : Get current IMU data
-imuctr --> api -- : IMU data
-
-api -> csctr : Set current CS data
-csctr -> csctr : Apply limiters
-csctr --> api -- : CS data
-
-serial <- api -- : Signal servo data
-
-serial -> mcu : Write servo data
-mcu -> srv : Write servo data
+serial -> mcu : Write ControlSurfacePacket
+mcu -> srv ++ : Write servo data
 
 deactivate mcu
 deactivate serial
