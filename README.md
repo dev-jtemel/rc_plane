@@ -1,5 +1,29 @@
 # RC Plane
 DIY RC Plane built and designed from scratch.
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+<!-- code_chunk_output -->
+
+- [RC Plane](#rc-plane)
+  - [Design](#design)
+    - [Libraries](#libraries)
+      - [Autopilot `rcplane.autopilot`](#autopilot-rcplaneautopilot)
+      - [Common `rcplane.common`](#common-rcplanecommon)
+      - [IO `rcplane.io`](#io-rcplaneio)
+      - [SoM `rcplane.som`](#som-rcplanesom)
+      - [MCU `rcplane.mcu`](#mcu-rcplanemcu)
+  - [Configuration](#configuration)
+  - [Build](#build)
+    - [Microcontroller](#microcontroller)
+    - [SoM](#som)
+    - [PC](#pc)
+  - [Running the Software](#running-the-software)
+  - [Testing](#testing)
+  - [Debugging](#debugging)
+  - [Requirements](#requirements)
+    - [Physical](#physical)
+
+<!-- /code_chunk_output -->
+
 
 [![CMake](https://github.com/dev-jtemel/rc_plane/actions/workflows/cmake.yml/badge.svg)](https://github.com/dev-jtemel/rc_plane/actions/workflows/cmake.yml)
 [![CodeQL](https://github.com/dev-jtemel/rc_plane/actions/workflows/codeql.yml/badge.svg)](https://github.com/dev-jtemel/rc_plane/actions/workflows/codeql.yml)
@@ -10,109 +34,80 @@ DIY RC Plane built and designed from scratch.
 ![Linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black)
 
 
-- [Design](#design)
-  - [Control Flow](#control-flow)
-  - [Software](#software)
-    - [SOM Architecture](#som-architecture)
-    - [MCU Architecture](#mcu-architecture)
-    - [Serial Communication](#serial-communication)
-  - [Hardware](#hardware)
-    - [Schematic](#schematic)
-    - [RC Controller](#rc-controller)
-  - [Plane Dimensions](#plane-dimensions)
-- [Build](#build)
-  - [Microcontroller](#microcontroller)
-  - [SoM](#som)
-  - [PC](#pc)
-- [Requirements](#requirements)
-  - [Physical](#physical)
-
 ## Design
-This sections lays out the schematic of the hardware and the relation of the controls
-of the flight controller to the plane.
-### Control Flow
+The design of the system relies on two main hardware components: the MCU (for hardware interfacing, speed and RC communication) and the SoM (for autopilot systems and logging).
 
-![control_flow](resources/control_flow.png)
+### Libraries
+Libraries are broken down by subdirectories in the `include/` dir and by namespaces. The current libraries are:
 
-### Software
-#### SOM Architecture
+#### Autopilot `rcplane.autopilot`
+This library handles all manipulation of autopilot systems and defines the systems supported. Currently there are two systems: ManualAutopilot (which is a dummy implementation to give user full control over the aircraft) and StabilizedAutopilot (which stabilizes the pitch and roll of the aircraft when the user is **not** manipulating the controls). This library handles applying the applicable autopilot system based on the state of the user's RC controller.
 
-![som_uml](resources/som_uml.png)
+#### Common `rcplane.common`
+Contains all relevant information for both the MCU and the SoM, synchronizing and ensuring that shared data structures and flags are consistent across devices. The
+serial communication (i.e. Packets) are defined here.
 
-#### MCU Architecture
+Note: Timestamp buffer overflows at 4294967295 milliseconds (4294967 seconds; 71583minutes; 1193 hours), well exceeding any possible flight times. Also note that the timestamp resets upon an initial read of the serial port from the MCU since the microcontroller resets on an initial read.
 
-![mcu_uml](resources/mcu_uml.png)
+#### IO `rcplane.io`
+Handles all io communication, such as over serial or logging. This library also maintains managing and distributing the configuration parameters of the suite.
 
-#### Serial Communication
-Communication from the MCU to the SoM follows a 64-bit packet format defined as follows.
+#### SoM `rcplane.som`
+Not a library but the main entry point for the SoM suite.
 
-![packet](resources/packet.png)
+#### MCU `rcplane.mcu`
+Not a library but the main entry point for the MCU suite.
 
-**Note**: Packets are always recevied in this order.
+The architecture of the SoM and library to library linkage is as follows:
+![som_class_diagram](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/dev-jtemel/rc_plane/main/puml/som_class_diagram.puml)
 
-Timestamp buffer overflows at 16777215 milliseconds (16777.215 seconds; 279.62025 minutes; 4.66 hours), well exceeding any possible flight times. Note that the timestamp resets upon an initial read of the serial port from the MCU since the microcontroller resets on an initial read.
-
-Packets are written to the serial port in HEX, with each line containing exactly 8 bytes of data. 
-
-When the serial connection is opened on the SOM, there is a chance of buffered data to be read before the microcontroller resets. To invalidate old data, the mcu and som perform a basic handshake by exchanging one byte.
-
-### Hardware
-
-#### Schematic
-The following schematic lays out the hardware design of the plane.
-
-![schematic](resources/schematic.png)
-
-For direct access to pin mapping, see the `pins.hpp` file in the `mcu` library.
-
-#### RC Controller
-The following schematic lays out the control mapping of transmitter.
-
-![controller](resources/controller.png)
+The interaction between the MCU and SoM can be seen here:
+![mcu_som_communication](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/dev-jtemel/rc_plane/main/puml/mcu_som_communication.puml)
 
 
-| **Channel** | **Functionality**  |
-|---------------|------------------|
-| CH1 | Roll |
-| CH2 | Pitch |
-| CH3 | Motor Speed |
-| CH4 | Yaw |
-| CH5 | Unassigned |
-| CH6 | Unassigned |
+## Configuration
+To combat changing requirements of the software, major parameters are configured in a JSON configuration file (primary file is located at `configs/config.json`).
+You can trace where the configuration parameter is used in the source code by following the nesting as namespaces and/or class names.
 
-
-### Plane Dimensions
-The dimensions of the plane are laid out in the following sketch.
-
-![plane](resources/plane.png)
-
-The Dimensions were calculated as follows:
-| **Identifier** | **Relation**  | **Result** |
-|----------|-----------|----------------------|
-| Chord \(C\) | N/A | 20cm |
-| Wingspan (WS) | 5 x C | 100cm |
-| WingArea (WA) | C x WS | 2000cm^2 |
-| Fuselage Length (FL) | 75% of WS | 75cm |
-| Nose Length (NL) | 20% of FL | 15cm |
-| Mid Length (ML) | ~37% of FL | 28cm |
-| Tail Length (TL) | ~2.5% of FL | 2cm |
-| Fuselage Height (FH) | 10% of FL | 7.5cm |
-| Horz. Stabilizer Width (HSW) | FL - NL - ML - TL | 10cm |
-| Horz. Stabilizer Area (HSA) | 20% of WA | 400cm^2 |
-| Horz. Stabilizer Length (HSL) | HSA / HSW | 40cm |
-| Aileron Width (AW) | 12.5% of C | 2.5cm |
-| Aileron Length (AL) | 10 x AW | 25cm |
-| Elevator Width (EW) | (20% of HSA) / HSL | 2cm |
-| Elevator Length (EL) | HSL | 40cm |
-| Vert. Stabilizer Area (VSA) | 33% of HSA | 132 cm^2 |
-| Vert. Stabilizer Width (VSW) | HSW - EW | 8cm |
-| Vert. Stabilizer Height (VSH) | VSW | 8cm |
-| Rudder Area (RA) | 50% of VSA | 66cm |
-| Rudder Height (RH) | VSH | 8cm |
-| Rudder Width (RW) | 50% VSW | 4cm |
-| Angle of Attack (AoA) | | 3deg |
-| Dihedral (D) | | 2deg |
-| Center of Gravity (CoG) | 25% of C | 5cm |
+Available parameters are defined below. Format: `"parameter name": Description of the parameter. <c++ equivalent type> : default_value : [available_options]`.
+```json
+{
+  "rcplane": {
+    "common": {
+      "handshake_termination_string": Message to receive from the MCU to flush the serial buffer. <string> : rcplane\r\n
+    },
+    "io": {
+      "journal": {
+        "severity": Severity to output console logs. <string> : trace : [trace, debug, info, warning, error, fatal]
+      },
+      "serial_controller": {
+        "tty_dev": TTY Device to communicate to the MCU with. <string> : /dev/ttyACM0,
+        "baud_rate": Baudrate of the tty device: <uint32_t> : 115200,
+        "read_timeout_ms": Timeout in milliseconds for a read operation. <uint32_t> : 500,
+        "write_timeout_ms": Timeout in milliseconds for a write operation. <uint32_t> : 500
+      }
+    },
+    "autopilot": {
+      "max_throttle": Upper bound of throttle output. <uint8_t> : 255,
+      "max_aileron_deflection": Maximum degrees the aileron can deflect. <int8_t> : 35,
+      "max_elevator_deflection": Maximum degrees the elevator can deflect. <int8_t> : 40,
+      "max_rudder_deflection": Maximum degrees the rudder can deflect. <int8_t> : 20,
+      "stabilize": {
+        "kp": Proportional gain for the PID controller. <double> : 0.8,
+        "ki": Integral gain for the PID controller. <double> : 0.05,
+        "kd": Derivate gain for the PID controller. <double> : 0.02,
+        "max_integral_error": The upper/lower bound for the PID integral error. <double> :4
+      }
+    },
+    "som": {
+      "som_controller": {
+        "handshake_attempts": Number of times to attempt a handshake before aborting. <uint32_t> : 2,
+        "main_loop_delay_ms": Milliseconds to wait before starting the main SoM loop. <uint32_t> :4000
+      }
+    }
+  }
+}
+```
 
 ## Build
 To compile the entire project, use the `full_build.sh` script. The following sections layout how to
@@ -123,11 +118,11 @@ Using the `builder.sh` script, deploy the following commands *after* the microco
 
 ```shell
 ./builder.sh
-8 # Install dependencies (only needed on first clone)
+9 # Install dependencies (only needed on first clone)
 1 # Cycle to MCU
 2 # Compile the MCU library
 3 # Flash the microcontroller
-7 # Optional to view serial data output (CTRL+A CTRL+X to exit).
+8 # Optional to view serial data output (CTRL+A CTRL+X to exit).
 ```
 
 ### SoM
@@ -135,11 +130,10 @@ Provide the IP of the SOM to the builder and execute the following commands:
 
 ```shell
 ./builder.sh -i <IP>
-8 # Install dependencies
+9 # Install dependencies
 1 # Cycle to SOM
 2 # Compile the SOM library
 3 # Flash SOM
-4 # Run SOM
 ```
 
 ### PC
@@ -149,24 +143,45 @@ Using the `builder.sh` script, deploy the following commands:
 ./builder.sh
 1 # Cycle to PC
 2 # Compile the PC library
-3 # Flash PC
-4 # Run PC
 ```
 
-### Running
+## Running the Software
 Turn on all power supplies and connect the MCU to the SoM via a serial connection. Then start the SoM controller followed by the PC controller:
-```
+
+```shell
 ./builder.sh
-1 # Cycle to SOM
-4 # Run the SOM controller
+1 # Cycle to SOM or PC
+4 # Run the controller (mcu must be connected to respective device)
 ```
 
-If the GNSS recevier is **not** connected to the SOM, simulate GNSS flow with GPSFake. Failure to parse GPS data will abort the SOM controller.
-```
+## Testing
+To run the test suite use the following commands:
+```shell
 ./builder.sh
-1 # Cycle to SOM
-6 # Run GPSFake
+1 # Cycle to PC
+6 # Compile Test Suite
+7 # Run Test Suite
 ```
+
+Coverage reports are generated after a test suite run. You can view them with the following command:
+```shell
+firefox coverage/coverage.html
+```
+
+Alternatively, you can run the top level test script instead. This does not build coverage reports.
+```shell
+./run_tests.sh
+```
+
+## Debugging
+To run the debugger, connect the MCU and use the following command:
+```shell
+./builder.sh
+1 # Cycle to PC
+2 # Compile PC
+5 # Run gdb debugger
+```
+
 ## Requirements
 This section lays out the requirements, both virtual and physical, needed for the rc plane.
 
@@ -184,4 +199,3 @@ The following components are used in the build:
 - (3x) 220 Ohm resistors
 - (1) Green LED
 - (1) Red LED
-- (1) Blue LED
