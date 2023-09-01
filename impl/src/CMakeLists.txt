@@ -47,6 +47,7 @@ add_library(rcplane_som
 target_link_libraries(rcplane_som
   PUBLIC
     rcplane_io
+    rcplane_io_telemetry_tx
     rcplane_autopilot
 )
 

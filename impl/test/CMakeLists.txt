@@ -14,6 +14,8 @@ add_executable(RcplaneTests
 target_link_libraries(RcplaneTests
   PUBLIC
     rcplane_io
+    rcplane_io_telemetry_tx
+    rcplane_io_telemetry_rx
     rcplane_autopilot
     rcplane_som
   PRIVATE
