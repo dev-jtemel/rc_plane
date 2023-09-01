@@ -39,6 +39,7 @@ public:
   /**
    * @brief Trigger the appropriate autopilot based on the received packet.
    * @param rcRxPacket The received packet.
+   * @param imuPacket The IMU packet.
    * @return The control surface packet to send to the MCU.
    */
   common::ControlSurfacePacket trigger(const common::RcRxPacket &rcRxPacket,
