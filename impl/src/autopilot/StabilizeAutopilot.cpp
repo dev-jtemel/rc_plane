@@ -28,8 +28,7 @@ void StabilizeAutopilot::trigger(
   controlSurfacePacket.motorSpeed =
       m_autopilotUtility.bindRcThrottle(rcRxPacket.motorStickPosition);
   controlSurfacePacket.aileronDeflection =
-      m_autopilotUtility.bindPidAileronDeflection(
-          computeRollToAileronDeflection(imuPacket.gyroX));
+      computeRollToAileronDeflection(rcRxPacket.timestamp, imuPacket.gyroX);
   controlSurfacePacket.elevatorDeflection =
       m_autopilotUtility.bindPidElevatorDeflection(
           computePitchToElevatorDeflection(imuPacket.gyroY));
@@ -38,17 +37,37 @@ void StabilizeAutopilot::trigger(
 }
 
 int8_t StabilizeAutopilot::computeRollToAileronDeflection(
+    const uint32_t &,
     const double &rollAngle) {
   RCPLANE_LOG_METHOD();
 
+  constexpr double tau = 0.05;  // 40 ms loop time
+  constexpr double timestamp = 0.04;
   double error = m_desiredRollAngle - rollAngle;
-  double derivative = error - m_prevRollError;
-  m_rollIntegralError += error;
-  m_rollIntegralError = bindIntegralError(m_rollIntegralError);
 
-  double output = c_kp * error + c_ki * m_rollIntegralError + c_kd * derivative;
+  m_rollIntegralError += (timestamp / 2) * (error + m_prevRollError);
+  m_rollDerivativeError =
+      (2 * tau - timestamp) / (2 * tau + timestamp) * m_rollDerivativeError
+      + 2 / (2 * tau + timestamp) * (error - m_prevRollError);
+
   m_prevRollError = error;
 
+  RCPLANE_LOG(debug,
+              "error = " << error
+                         << ", integral error = " << m_rollIntegralError
+                         << ", derivative error = " << m_rollDerivativeError);
+
+  double output =
+      c_kp * error + c_ki * m_rollIntegralError + c_kd * m_rollDerivativeError;
+  double unsaturatedOutput = output;
+  if (output > 35) {
+    output = 35;
+  } else if (output < -35) {
+    output = -35;
+  }
+
+  m_rollIntegralError =
+      m_rollIntegralError + timestamp / c_ki * (output - unsaturatedOutput);
   return static_cast<int8_t>(output);
 }
 
