@@ -9,10 +9,10 @@
         "log_destination": "./logs/"
       },
       "serial_controller": {
-        "tty_dev": "/dev/ttyACM0",
+        "tty_dev": "/tmp/rcplane_test_tty_dev_read",
         "baud_rate": 115200,
-        "read_timeout_ms": 500,
-        "write_timeout_ms": 500
+        "read_timeout_ms": 200,
+        "write_timeout_ms": 200
       }
     },
     "autopilot": {
@@ -29,8 +29,8 @@
     },
     "som": {
       "som_controller": {
-        "handshake_attempts": 20,
-        "main_loop_delay_ms": 4000
+        "handshake_attempts": 5,
+        "main_loop_delay_ms": 20
       }
     }
   }
