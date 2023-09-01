@@ -22,7 +22,7 @@ public:
   /**
    * @brief Construct a new Serial Controller object.
    * 
-   * @param cm The configuration manager.
+   * @param configManager The configuration manager.
    * @param io_service The main IO service.
    */
   SerialController(const ConfigManager &configManager,
@@ -53,8 +53,7 @@ public:
   /**
    * @brief Read a packet from the serial port.
    * @tparam PACKET_TYPE Packet type derived from rcplane::common::BasePacket.
-   * @tparam std::enable_if_t<
-   * std::is_base_of_v<common::BasePacket, PACKET_TYPE>> 
+   * @tparam std::is_base_of_v<common::BasePacket, PACKET_TYPE>
    * @return ReadResult<PACKET_TYPE> The packet and metadata read from the serial port.
    */
   template<typename PACKET_TYPE,
@@ -66,8 +65,7 @@ public:
    * @brief Write a packet to the serial port.
    * 
    * @tparam PACKET_TYPE Packet type derived from rcplane::common::BasePacket.
-   * @tparam std::enable_if<
-   * std::is_base_of<common::BasePacket, PACKET_TYPE>::value>::type 
+   * @tparam std::enable_if<std::is_base_of<common::BasePacket, PACKET_TYPE>::value>::type 
    * @param packet The packet to write to the serial port.
    * @return bool True if the packet was written successfully.
    */

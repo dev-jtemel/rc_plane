@@ -24,9 +24,16 @@ class SomController : public boost::noncopyable {
 public:
   /**
    * @brief Config the SerialController and underlying data structs.
+   * @param configPath The path to location of the configuration file.
    */
-  SomController();
+  SomController(const std::string &configPath = "");
   ~SomController();
+
+  /**
+   * @brief Gain reference to the underlying io context.
+   * return Reference to the underlying io context.
+   */
+  boost::asio::io_service &getIoService();
 
   /**
    * @brief Run the main loop of the SoM.

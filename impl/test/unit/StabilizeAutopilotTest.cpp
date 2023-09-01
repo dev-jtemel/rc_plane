@@ -1,4 +1,4 @@
-#include "rcplane/autopilot/ManualAutopilot.hpp"
+#include "rcplane/autopilot/StabilizeAutopilot.hpp"
 
 #include <gtest/gtest.h>
 #include <memory>
@@ -11,7 +11,7 @@
 namespace rcplane {
 namespace test {
 
-class ManualAutopilotFixture : public ::testing::Test {
+class StabilizeAutopilotFixture : public ::testing::Test {
 protected:
   void SetUp() override {
     const std::string kConfigFile = "configs/test/unit/generalConfig.json";
@@ -29,13 +29,13 @@ protected:
 
     m_autopilotUtility =
         std::make_unique<autopilot::AutopilotUtility>(m_configManager);
-    m_manualAutopilot =
-        std::make_unique<autopilot::ManualAutopilot>(*m_autopilotUtility.get());
+    m_stabilizeAutopilot = std::make_unique<autopilot::StabilizeAutopilot>(
+        *m_autopilotUtility.get());
   }
 
   void TearDown() override {
     m_autopilotUtility.reset();
-    m_manualAutopilot.reset();
+    m_stabilizeAutopilot.reset();
   }
 
   const int8_t kMaxStickPosition = 100;
@@ -48,15 +48,15 @@ protected:
 
   io::ConfigManager m_configManager;
   std::unique_ptr<autopilot::AutopilotUtility> m_autopilotUtility;
-  std::unique_ptr<autopilot::ManualAutopilot> m_manualAutopilot;
+  std::unique_ptr<autopilot::StabilizeAutopilot> m_stabilizeAutopilot;
 };
 
-TEST_F(ManualAutopilotFixture, zeroToZero) {
+TEST_F(StabilizeAutopilotFixture, zeroToZero) {
   common::ControlSurfacePacket controlSurfacePacket;
   const common::ImuPacket kImuPacket;
   const common::RcRxPacket kRcRxPacket;
 
-  m_manualAutopilot->trigger(controlSurfacePacket, kRcRxPacket, kImuPacket);
+  m_stabilizeAutopilot->trigger(controlSurfacePacket, kRcRxPacket, kImuPacket);
 
   EXPECT_EQ(0, controlSurfacePacket.motorSpeed);
   EXPECT_EQ(0, controlSurfacePacket.aileronDeflection);
@@ -64,41 +64,47 @@ TEST_F(ManualAutopilotFixture, zeroToZero) {
   EXPECT_EQ(0, controlSurfacePacket.rudderDeflection);
 }
 
-TEST_F(ManualAutopilotFixture, aileronBind) {
+TEST_F(StabilizeAutopilotFixture, aileronBind) {
   common::ControlSurfacePacket controlSurfacePacket;
-  const common::ImuPacket kImuPacket;
-  common::RcRxPacket rcRxPacket;
-  rcRxPacket.aileronStickPosition = kMaxStickPosition;
+  const common::RcRxPacket kRcRxPacket;
+  common::ImuPacket imuPacket;
+  imuPacket.gyroX = -35;
 
-  m_manualAutopilot->trigger(controlSurfacePacket, rcRxPacket, kImuPacket);
+  constexpr uint32_t kLoopCount = 1000U;
+  for (auto i = 0U; i < kLoopCount; ++i) {
+    m_stabilizeAutopilot->trigger(controlSurfacePacket, kRcRxPacket, imuPacket);
+  }
 
   EXPECT_EQ(0, controlSurfacePacket.motorSpeed);
-  EXPECT_EQ(c_maxAileronDeflection, controlSurfacePacket.aileronDeflection);
+  EXPECT_GE(c_maxAileronDeflection, controlSurfacePacket.aileronDeflection);
   EXPECT_EQ(0, controlSurfacePacket.elevatorDeflection);
   EXPECT_EQ(0, controlSurfacePacket.rudderDeflection);
 }
 
-TEST_F(ManualAutopilotFixture, elevatorBind) {
+TEST_F(StabilizeAutopilotFixture, elevatorBind) {
   common::ControlSurfacePacket controlSurfacePacket;
-  const common::ImuPacket kImuPacket;
-  common::RcRxPacket rcRxPacket;
-  rcRxPacket.elevatorStickPosition = kMinStickPosition;
+  const common::RcRxPacket kRcRxPacket;
+  common::ImuPacket imuPacket;
+  imuPacket.gyroY = 35;
 
-  m_manualAutopilot->trigger(controlSurfacePacket, rcRxPacket, kImuPacket);
+  constexpr uint32_t kLoopCount = 1000U;
+  for (auto i = 0U; i < kLoopCount; ++i) {
+    m_stabilizeAutopilot->trigger(controlSurfacePacket, kRcRxPacket, imuPacket);
+  }
 
   EXPECT_EQ(0, controlSurfacePacket.motorSpeed);
   EXPECT_EQ(0, controlSurfacePacket.aileronDeflection);
-  EXPECT_EQ(-c_maxElevatorDeflection, controlSurfacePacket.elevatorDeflection);
+  EXPECT_LE(-c_maxElevatorDeflection, controlSurfacePacket.elevatorDeflection);
   EXPECT_EQ(0, controlSurfacePacket.rudderDeflection);
 }
 
-TEST_F(ManualAutopilotFixture, rudderBind) {
+TEST_F(StabilizeAutopilotFixture, rudderBind) {
   common::ControlSurfacePacket controlSurfacePacket;
   const common::ImuPacket kImuPacket;
   common::RcRxPacket rcRxPacket;
   rcRxPacket.rudderStickPosition = kMaxStickPosition / 2;
 
-  m_manualAutopilot->trigger(controlSurfacePacket, rcRxPacket, kImuPacket);
+  m_stabilizeAutopilot->trigger(controlSurfacePacket, rcRxPacket, kImuPacket);
 
   EXPECT_EQ(0, controlSurfacePacket.motorSpeed);
   EXPECT_EQ(0, controlSurfacePacket.aileronDeflection);
@@ -106,21 +112,25 @@ TEST_F(ManualAutopilotFixture, rudderBind) {
   EXPECT_EQ(c_maxRudderDeflection / 2, controlSurfacePacket.rudderDeflection);
 }
 
-TEST_F(ManualAutopilotFixture, allBind) {
+TEST_F(StabilizeAutopilotFixture, allBind) {
   common::ControlSurfacePacket controlSurfacePacket;
-  const common::ImuPacket kImuPacket;
+  common::ImuPacket imuPacket;
   common::RcRxPacket rcRxPacket;
   rcRxPacket.motorStickPosition = kMaxStickPosition;
-  rcRxPacket.aileronStickPosition = kMinStickPosition / 10;
-  rcRxPacket.elevatorStickPosition = kMaxStickPosition / 2;
   rcRxPacket.rudderStickPosition = kMinStickPosition / 4;
 
-  m_manualAutopilot->trigger(controlSurfacePacket, rcRxPacket, kImuPacket);
+  imuPacket.gyroX = 10;
+  imuPacket.gyroY = -5;
+
+  constexpr uint32_t kLoopCount = 1000U;
+  for (auto i = 0U; i < kLoopCount; ++i) {
+    m_stabilizeAutopilot->trigger(controlSurfacePacket, rcRxPacket, imuPacket);
+  }
 
   EXPECT_EQ(c_maxThrottle, controlSurfacePacket.motorSpeed);
-  EXPECT_EQ(static_cast<int8_t>(-c_maxElevatorDeflection / 10),
+  EXPECT_GE(static_cast<int8_t>(-c_maxElevatorDeflection / 10),
             controlSurfacePacket.aileronDeflection);
-  EXPECT_EQ(static_cast<int8_t>(c_maxElevatorDeflection / 2),
+  EXPECT_GE(static_cast<int8_t>(c_maxElevatorDeflection / 2),
             controlSurfacePacket.elevatorDeflection);
   EXPECT_EQ(static_cast<int8_t>(-c_maxRudderDeflection / 4),
             controlSurfacePacket.rudderDeflection);

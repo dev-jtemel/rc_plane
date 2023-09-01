@@ -5,13 +5,17 @@ add_executable(RcplaneTests
   unit/ConfigManagerTest.cpp
   unit/SerialControllerTest.cpp
   unit/ManualAutopilotTest.cpp
+  unit/StabilizeAutopilotTest.cpp
   unit/AutopilotManagerTest.cpp
+
+  integration/SomControllerTest.cpp
 )
 
 target_link_libraries(RcplaneTests
   PUBLIC
     rcplane_io
     rcplane_autopilot
+    rcplane_som
   PRIVATE
     gmock
     gtest

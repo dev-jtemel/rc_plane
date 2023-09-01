@@ -12,16 +12,19 @@
 namespace rcplane {
 namespace som {
 
-SomController::SomController() {
-  RCPLANE_LOG_METHOD();
-
+SomController::SomController(const std::string &configPath) {
   m_signalSet.async_wait([&](boost::system::error_code ec, int sig) {
     RCPLANE_LOG(warning, "Termination signal received!");
     m_worker.reset();
   });
 
   m_configManager = std::make_unique<io::ConfigManager>();
-  assert(m_configManager->loadConfig());
+  if (configPath.empty()) {
+    assert(m_configManager->loadConfig());
+  } else {
+    assert(m_configManager->loadConfig(configPath));
+  }
+
   RCPLANE_LOG(debug, m_configManager->dumpConfig());
 
   RCPLANE_LOG(info, "ConfigManager initialized!");
@@ -50,6 +53,8 @@ SomController::~SomController() {
 
   stopIoThread();
 }
+
+boost::asio::io_service &SomController::getIoService() { return m_ioService; }
 
 void SomController::runMainLoop() {
   RCPLANE_LOG_METHOD();
@@ -88,6 +93,8 @@ void SomController::stopIoThread() {
   RCPLANE_LOG_METHOD();
 
   m_worker.reset();
+  m_worker.~executor_work_guard();
+  m_worker.~executor_work_guard();
   m_ioThread.join();
 }
 
