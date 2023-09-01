@@ -8,7 +8,8 @@ OPTIONS="\
   Change-Mode \
   Compile \
   Flash \
-  Run \
+  Run-SomController \
+  Run-PcTelemetryRX \
   Debug \
   Compile-Test \
   Test \
@@ -31,16 +32,17 @@ usage() {
   echo "  1) Change-Mode            : Cycle between MCU, SOM and PC (default: PC)."
   echo "  2) Compile                : Compile the mode's code."
   echo "  3) Flash                  : Flash the modes code (via serial for MCU or ssh for SOM)."
-  echo "  4) Run                    : Run the desired code on the appropiate device."
-  echo "  5) Debug                  : Run gdb on the PC code."
-  echo "  6) Comple-Test            : Compile tests."
-  echo "  7) Test                   : Run the tests for the appropiate device."
-  echo "  8) Read-Serial            : Read the serial output of the microcontroller."
-  echo "  9) Install-Dependencies   : Install the required dependencies."
-  echo "  10) Run-Clang-Format      : Run clang-format on the project."
-  echo "  11) Documentation         : Run doxygen on the project."
-  echo "  12) Help                  : Display this message."
-  echo "  13) Quit                  : Exit the builder script."
+  echo "  4) Run-SomController      : Run the desired code on the appropiate device."
+  echo "  5) Run-PcTelemetryRX      : Run the desired code on the appropiate device."
+  echo "  6) Debug                  : Run gdb on the PC code."
+  echo "  7) Comple-Test            : Compile tests."
+  echo "  8) Test                   : Run the tests for the appropiate device."
+  echo "  9) Read-Serial            : Read the serial output of the microcontroller."
+  echo "  10) Install-Dependencies   : Install the required dependencies."
+  echo "  11) Run-Clang-Format      : Run clang-format on the project."
+  echo "  12) Documentation         : Run doxygen on the project."
+  echo "  13) Help                  : Display this message."
+  echo "  14) Quit                  : Exit the builder script."
 }
 
 while getopts "d:i:h" opt; do
@@ -83,10 +85,17 @@ do
         break
       }
       echo "Nothing to do on PC...."
-    elif [ "$opt" = "Run" ];
+    elif [ "$opt" = "Run-SomController" ];
     then
       [ $MODE == "PC" ] && {
         ./build/impl/src/SomController
+        break
+      }
+      echo "Nothing to do on $MODE..."
+    elif [ "$opt" = "Run-PcTelemetryRX" ];
+    then
+      [ $MODE == "PC" ] && {
+        ./build/impl/src/PcTelemetryRX
         break
       }
       echo "Nothing to do on $MODE..."

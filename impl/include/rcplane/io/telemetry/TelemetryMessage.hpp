@@ -1,8 +1,8 @@
 #ifndef RCPLANE_IO_TELEMETRY_TELEMETRY_MESSAGE_HPP
 #define RCPLANE_IO_TELEMETRY_TELEMETRY_MESSAGE_HPP
 
-#include <map>
 #include <iostream>
+#include <map>
 #include <string>
 
 namespace rcplane {

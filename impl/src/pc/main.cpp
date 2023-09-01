@@ -7,7 +7,7 @@ int main(int argc, char *argv[]) {
   rcplane::io::telemetry::TelemetryReceiverMQ receiver;
   assert(receiver.init());
 
-  while (true) { (void)receiver.receiveMessage(); }
+  while (true) { (void)receiver.receiveDebugMessage(); }
 
   return EXIT_SUCCESS;
 }

@@ -13,6 +13,7 @@ target_link_libraries(rcplane_io
 
 add_library(rcplane_io_telemetry_tx
   io/telemetry/TelemetryMessage.cpp
+  io/telemetry/TelemetryTransmitterMQ.cpp
 )
 target_link_libraries(rcplane_io_telemetry_tx
   PUBLIC
@@ -21,6 +22,7 @@ target_link_libraries(rcplane_io_telemetry_tx
 
 add_library(rcplane_io_telemetry_rx
   io/telemetry/TelemetryMessage.cpp
+  io/telemetry/TelemetryReceiverMQ.cpp
 )
 target_link_libraries(rcplane_io_telemetry_rx
   PUBLIC
@@ -61,7 +63,7 @@ target_link_libraries(SomController
 )
 
 add_executable(PcTelemetryRX
-  som/telemetry_rx.cpp
+  pc/main.cpp
 )
 
 target_link_libraries(PcTelemetryRX
