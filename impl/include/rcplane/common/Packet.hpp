@@ -38,7 +38,6 @@ struct RCPLANE_PACKED HandshakePacket : public BasePacket {
   uint8_t handshake{};
 };
 
-
 /**
  * @brief Packet definition of time and state of the RX controller. 
  * @warning This packet is packed to avoid compiler padding.

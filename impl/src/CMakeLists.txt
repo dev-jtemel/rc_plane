@@ -11,6 +11,22 @@ target_link_libraries(rcplane_io
     pthread
 )
 
+add_library(rcplane_io_telemetry_tx
+  io/telemetry/TelemetryMessage.cpp
+)
+target_link_libraries(rcplane_io_telemetry_tx
+  PUBLIC
+    rcplane_io
+)
+
+add_library(rcplane_io_telemetry_rx
+  io/telemetry/TelemetryMessage.cpp
+)
+target_link_libraries(rcplane_io_telemetry_rx
+  PUBLIC
+    rcplane_io
+)
+
 add_library(rcplane_autopilot
   autopilot/AutopilotManager.cpp
   autopilot/AutopilotUtility.cpp
@@ -41,4 +57,15 @@ target_link_libraries(SomController
     rcplane_io
     rcplane_autopilot
     rcplane_som
+    rcplane_io_telemetry_tx
+)
+
+add_executable(PcTelemetryRX
+  som/telemetry_rx.cpp
+)
+
+target_link_libraries(PcTelemetryRX
+  PUBLIC
+    rcplane_io
+    rcplane_io_telemetry_rx
 )
