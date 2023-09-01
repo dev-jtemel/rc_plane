@@ -6,7 +6,16 @@ namespace rcplane {
 namespace io {
 namespace telemetry {
 
-TelemetryTransmitterMQ::TelemetryTransmitterMQ() { RCPLANE_LOG_METHOD(); }
+TelemetryTransmitterMQ::TelemetryTransmitterMQ(
+    const ConfigManager &configManager) {
+  RCPLANE_LOG_METHOD();
+
+  c_mQueueName =
+      configManager.getValue<std::string>("rcplane.io.telemetry.debug_mq_name");
+  c_mQueueSize =
+      configManager.getValue<uint32_t>("rcplane.io.telemetry.debug_mq_size");
+}
+
 TelemetryTransmitterMQ::~TelemetryTransmitterMQ() {
   RCPLANE_LOG_METHOD();
   boost::interprocess::message_queue::remove(c_mQueueName.c_str());

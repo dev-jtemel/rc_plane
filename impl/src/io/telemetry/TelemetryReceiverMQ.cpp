@@ -6,7 +6,13 @@ namespace rcplane {
 namespace io {
 namespace telemetry {
 
-TelemetryReceiverMQ::TelemetryReceiverMQ() { RCPLANE_LOG_METHOD(); }
+TelemetryReceiverMQ::TelemetryReceiverMQ(const ConfigManager &configManager) {
+  RCPLANE_LOG_METHOD();
+
+  c_mQueueName =
+      configManager.getValue<std::string>("rcplane.io.telemetry.debug_mq_name");
+}
+
 TelemetryReceiverMQ::~TelemetryReceiverMQ() { RCPLANE_LOG_METHOD(); }
 
 bool TelemetryReceiverMQ::init() {

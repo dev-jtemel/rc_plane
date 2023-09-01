@@ -3,7 +3,7 @@
 
 #include <boost/interprocess/ipc/message_queue.hpp>
 
-#include "rcplane/io/Journal.hpp"
+#include "rcplane/io/ConfigManager.hpp"
 #include "rcplane/io/telemetry/TelemetryMessage.hpp"
 
 namespace rcplane {
@@ -12,7 +12,7 @@ namespace telemetry {
 
 class TelemetryTransmitterMQ {
 public:
-  TelemetryTransmitterMQ();
+  TelemetryTransmitterMQ(const ConfigManager &configManager);
   ~TelemetryTransmitterMQ();
 
   virtual bool init();
@@ -21,7 +21,7 @@ public:
 private:
   // TODO: config
   std::string c_mQueueName = "rcplane_telemetry_mq";
-  uint32_t c_mQueueSize = 1024U;
+  uint32_t c_mQueueSize = 10U;
   std::unique_ptr<boost::interprocess::message_queue> m_mQueue;
 };
 

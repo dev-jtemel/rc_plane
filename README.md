@@ -85,6 +85,10 @@ Available parameters are defined below. Format: `"parameter name": Description o
         "baud_rate": Baudrate of the tty device: <uint32_t> : 115200,
         "read_timeout_ms": Timeout in milliseconds for a read operation. <uint32_t> : 500,
         "write_timeout_ms": Timeout in milliseconds for a write operation. <uint32_t> : 500
+      },
+      "telemetry": {
+        "debug_mq_name": Name of the POSIX MQ to send DebugMessages. <string> : rcplane_mq_debug,
+        "debug_mq_size": Size of the debug MQ. <uint32_t> : 10
       }
     },
     "autopilot": {

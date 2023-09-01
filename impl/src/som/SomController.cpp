@@ -48,7 +48,8 @@ SomController::SomController(const std::string &configPath) {
   RCPLANE_LOG(info, "Autopilot initialized!");
 
   m_telemetryTransmitterMQ =
-      std::make_unique<io::telemetry::TelemetryTransmitterMQ>();
+      std::make_unique<io::telemetry::TelemetryTransmitterMQ>(
+          *m_configManager.get());
 
   assert(m_telemetryTransmitterMQ->init());
   RCPLANE_LOG(info, "Telemetry transmitter initialized!");

@@ -3,6 +3,7 @@
 
 #include <boost/interprocess/ipc/message_queue.hpp>
 
+#include "rcplane/io/ConfigManager.hpp"
 #include "rcplane/io/telemetry/TelemetryMessage.hpp"
 
 namespace rcplane {
@@ -11,7 +12,7 @@ namespace telemetry {
 
 class TelemetryReceiverMQ {
 public:
-  TelemetryReceiverMQ();
+  TelemetryReceiverMQ(const ConfigManager &configManager);
   ~TelemetryReceiverMQ();
 
   virtual bool init();
