@@ -10,17 +10,33 @@ namespace rcplane {
 namespace io {
 namespace telemetry {
 
+/**
+ * @brief Implementation of the TelemetryReceiver interface that uses a
+ * message queue to local IPC.
+ */
 class TelemetryReceiverMQ {
 public:
+  /**
+   * @brief Construct a new Telemetry Receiver MQ object.
+   * @param configManager The configuration manager.
+   */
   TelemetryReceiverMQ(const ConfigManager &configManager);
   ~TelemetryReceiverMQ();
 
-  virtual bool init();
-  virtual bool receiveDebugMessage();
+  /**
+   * @brief Initialize the telemetry receiver.
+   * @return True if MQ is initialized successfully, false otherwise.
+   */
+  bool init();
+
+  /**
+   * @brief Receive a debug telemetry message.
+   * @return bool Status of the read operation.
+   */
+  bool receiveDebugMessage();
 
 private:
-  // TODO: config
-  std::string c_mQueueName = "rcplane_telemetry_mq";
+  std::string c_mQueueName{};
   std::unique_ptr<boost::interprocess::message_queue> m_mQueue;
 };
 

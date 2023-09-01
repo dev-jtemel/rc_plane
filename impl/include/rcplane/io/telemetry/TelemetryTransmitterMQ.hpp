@@ -10,18 +10,35 @@ namespace rcplane {
 namespace io {
 namespace telemetry {
 
+/**
+ * @brief Implementation of the TelemetryTransmitter interface that uses a
+ * message queue to local IPC.
+ */
 class TelemetryTransmitterMQ {
 public:
+  /**
+   * @brief Construct a new Telemetry Transmitter MQ object.
+   * @param configManager The configuration manager.
+   */
   TelemetryTransmitterMQ(const ConfigManager &configManager);
   ~TelemetryTransmitterMQ();
 
-  virtual bool init();
-  virtual bool sendDebugMessage(const message::DebugMessage &message);
+  /**
+   * @brief Initialize the telemetry transmitter.
+   * @return True if mq is initialized successfully, false otherwise.
+   */
+  bool init();
+
+  /**
+   * @brief Send a debug telemetry message.
+   * @param message The debug telemetry message to send.
+   * @return bool Status of the operation.
+   */
+  bool sendDebugMessage(const message::DebugMessage &message);
 
 private:
-  // TODO: config
-  std::string c_mQueueName = "rcplane_telemetry_mq";
-  uint32_t c_mQueueSize = 10U;
+  std::string c_mQueueName{};
+  uint32_t c_mQueueSize{0U};
   std::unique_ptr<boost::interprocess::message_queue> m_mQueue;
 };
 

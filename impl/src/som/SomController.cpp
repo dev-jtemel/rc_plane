@@ -68,33 +68,38 @@ void SomController::runMainLoop() {
 
   sendTelemetry();
 
-  // TODO: Add timeout to debug
-
   std::this_thread::sleep_for(std::chrono::milliseconds(c_mainLoopDelay));
   assert(!m_ioService.stopped());
 
   while (!m_ioService.stopped()) {
-    const auto rcRxPacket =
-        m_serialController->readPacket<common::RcRxPacket>().packet;
-    ++m_debugMessage.serialReads;
+    const auto kRcRxPacketResult =
+        m_serialController->readPacket<common::RcRxPacket>();
 
-    const auto imuPacket =
-        m_serialController->readPacket<common::ImuPacket>().packet;
-    ++m_debugMessage.serialReads;
+    kRcRxPacketResult.didTimeout ? ++m_debugMessage.serialReadTimeouts
+                                 : ++m_debugMessage.serialReads;
 
-    RCPLANE_LOG(debug, rcRxPacket);
-    RCPLANE_LOG(debug, imuPacket);
+    const auto kImuPacketResult =
+        m_serialController->readPacket<common::ImuPacket>();
+
+    kImuPacketResult.didTimeout ? ++m_debugMessage.serialReadTimeouts
+                                : ++m_debugMessage.serialReads;
+
+    RCPLANE_LOG(debug, kRcRxPacketResult.packet);
+    RCPLANE_LOG(debug, kImuPacketResult.packet);
 
     common::ControlSurfacePacket controlSurfacePacket =
-        m_autopilotManager->trigger(rcRxPacket, imuPacket);
+        m_autopilotManager->trigger(kRcRxPacketResult.packet,
+                                    kImuPacketResult.packet);
 
     RCPLANE_LOG(debug, controlSurfacePacket);
 
     if (!m_serialController->writePacket<common::ControlSurfacePacket>(
             controlSurfacePacket)) {
       RCPLANE_LOG(error, "Failed to write packet to MCU.");
+      ++m_debugMessage.serialWriteTimeouts;
+    } else {
+      ++m_debugMessage.serialWrites;
     }
-    ++m_debugMessage.serialWrites;
 
     ++m_debugMessage.mainLoopCounter;
 
@@ -127,23 +132,28 @@ bool SomController::handshakeMCU() {
           kHandshakePacket)) {
     RCPLANE_LOG(error, "Failed to write handshake packet!");
     return false;
+  } else {
+    RCPLANE_LOG(debug, "Handshake packet written!");
+    ++m_debugMessage.serialWrites;
   }
-  ++m_debugMessage.serialWrites;
 
   for (uint32_t i = 0; i < c_handshakeAttempts; ++i) {
-    const auto handshakePacket =
-        m_serialController->readPacket<common::HandshakePacket>().packet;
-    ++m_debugMessage.serialReads;
+    const auto kHandshakePacketResult =
+        m_serialController->readPacket<common::HandshakePacket>();
 
-    if (kHandshakePacket == handshakePacket) {
+    if (kHandshakePacketResult.didTimeout) {
+      ++m_debugMessage.serialReadTimeouts;
+      continue;
+    }
+
+    if (kHandshakePacket == kHandshakePacketResult.packet) {
+      ++m_debugMessage.serialReads;
       RCPLANE_LOG(info, "MCU handshake succeeded!");
       return true;
-    } else if (handshakePacket == common::HandshakePacket()) {
-      RCPLANE_LOG(warning, "Timeout waiting for handshake packet!");
     } else {
-      RCPLANE_LOG(
-          info,
-          "Flushed invalid handshake packet :: " << +handshakePacket.handshake);
+      RCPLANE_LOG(info,
+                  "Flushed invalid handshake packet :: "
+                      << +kHandshakePacketResult.packet.handshake);
     }
   }
 

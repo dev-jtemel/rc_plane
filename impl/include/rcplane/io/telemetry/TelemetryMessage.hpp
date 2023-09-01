@@ -42,7 +42,9 @@ struct FaultMessage : public TelemetryMessage {
  */
 struct DebugMessage : public TelemetryMessage {
   uint32_t serialReads{0U};
+  uint32_t serialReadTimeouts{0U};
   uint32_t serialWrites{0U};
+  uint32_t serialWriteTimeouts{0U};
   uint32_t mainLoopCounter{0U};
 };
 
@@ -70,7 +72,9 @@ struct OnboardStateMessage : public TelemetryMessage {
 
 inline std::ostream &operator<<(std::ostream &os, const DebugMessage &message) {
   return os << "serialReads: " << message.serialReads
+            << " serialReadTimeouts: " << message.serialReadTimeouts
             << " serialWrites: " << message.serialWrites
+            << " serialWriteTimeouts: " << message.serialWriteTimeouts
             << " mainLoopCounter: " << message.mainLoopCounter;
 }
 
