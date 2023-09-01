@@ -4,6 +4,7 @@
 #include <boost/interprocess/ipc/message_queue.hpp>
 
 #include "rcplane/io/ConfigManager.hpp"
+#include "rcplane/io/telemetry/ITelemetryReceiver.hpp"
 #include "rcplane/io/telemetry/TelemetryMessage.hpp"
 
 namespace rcplane {
@@ -14,7 +15,7 @@ namespace telemetry {
  * @brief Implementation of the TelemetryReceiver interface that uses a
  * message queue to local IPC.
  */
-class TelemetryReceiverMQ {
+class TelemetryReceiverMQ : public ITelemetryReceiver {
 public:
   /**
    * @brief Construct a new Telemetry Receiver MQ object.

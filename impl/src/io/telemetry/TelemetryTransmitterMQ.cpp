@@ -7,7 +7,8 @@ namespace io {
 namespace telemetry {
 
 TelemetryTransmitterMQ::TelemetryTransmitterMQ(
-    const ConfigManager &configManager) {
+    const ConfigManager &configManager)
+  : ITelemetryTransmitter() {
   RCPLANE_LOG_METHOD();
 
   c_mQueueName =
@@ -19,6 +20,7 @@ TelemetryTransmitterMQ::TelemetryTransmitterMQ(
 TelemetryTransmitterMQ::~TelemetryTransmitterMQ() {
   RCPLANE_LOG_METHOD();
   boost::interprocess::message_queue::remove(c_mQueueName.c_str());
+  RCPLANE_LOG(info, "Removed debug message queue: " << c_mQueueName);
 }
 
 bool TelemetryTransmitterMQ::init() {
@@ -29,6 +31,8 @@ bool TelemetryTransmitterMQ::init() {
         c_mQueueName.c_str(),
         c_mQueueSize,
         sizeof(message::DebugMessage));
+
+    RCPLANE_LOG(info, "Opened debug message queue: " << c_mQueueName);
     return true;
   } catch (boost::interprocess::interprocess_exception &e) {
     RCPLANE_LOG(error, "Failed to create message queue: " << e.what());

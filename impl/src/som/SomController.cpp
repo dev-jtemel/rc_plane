@@ -8,6 +8,7 @@
 
 #include "rcplane/io/ConfigManager.hpp"
 #include "rcplane/io/Journal.hpp"
+#include "rcplane/io/telemetry/TelemetryTransmitterMQ.hpp"
 
 namespace rcplane {
 namespace som {
@@ -47,11 +48,11 @@ SomController::SomController(const std::string &configPath) {
       std::make_unique<autopilot::AutopilotManager>(*m_autopilotUtility.get());
   RCPLANE_LOG(info, "Autopilot initialized!");
 
-  m_telemetryTransmitterMQ =
+  m_telemetryTransmitter =
       std::make_unique<io::telemetry::TelemetryTransmitterMQ>(
           *m_configManager.get());
 
-  assert(m_telemetryTransmitterMQ->init());
+  assert(m_telemetryTransmitter->init());
   RCPLANE_LOG(info, "Telemetry transmitter initialized!");
 }
 
@@ -164,7 +165,7 @@ bool SomController::handshakeMCU() {
 void SomController::sendTelemetry() {
   RCPLANE_LOG_METHOD();
 
-  if (!m_telemetryTransmitterMQ->sendDebugMessage(m_debugMessage)) {
+  if (!m_telemetryTransmitter->sendDebugMessage(m_debugMessage)) {
     RCPLANE_LOG(error, "Failed to send telemetry!");
   }
 }

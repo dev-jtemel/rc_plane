@@ -4,6 +4,7 @@
 #include <boost/interprocess/ipc/message_queue.hpp>
 
 #include "rcplane/io/ConfigManager.hpp"
+#include "rcplane/io/telemetry/ITelemetryTransmitter.hpp"
 #include "rcplane/io/telemetry/TelemetryMessage.hpp"
 
 namespace rcplane {
@@ -14,7 +15,7 @@ namespace telemetry {
  * @brief Implementation of the TelemetryTransmitter interface that uses a
  * message queue to local IPC.
  */
-class TelemetryTransmitterMQ {
+class TelemetryTransmitterMQ : public ITelemetryTransmitter {
 public:
   /**
    * @brief Construct a new Telemetry Transmitter MQ object.
@@ -27,14 +28,14 @@ public:
    * @brief Initialize the telemetry transmitter.
    * @return True if mq is initialized successfully, false otherwise.
    */
-  bool init();
+  bool init() override;
 
   /**
    * @brief Send a debug telemetry message.
    * @param message The debug telemetry message to send.
    * @return bool Status of the operation.
    */
-  bool sendDebugMessage(const message::DebugMessage &message);
+  bool sendDebugMessage(const message::DebugMessage &message) override;
 
 private:
   std::string c_mQueueName{};
