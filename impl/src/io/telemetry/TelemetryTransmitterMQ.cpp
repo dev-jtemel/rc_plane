@@ -85,7 +85,6 @@ bool TelemetryTransmitterMQ::sendAttitudeMessage(
       RCPLANE_LOG(error, "Failed to send attitude message");
       return false;
     }
-
   } catch (const boost::interprocess::interprocess_exception &e) {
     RCPLANE_LOG(error, "Failed to send attitude message :: " << e.what());
     return false;
