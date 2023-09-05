@@ -88,6 +88,7 @@ Available parameters are defined below. Format: `"parameter name": Description o
       },
       "telemetry": {
         "debug_mq_name": Name of the POSIX MQ to send DebugMessages. <string> : rcplane_mq_debug,
+        "attitude_mq_name": Name of the POSIX MQ to send AttitudeMessages. <string> : rcplane_mq_attitude,
         "debug_mq_size": Size of the debug MQ. <uint32_t> : 10
       }
     },
