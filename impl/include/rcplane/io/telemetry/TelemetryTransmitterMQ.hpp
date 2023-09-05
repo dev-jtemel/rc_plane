@@ -37,10 +37,19 @@ public:
    */
   bool sendDebugMessage(const message::DebugMessage &message) override;
 
+  /**
+   * @brief Send an attitude telemetry message.
+   * @param message The attitude telemetry message to send.
+   * @return bool Status of the operation.
+   */
+  bool sendAttitudeMessage(const message::AttitudeMessage &message) override;
+
 private:
-  std::string c_mQueueName{};
-  uint32_t c_mQueueSize{0U};
-  std::unique_ptr<boost::interprocess::message_queue> m_mQueue;
+  std::string c_debugMessageQueueName{};
+  std::string c_attitudeMessageQueueName{};
+  uint32_t c_messageQueueSize{0U};
+  std::unique_ptr<boost::interprocess::message_queue> m_debugMessageQueue{};
+  std::unique_ptr<boost::interprocess::message_queue> m_attitudeMessageQueue{};
 };
 
 }  // namespace telemetry

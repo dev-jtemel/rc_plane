@@ -23,6 +23,12 @@ public:
    * @return bool Status of the read operation.
    */
   virtual bool receiveDebugMessage() = 0;
+
+  /**
+   * @brief Receive a attitude telemetry message.
+   * @return bool Status of the read operation.
+   */
+  virtual bool receiveAttitudeMessage() = 0;
 };
 
 }  // namespace telemetry

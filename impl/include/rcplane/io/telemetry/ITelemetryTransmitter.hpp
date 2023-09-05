@@ -24,6 +24,13 @@ public:
    * @return bool Status of the operation.
    */
   virtual bool sendDebugMessage(const message::DebugMessage &message) = 0;
+
+  /**
+   * @brief Send a attitude telemetry message.
+   * @param message The attitude telemetry message to send.
+   * @return bool Status of the operation.
+   */
+  virtual bool sendAttitudeMessage(const message::AttitudeMessage &message) = 0;
 };
 
 }  // namespace telemetry

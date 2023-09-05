@@ -12,7 +12,7 @@
 #include "rcplane/io/ConfigManager.hpp"
 #include "rcplane/io/Journal.hpp"
 #include "rcplane/io/SerialController.hpp"
-#include "rcplane/io/telemetry/ITelemetryTransmitter.hpp"
+#include "rcplane/io/telemetry/TelemetryTransmitterMQ.hpp"
 
 namespace rcplane {
 namespace som {
@@ -89,7 +89,8 @@ private:
   std::unique_ptr<autopilot::AutopilotManager> m_autopilotManager{};
 
   io::telemetry::message::DebugMessage m_debugMessage{};
-  std::unique_ptr<io::telemetry::ITelemetryTransmitter>
+  io::telemetry::message::AttitudeMessage m_attitudeMessage{};
+  std::unique_ptr<io::telemetry::TelemetryTransmitterMQ>
       m_telemetryTransmitter{};
 };
 

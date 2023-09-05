@@ -11,8 +11,12 @@ int main(int argc, char *argv[]) {
   rcplane::io::telemetry::TelemetryReceiverMQ receiver(configManager);
   assert(receiver.init());
 
-  while (receiver.receiveDebugMessage())
-    ;
+  while (true) {
+    while (!receiver.receiveDebugMessage())
+      ;
+    while (!receiver.receiveAttitudeMessage())
+      ;
+  }
 
   return EXIT_SUCCESS;
 }

@@ -40,7 +40,7 @@ struct FaultMessage : public TelemetryMessage {
 /**
  * @brief Debug information.
  */
-struct DebugMessage : public TelemetryMessage {
+struct __attribute__((packed)) DebugMessage : public TelemetryMessage {
   uint32_t serialReads{0U};
   uint32_t serialReadTimeouts{0U};
   uint32_t serialWrites{0U};
@@ -51,11 +51,11 @@ struct DebugMessage : public TelemetryMessage {
 /**
  * @brief Attitude data.
  */
-struct AttitudeMessage : public TelemetryMessage {
-  double courseHeading{0.0};
+struct __attribute__((packed)) AttitudeMessage : public TelemetryMessage {
   double rollAngle{0.0};
   double pitchAngle{0.0};
   double yawAngle{0.0};
+  double courseHeading{0.0};
 };
 
 /**

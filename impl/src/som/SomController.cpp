@@ -104,6 +104,10 @@ void SomController::runMainLoop() {
 
     ++m_debugMessage.mainLoopCounter;
 
+    m_attitudeMessage.rollAngle = kImuPacketResult.packet.gyroX;
+    m_attitudeMessage.pitchAngle = kImuPacketResult.packet.gyroY;
+    m_attitudeMessage.yawAngle = kImuPacketResult.packet.gyroZ;
+
     sendTelemetry();
   }
 }
@@ -166,7 +170,10 @@ void SomController::sendTelemetry() {
   RCPLANE_LOG_METHOD();
 
   if (!m_telemetryTransmitter->sendDebugMessage(m_debugMessage)) {
-    RCPLANE_LOG(error, "Failed to send telemetry!");
+    RCPLANE_LOG(error, "Failed to send debug telemetry!");
+  }
+  if (!m_telemetryTransmitter->sendAttitudeMessage(m_attitudeMessage)) {
+    RCPLANE_LOG(error, "Failed to send attitude telemetry!");
   }
 }
 
