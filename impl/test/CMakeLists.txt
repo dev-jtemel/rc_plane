@@ -7,6 +7,7 @@ add_executable(RcplaneTests
   unit/ManualAutopilotTest.cpp
   unit/StabilizeAutopilotTest.cpp
   unit/AutopilotManagerTest.cpp
+  unit/TelemetryMQTest.cpp
 
   integration/SomControllerTest.cpp
 )
