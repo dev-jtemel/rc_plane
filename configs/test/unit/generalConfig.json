@@ -13,6 +13,11 @@
         "baud_rate": 115200,
         "read_timeout_ms": 200,
         "write_timeout_ms": 200
+      },
+      "telemetry": {
+        "debug_mq_name": "rcplane_mq_debug",
+        "attitude_mq_name": "rcplane_mq_attitude",
+        "mq_size": 100
       }
     },
     "autopilot": {
