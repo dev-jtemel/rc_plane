@@ -136,6 +136,8 @@ do
       [ $MODE == "PC" ] && {
         find "$ROOT_DIR/impl" -iname "*.hpp" -exec clang-format --verbose -style=file -i {} +
         find "$ROOT_DIR/impl" -iname "*.cpp" -exec clang-format --verbose -style=file -i {} +
+        find "$ROOT_DIR/control_station" -iname "*.hpp" -exec clang-format --verbose -style=file -i {} +
+        find "$ROOT_DIR/control_station" -iname "*.cpp" -exec clang-format --verbose -style=file -i {} +
         break
       }
       echo "Nothing to do on $MODE..."

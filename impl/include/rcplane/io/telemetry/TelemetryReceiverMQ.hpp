@@ -34,13 +34,13 @@ public:
    * @brief Receive a debug telemetry message.
    * @return bool Status of the read operation.
    */
-  bool receiveDebugMessage() override;
+  bool receiveDebugMessage(message::DebugMessage &message) override;
 
   /**
    * @brief Receive an attitude telemetry message.
    * @return bool Status of the read operation.
    */
-  bool receiveAttitudeMessage() override;
+  bool receiveAttitudeMessage(message::AttitudeMessage &message) override;
 
 private:
   std::string c_debugMessageQueueName{};

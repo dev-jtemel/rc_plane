@@ -42,12 +42,11 @@ bool TelemetryReceiverMQ::init() {
   }
 }
 
-bool TelemetryReceiverMQ::receiveDebugMessage() {
+bool TelemetryReceiverMQ::receiveDebugMessage(message::DebugMessage &message) {
   RCPLANE_LOG_METHOD();
 
   uint32_t priority;
   boost::interprocess::message_queue::size_type messageSize;
-  message::DebugMessage message;
 
   try {
     m_debugMessageQueue->receive(&message,
@@ -65,12 +64,11 @@ bool TelemetryReceiverMQ::receiveDebugMessage() {
   return true;
 }
 
-bool TelemetryReceiverMQ::receiveAttitudeMessage() {
+bool TelemetryReceiverMQ::receiveAttitudeMessage(message::AttitudeMessage &message) {
   RCPLANE_LOG_METHOD();
 
   uint32_t priority;
   boost::interprocess::message_queue::size_type messageSize;
-  message::AttitudeMessage message;
 
   try {
     m_attitudeMessageQueue->receive(&message,
