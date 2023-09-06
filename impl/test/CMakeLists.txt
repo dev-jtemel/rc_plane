@@ -7,6 +7,7 @@ add_executable(RcplaneTests
   unit/ManualAutopilotTest.cpp
   unit/StabilizeAutopilotTest.cpp
   unit/AutopilotManagerTest.cpp
+  unit/TelemetryMQTest.cpp
 
   integration/SomControllerTest.cpp
 )
@@ -14,6 +15,8 @@ add_executable(RcplaneTests
 target_link_libraries(RcplaneTests
   PUBLIC
     rcplane_io
+    rcplane_io_telemetry_tx
+    rcplane_io_telemetry_rx
     rcplane_autopilot
     rcplane_som
   PRIVATE

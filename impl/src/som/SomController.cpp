@@ -8,6 +8,7 @@
 
 #include "rcplane/io/ConfigManager.hpp"
 #include "rcplane/io/Journal.hpp"
+#include "rcplane/io/telemetry/TelemetryTransmitterMQ.hpp"
 
 namespace rcplane {
 namespace som {
@@ -46,6 +47,13 @@ SomController::SomController(const std::string &configPath) {
   m_autopilotManager =
       std::make_unique<autopilot::AutopilotManager>(*m_autopilotUtility.get());
   RCPLANE_LOG(info, "Autopilot initialized!");
+
+  m_telemetryTransmitter =
+      std::make_unique<io::telemetry::TelemetryTransmitterMQ>(
+          *m_configManager.get());
+
+  assert(m_telemetryTransmitter->init());
+  RCPLANE_LOG(info, "Telemetry transmitter initialized!");
 }
 
 SomController::~SomController() {
@@ -59,27 +67,48 @@ boost::asio::io_service &SomController::getIoService() { return m_ioService; }
 void SomController::runMainLoop() {
   RCPLANE_LOG_METHOD();
 
+  sendTelemetry();
+
   std::this_thread::sleep_for(std::chrono::milliseconds(c_mainLoopDelay));
   assert(!m_ioService.stopped());
 
   while (!m_ioService.stopped()) {
-    const auto rcRxPacket =
-        m_serialController->readPacket<common::RcRxPacket>().packet;
-    const auto imuPacket =
-        m_serialController->readPacket<common::ImuPacket>().packet;
+    const auto kRcRxPacketResult =
+        m_serialController->readPacket<common::RcRxPacket>();
 
-    RCPLANE_LOG(debug, rcRxPacket);
-    RCPLANE_LOG(debug, imuPacket);
+    kRcRxPacketResult.didTimeout ? ++m_debugMessage.serialReadTimeouts
+                                 : ++m_debugMessage.serialReads;
+
+    const auto kImuPacketResult =
+        m_serialController->readPacket<common::ImuPacket>();
+
+    kImuPacketResult.didTimeout ? ++m_debugMessage.serialReadTimeouts
+                                : ++m_debugMessage.serialReads;
+
+    RCPLANE_LOG(debug, kRcRxPacketResult.packet);
+    RCPLANE_LOG(debug, kImuPacketResult.packet);
 
     common::ControlSurfacePacket controlSurfacePacket =
-        m_autopilotManager->trigger(rcRxPacket, imuPacket);
+        m_autopilotManager->trigger(kRcRxPacketResult.packet,
+                                    kImuPacketResult.packet);
 
     RCPLANE_LOG(debug, controlSurfacePacket);
 
     if (!m_serialController->writePacket<common::ControlSurfacePacket>(
             controlSurfacePacket)) {
       RCPLANE_LOG(error, "Failed to write packet to MCU.");
+      ++m_debugMessage.serialWriteTimeouts;
+    } else {
+      ++m_debugMessage.serialWrites;
     }
+
+    ++m_debugMessage.mainLoopCounter;
+
+    m_attitudeMessage.rollAngle = kImuPacketResult.packet.gyroX;
+    m_attitudeMessage.pitchAngle = kImuPacketResult.packet.gyroY;
+    m_attitudeMessage.yawAngle = kImuPacketResult.packet.gyroZ;
+
+    sendTelemetry();
   }
 }
 
@@ -108,26 +137,45 @@ bool SomController::handshakeMCU() {
           kHandshakePacket)) {
     RCPLANE_LOG(error, "Failed to write handshake packet!");
     return false;
+  } else {
+    RCPLANE_LOG(debug, "Handshake packet written!");
+    ++m_debugMessage.serialWrites;
   }
 
   for (uint32_t i = 0; i < c_handshakeAttempts; ++i) {
-    const auto handshakePacket =
-        m_serialController->readPacket<common::HandshakePacket>().packet;
+    const auto kHandshakePacketResult =
+        m_serialController->readPacket<common::HandshakePacket>();
 
-    if (kHandshakePacket == handshakePacket) {
+    if (kHandshakePacketResult.didTimeout) {
+      ++m_debugMessage.serialReadTimeouts;
+      continue;
+    }
+
+    if (kHandshakePacket == kHandshakePacketResult.packet) {
+      ++m_debugMessage.serialReads;
       RCPLANE_LOG(info, "MCU handshake succeeded!");
       return true;
-    } else if (handshakePacket == common::HandshakePacket()) {
-      RCPLANE_LOG(warning, "Timeout waiting for handshake packet!");
     } else {
-      RCPLANE_LOG(
-          info,
-          "Flushed invalid handshake packet :: " << +handshakePacket.handshake);
+      RCPLANE_LOG(info,
+                  "Flushed invalid handshake packet :: "
+                      << +kHandshakePacketResult.packet.handshake);
     }
   }
 
   RCPLANE_LOG(error, "Handshake never acknowledged!");
   return false;
 }
+
+void SomController::sendTelemetry() {
+  RCPLANE_LOG_METHOD();
+
+  if (!m_telemetryTransmitter->sendDebugMessage(m_debugMessage)) {
+    RCPLANE_LOG(error, "Failed to send debug telemetry!");
+  }
+  if (!m_telemetryTransmitter->sendAttitudeMessage(m_attitudeMessage)) {
+    RCPLANE_LOG(error, "Failed to send attitude telemetry!");
+  }
+}
+
 }  // namespace som
 }  // namespace rcplane

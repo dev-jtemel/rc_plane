@@ -163,7 +163,7 @@ TEST_F(SomControllerFixture, mainLoop_oneIteration) {
   });
 
   auto mcuLoopFuture = std::async([this] {
-    constexpr uint32_t kLoopDelayMs = 100U;
+    constexpr uint32_t kLoopDelayMs = 1000U;
     std::this_thread::sleep_for(std::chrono::milliseconds(kLoopDelayMs));
 
     const common::RcRxPacket kRcRxPacket =

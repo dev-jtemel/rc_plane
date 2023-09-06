@@ -7,6 +7,10 @@
 #  include <ostream>
 #endif
 
+// For GCC to avoid padding. Must be defined here so Doxygen
+// doesn't complain about 'missing semicolon'.
+#define RCPLANE_PACKED __attribute__((packed))
+
 namespace rcplane {
 namespace common {
 
@@ -19,7 +23,7 @@ struct BasePacket {};
  * @brief Packet definition of handshake value to coordinate with 
  * mcu/som.
  */
-struct __attribute((packed)) HandshakePacket : public BasePacket {
+struct RCPLANE_PACKED HandshakePacket : public BasePacket {
   HandshakePacket() = default;
   HandshakePacket(uint8_t handshake_) : handshake(handshake_) {}
 
@@ -34,12 +38,11 @@ struct __attribute((packed)) HandshakePacket : public BasePacket {
   uint8_t handshake{};
 };
 
-
 /**
  * @brief Packet definition of time and state of the RX controller. 
  * @warning This packet is packed to avoid compiler padding.
  */
-struct __attribute((packed)) RcRxPacket : public BasePacket {
+struct RCPLANE_PACKED RcRxPacket : public BasePacket {
   RcRxPacket() = default;
   RcRxPacket(uint32_t timestamp_,
              uint8_t state_,
@@ -79,7 +82,7 @@ struct __attribute((packed)) RcRxPacket : public BasePacket {
  * 
  * @warning This packet is packed to avoid compiler padding.
  */
-struct __attribute__((packed)) ControlSurfacePacket : public BasePacket {
+struct RCPLANE_PACKED ControlSurfacePacket : public BasePacket {
   ControlSurfacePacket() = default;
   ControlSurfacePacket(uint8_t motorSpeed_,
                        int8_t aileronDeflection_,
@@ -114,7 +117,7 @@ struct __attribute__((packed)) ControlSurfacePacket : public BasePacket {
  * 
  * @warning This packet is packed to avoid compiler padding.
  */
-struct __attribute__((packed)) ImuPacket : public BasePacket {
+struct RCPLANE_PACKED ImuPacket : public BasePacket {
   ImuPacket() = default;
   ImuPacket(float gyroX_,
             float gyroY_,

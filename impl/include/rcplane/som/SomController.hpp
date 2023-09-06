@@ -12,6 +12,7 @@
 #include "rcplane/io/ConfigManager.hpp"
 #include "rcplane/io/Journal.hpp"
 #include "rcplane/io/SerialController.hpp"
+#include "rcplane/io/telemetry/TelemetryTransmitterMQ.hpp"
 
 namespace rcplane {
 namespace som {
@@ -68,6 +69,11 @@ public:
   bool handshakeMCU();
 
 private:
+  /**
+   * @brief Send telemetry data to the receiver.
+   */
+  void sendTelemetry();
+
   uint32_t c_handshakeAttempts{};
   uint32_t c_mainLoopDelay{};
 
@@ -81,6 +87,11 @@ private:
   std::unique_ptr<io::SerialController> m_serialController{};
   std::unique_ptr<autopilot::AutopilotUtility> m_autopilotUtility{};
   std::unique_ptr<autopilot::AutopilotManager> m_autopilotManager{};
+
+  io::telemetry::message::DebugMessage m_debugMessage{};
+  io::telemetry::message::AttitudeMessage m_attitudeMessage{};
+  std::unique_ptr<io::telemetry::TelemetryTransmitterMQ>
+      m_telemetryTransmitter{};
 };
 
 }  // namespace som
