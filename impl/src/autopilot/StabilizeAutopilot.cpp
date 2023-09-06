@@ -53,11 +53,6 @@ int8_t StabilizeAutopilot::computeRollToAileronDeflection(
 
   m_prevRollError = error;
 
-  RCPLANE_LOG(debug,
-              "error = " << error
-                         << ", integral error = " << m_rollIntegralError
-                         << ", derivative error = " << m_rollDerivativeError);
-
   double output =
       c_kp * error + c_ki * m_rollIntegralError + c_kd * m_rollDerivativeError;
   double unsaturatedOutput = output;
@@ -66,6 +61,12 @@ int8_t StabilizeAutopilot::computeRollToAileronDeflection(
 
   m_rollIntegralError =
       m_rollIntegralError + timestamp / c_ki * (output - unsaturatedOutput);
+
+  RCPLANE_LOG(debug,
+              "output = " << output << ", error = " << error
+                          << ", integral error = " << m_rollIntegralError
+                          << ", derivative error = " << m_rollDerivativeError);
+
   return static_cast<int8_t>(output);
 }
 

@@ -6,6 +6,7 @@
 #include <memory>
 #include <thread>
 
+#include "rcplane/common/Helpers.hpp"
 #include "rcplane/io/ConfigManager.hpp"
 #include "rcplane/io/Journal.hpp"
 #include "rcplane/io/telemetry/TelemetryTransmitterMQ.hpp"
@@ -14,6 +15,8 @@ namespace rcplane {
 namespace som {
 
 SomController::SomController(const std::string &configPath) {
+  RCPLANE_LOG_METHOD();
+
   m_signalSet.async_wait([&](boost::system::error_code ec, int sig) {
     RCPLANE_LOG(warning, "Termination signal received!");
     m_worker.reset();
@@ -21,9 +24,9 @@ SomController::SomController(const std::string &configPath) {
 
   m_configManager = std::make_unique<io::ConfigManager>();
   if (configPath.empty()) {
-    assert(m_configManager->loadConfig());
+    RCPLANE_ASSERT(m_configManager->loadConfig());
   } else {
-    assert(m_configManager->loadConfig(configPath));
+    RCPLANE_ASSERT(m_configManager->loadConfig(configPath));
   }
 
   RCPLANE_LOG(debug, m_configManager->dumpConfig());
@@ -38,7 +41,7 @@ SomController::SomController(const std::string &configPath) {
   m_serialController =
       std::make_unique<io::SerialController>(*m_configManager.get(),
                                              m_ioService);
-  assert(m_serialController->open());
+  RCPLANE_ASSERT(m_serialController->open());
 
   RCPLANE_LOG(info, "SerialController initialized!");
 
@@ -52,7 +55,7 @@ SomController::SomController(const std::string &configPath) {
       std::make_unique<io::telemetry::TelemetryTransmitterMQ>(
           *m_configManager.get());
 
-  assert(m_telemetryTransmitter->init());
+  RCPLANE_ASSERT(m_telemetryTransmitter->init());
   RCPLANE_LOG(info, "Telemetry transmitter initialized!");
 }
 
@@ -70,7 +73,7 @@ void SomController::runMainLoop() {
   sendTelemetry();
 
   std::this_thread::sleep_for(std::chrono::milliseconds(c_mainLoopDelay));
-  assert(!m_ioService.stopped());
+  RCPLANE_ASSERT(!m_ioService.stopped());
 
   while (!m_ioService.stopped()) {
     const auto kRcRxPacketResult =
@@ -130,7 +133,7 @@ void SomController::stopIoThread() {
 bool SomController::handshakeMCU() {
   RCPLANE_LOG_METHOD();
 
-  assert(m_serialController->flush());
+  RCPLANE_ASSERT(m_serialController->flush());
 
   const common::HandshakePacket kHandshakePacket{1U};
   if (!m_serialController->writePacket<common::HandshakePacket>(
