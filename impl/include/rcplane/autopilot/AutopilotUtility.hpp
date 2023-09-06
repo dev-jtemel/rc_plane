@@ -60,7 +60,7 @@ public:
    * @param value The value of the pid controller output.
    * @return uint8_t The bounded value.
    */
-  int8_t bindPidAileronDeflection(const int8_t &value) const;
+  double bindPidAileronDeflection(const double &value) const;
 
   /**
    * @brief Bind the pid controller output to the configured elevator output range.

@@ -48,8 +48,7 @@ private:
    * @param rollAngle The current roll angle of the plane.
    * @return int8_t The amount to deflect the ailerons.
    */
-  int8_t computeRollToAileronDeflection(const uint32_t &timestamp,
-                                        const double &rollAngle);
+  int8_t computeRollToAileronDeflection(const double &rollAngle);
 
   /**
    * @brief Apply PID control to the pitch of the plane.
@@ -65,9 +64,11 @@ private:
    */
   int8_t bindIntegralError(const int8_t &integralError) const;
 
+  double c_maxAileronDeflection{0.0};
   double c_kp{};
   double c_ki{};
   double c_kd{};
+  double c_tau{};
   double c_maxIntegralError{};
 
   double m_timeStamp{0.0};
