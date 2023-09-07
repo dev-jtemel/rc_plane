@@ -13,8 +13,8 @@ ADD_DEFINITIONS(-DBOOST_LOG_DYN_LINK)
 find_package(Threads REQUIRED)
 find_package(Boost 1.58.0 REQUIRED)
 
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Svg)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Svg)
 
 include_directories(/home/jtemel/ws/rc_plane/impl/include /home/jtemel/ws/rc_plane/third_party)
 
@@ -54,6 +54,7 @@ target_link_libraries(control_station
         /home/jtemel/ws/rc_plane/build/impl/src/librcplane_io_telemetry_rx.a
     PRIVATE
         Qt${QT_VERSION_MAJOR}::Widgets
+        Qt${QT_VERSION_MAJOR}::Svg
         boost_log
         boost_log_setup
         boost_system

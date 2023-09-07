@@ -6,6 +6,8 @@
 #include <QThread>
 #include <QVariant>
 #include <memory>
+#include <QGraphicsSvgItem>
+#include <QGraphicsView>
 
 #include "rcplane/io/ConfigManager.hpp"
 #include "rcplane/io/telemetry/TelemetryMessage.hpp"
@@ -70,7 +72,18 @@ public slots:
 private:
   Ui::ControlStation *ui;
   Worker *w;
-  QLabel *label;
-  QLabel *value;
+  QGraphicsScene *scene;
+  QGraphicsSvgItem *svgBack;
+  QGraphicsSvgItem *svgFace;
+  QGraphicsSvgItem *svgRing;
+  QGraphicsSvgItem *svgCase;
+
+
+  QGraphicsScene *scene2;
+  QGraphicsSvgItem *svgFace2;
+  QGraphicsSvgItem *svgCase2;
+
+  double oldX;
+  double oldY;
 };
 #endif  // CONTROLSTATION_HPP
