@@ -75,9 +75,11 @@ TEST_F(TelemetryMQFixture, receiver_queueFull) {
     ASSERT_TRUE(m_telemetryTransmitter->sendAttitudeMessage(kAttitudeMessage));
   }
 
+  io::telemetry::message::DebugMessage debugMessage;
+  io::telemetry::message::AttitudeMessage attitudeMessage;
   for (uint32_t i = 0; i < kQueueSize; ++i) {
-    ASSERT_TRUE(m_telemetryReceiver->receiveAttitudeMessage());
-    ASSERT_TRUE(m_telemetryReceiver->receiveDebugMessage());
+    ASSERT_TRUE(m_telemetryReceiver->receiveAttitudeMessage(attitudeMessage));
+    ASSERT_TRUE(m_telemetryReceiver->receiveDebugMessage(debugMessage));
   }
 }
 

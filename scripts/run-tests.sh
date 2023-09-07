@@ -17,7 +17,7 @@ run_tests() {
     ./build/impl/test/RcplaneTests
     [ -d coverage ] && rm -rf coverage
     mkdir coverage && pushd coverage
-    gcovr -r .. -e "../impl/test" -e "../third_party" -e "../impl/src/som/main.cpp" --html-details -o coverage.html 2>/dev/null
+    gcovr -r .. -e "../impl/test" -e "../third_party" -e "../impl/src/som/main.cpp" -e "../impl/src/pc/main.cpp" --html-details -o coverage.html 2>/dev/null
     popd
     kill -9 $tty
 }
