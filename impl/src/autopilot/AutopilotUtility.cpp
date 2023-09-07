@@ -61,7 +61,7 @@ int8_t AutopilotUtility::bindRcRudderDeflection(const int8_t &value) const {
                              c_maxRudderDeflection);
 }
 
-int8_t AutopilotUtility::bindPidAileronDeflection(const int8_t &value) const {
+double AutopilotUtility::bindPidAileronDeflection(const double &value) const {
   RCPLANE_LOG_METHOD();
 
   if (value > c_maxAileronDeflection) { return c_maxAileronDeflection; }

@@ -17,9 +17,6 @@
 namespace rcplane {
 namespace io {
 
-// Forward declaration
-class config_manager;
-
 /**
 * @brief Journaling sink for boost::log.
 */
@@ -69,6 +66,9 @@ static boost::shared_ptr<colored_sink> g_journalSink =
                            << boost::core::demangle(typeid(*this).name())      \
                            << "] " << msg;                                     \
   } while (false)
+
+#define RCPLANE_LOG_EXTERNAL(lvl, tag, msg)                                    \
+  do { BOOST_LOG_TRIVIAL(lvl) << "[" << tag << "] " << msg; } while (false)
 
 #define RCPLANE_LOG_TEST(lvl, msg)                                             \
   do {                                                                         \

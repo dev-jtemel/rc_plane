@@ -25,7 +25,7 @@ public:
    */
   void trigger(common::ControlSurfacePacket &controlSurfacePacket,
                const common::RcRxPacket &rcRxPacket,
-               const common::ImuPacket &imuPacket);
+               const common::ImuPacket &imuPacket) override;
 
 private:
   const AutopilotUtility &m_autopilotUtility;

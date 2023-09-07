@@ -21,6 +21,8 @@ ConfigManager::~ConfigManager() { RCPLANE_LOG_METHOD(); }
 bool ConfigManager::loadConfig(const std::string &configPath) {
   RCPLANE_LOG_METHOD();
 
+  RCPLANE_LOG(info, "Loading config from " << configPath);
+
   std::ifstream configStream(configPath);
   if (!configStream.is_open()) {
     RCPLANE_LOG(error, "Failed to open config file: " << configPath);

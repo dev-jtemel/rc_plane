@@ -26,9 +26,10 @@
       "max_elevator_deflection": 40,
       "max_rudder_deflection": 20,
       "stabilize": {
-        "kp": 0.8,
+        "kp": 0.5,
         "ki": 0.05,
-        "kd": 0.02,
+        "kd": 0.08,
+        "tau": 0.05,
         "max_integral_error": 4
       }
     },
