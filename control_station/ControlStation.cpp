@@ -35,12 +35,14 @@ void ControlStation::handleMessages(QVariant debug, QVariant attitude, QVariant 
   rcplane::io::telemetry::message::OnboardStateMessage onboardMessage =
       onboard.value<rcplane::io::telemetry::message::OnboardStateMessage>();
 
-  ui->mtm->setText(QString::number(onboardMessage.mcuTimestamp));
+  ui->mtm->setText(QString::number((uint64_t) (onboardMessage.mcuTimestamp / 100)));
   ui->thl->setText(QString::number(onboardMessage.throttle));
   ui->adf->setText(QString::number(onboardMessage.aileronDeflection));
   ui->edf->setText(QString::number(onboardMessage.elevatorDeflection));
   ui->rdf->setText(QString::number(onboardMessage.rudderDeflection));
   ui->apt->setText(QString::fromStdString(rcplane::io::telemetry::message::gAutopilotTypeToStr.at(onboardMessage.autopilotType)));
+  ui->gps->setText(QString::fromStdString(rcplane::io::telemetry::message::gGpsFixTypeToStr.at(onboardMessage.gpsFix)));
+  ui->tmp->setText(QString::number(onboardMessage.imuTemperature));
 
   rcplane::io::telemetry::message::AttitudeMessage attitudeMessage =
       attitude.value<rcplane::io::telemetry::message::AttitudeMessage>();

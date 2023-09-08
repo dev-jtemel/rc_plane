@@ -106,6 +106,7 @@ void SomController::runMainLoop() {
     m_onboardMessage.autopilotType = m_autopilotManager->isInManualMode()
         ? io::telemetry::message::AutopilotType::MANUAL_AUTOPILOT
         : io::telemetry::message::AutopilotType::STABILIZE_AUTOPILOT;
+    m_onboardMessage.imuTemperature = static_cast<uint8_t>(kImuPacketResult.packet.temperature);
 
     if (!m_serialController->writePacket<common::ControlSurfacePacket>(
             controlSurfacePacket)) {

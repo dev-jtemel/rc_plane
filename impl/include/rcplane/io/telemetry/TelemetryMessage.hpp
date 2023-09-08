@@ -20,9 +20,24 @@ enum class AutopilotType : uint8_t {
 };
 
 /**
+ * @brief GPS fix status.
+ */
+enum class GpsFixType : uint8_t {
+  ERROR = 0x00,
+  FIX_1D = 0x01,
+  FIX_2D = 0x02,
+  FIX_3D = 0x03
+};
+
+/**
  * @brief Defines map from enum AutopilotType to string.
  */
 extern std::map<AutopilotType, std::string> gAutopilotTypeToStr;
+
+/**
+ * @brief Defines map from enum GPSFix to string.
+ */
+extern std::map<GpsFixType, std::string> gGpsFixTypeToStr;
 
 /**
  * @brief All telemetry messages must derive from this struct and
@@ -68,6 +83,8 @@ struct OnboardStateMessage : public TelemetryMessage {
   int8_t elevatorDeflection{0};
   int8_t rudderDeflection{0};
   AutopilotType autopilotType{0U};
+  GpsFixType gpsFix{0U};
+  uint8_t imuTemperature{0U};
 };
 
 inline std::ostream &operator<<(std::ostream &os, const DebugMessage &message) {
@@ -93,7 +110,9 @@ inline std::ostream &operator<<(std::ostream &os,
             << " aileronDeflection: " << +message.aileronDeflection
             << " elevatorDeflection: " << +message.elevatorDeflection
             << " rudderDeflection: " << +message.rudderDeflection
-            << " autopilot: " << gAutopilotTypeToStr.at(message.autopilotType);
+            << " autopilot: " << gAutopilotTypeToStr.at(message.autopilotType)
+            << " gpsFix: " << gGpsFixTypeToStr.at(message.gpsFix)
+            << " imuTemp: " << +message.imuTemperature;
 }
 
 }  // namespace message
