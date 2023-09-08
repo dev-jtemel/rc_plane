@@ -24,7 +24,7 @@ public:
   ~ControlStation();
 
 public slots:
-  void handleMessages(QVariant debug, QVariant attitude);
+  void handleMessages(QVariant debug, QVariant attitude, QVariant onboard);
 
 private:
   Ui::ControlStation *ui;

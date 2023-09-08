@@ -13,8 +13,7 @@ namespace message {
  */
 std::map<AutopilotType, std::string> gAutopilotTypeToStr = {
     {rcplane::io::telemetry::message::AutopilotType::ERROR, "ERR"},
-    {rcplane::io::telemetry::message::AutopilotType::MANUAL_AUTOPILOT,
-     "MAN"},
+    {rcplane::io::telemetry::message::AutopilotType::MANUAL_AUTOPILOT, "MAN"},
     {rcplane::io::telemetry::message::AutopilotType::STABILIZE_AUTOPILOT,
      "STL"}};
 

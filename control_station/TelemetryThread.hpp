@@ -10,6 +10,7 @@
 
 Q_DECLARE_METATYPE(rcplane::io::telemetry::message::DebugMessage);
 Q_DECLARE_METATYPE(rcplane::io::telemetry::message::AttitudeMessage);
+Q_DECLARE_METATYPE(rcplane::io::telemetry::message::OnboardStateMessage);
 
 class TelemetryThread : public QThread {
   Q_OBJECT
@@ -30,18 +31,26 @@ public:
       rcplane::io::telemetry::message::AttitudeMessage attitudeMsg;
       receiver->receiveAttitudeMessage(attitudeMsg);
 
+
+      rcplane::io::telemetry::message::OnboardStateMessage onboardMessage;
+      receiver->receiveOnboardMessage(onboardMessage);
+
       QVariant debugMessageVariant;
       debugMessageVariant.setValue(debugMsg);
 
       QVariant attitudeMessageVariant;
       attitudeMessageVariant.setValue(attitudeMsg);
 
-      emit sendMessages(debugMessageVariant, attitudeMessageVariant);
+
+      QVariant onboardMessageVariant;
+      onboardMessageVariant.setValue(onboardMessage);
+
+      emit sendMessages(debugMessageVariant, attitudeMessageVariant, onboardMessageVariant);
     }
   }
 
 signals:
-  void sendMessages(QVariant debug, QVariant attitude);
+  void sendMessages(QVariant debug, QVariant attitude, QVariant onboard);
 
 private:
   std::unique_ptr<rcplane::io::telemetry::TelemetryReceiverMQ> receiver;

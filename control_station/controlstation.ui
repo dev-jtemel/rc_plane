@@ -3276,7 +3276,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="mlCount_2">
+        <widget class="QLabel" name="thl">
          <property name="minimumSize">
           <size>
            <width>35</width>
@@ -3341,7 +3341,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="txOK_2">
+        <widget class="QLabel" name="adf">
          <property name="minimumSize">
           <size>
            <width>35</width>
@@ -3406,7 +3406,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="rxOK_2">
+        <widget class="QLabel" name="edf">
          <property name="minimumSize">
           <size>
            <width>35</width>
@@ -3913,7 +3913,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="txTO_2">
+        <widget class="QLabel" name="rdf">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
            <horstretch>40</horstretch>
@@ -4444,7 +4444,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="mlCount_3">
+        <widget class="QLabel" name="apt">
          <property name="minimumSize">
           <size>
            <width>35</width>
@@ -5081,7 +5081,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="txTO_3">
+        <widget class="QLabel" name="mtm">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
            <horstretch>40</horstretch>
