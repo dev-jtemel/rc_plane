@@ -44,6 +44,9 @@ else()
     else()
         add_executable(control_station
             ${PROJECT_SOURCES}
+            AttitudeIndicator.hpp
+            HeadingIndicator.hpp
+            TelemetryThread.hpp
         )
     endif()
 endif()
