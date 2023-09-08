@@ -15,9 +15,12 @@ int main(int argc, char *argv[]) {
   while (true) {
     rcplane::io::telemetry::message::DebugMessage debugMessage;
     rcplane::io::telemetry::message::AttitudeMessage attitudeMessage;
+    rcplane::io::telemetry::message::OnboardStateMessage onboardMessage;
     while (!receiver.receiveDebugMessage(debugMessage))
       ;
     while (!receiver.receiveAttitudeMessage(attitudeMessage))
+      ;
+    while (!receiver.receiveOnboardMessage(onboardMessage))
       ;
   }
 

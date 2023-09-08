@@ -89,10 +89,10 @@ inline std::ostream &operator<<(std::ostream &os,
 inline std::ostream &operator<<(std::ostream &os,
                                 const OnboardStateMessage &message) {
   return os << "mcuTimestamp: " << message.mcuTimestamp
-            << " throttle: " << message.throttle
-            << " aileronDeflection: " << message.aileronDeflection
-            << " elevatorDeflection: " << message.elevatorDeflection
-            << " rudderDeflection: " << message.rudderDeflection
+            << " throttle: " << +message.throttle
+            << " aileronDeflection: " << +message.aileronDeflection
+            << " elevatorDeflection: " << +message.elevatorDeflection
+            << " rudderDeflection: " << +message.rudderDeflection
             << " autopilot: " << gAutopilotTypeToStr.at(message.autopilotType);
 }
 

@@ -14,6 +14,8 @@ TelemetryReceiverMQ::TelemetryReceiverMQ(const ConfigManager &configManager)
       configManager.getValue<std::string>("rcplane.io.telemetry.debug_mq_name");
   c_attitudeMessageQueueName = configManager.getValue<std::string>(
       "rcplane.io.telemetry.attitude_mq_name");
+  c_onboardMessageQueueName = configManager.getValue<std::string>(
+      "rcplane.io.telemetry.onboard_mq_name");
 }
 
 TelemetryReceiverMQ::~TelemetryReceiverMQ() { RCPLANE_LOG_METHOD(); }
@@ -31,6 +33,14 @@ bool TelemetryReceiverMQ::init() {
         std::make_unique<boost::interprocess::message_queue>(
             boost::interprocess::open_only,
             c_attitudeMessageQueueName.c_str());
+    RCPLANE_LOG(
+        info,
+        "Opened attitude message queue: " << c_attitudeMessageQueueName);
+
+    m_onboardMessageQueue =
+        std::make_unique<boost::interprocess::message_queue>(
+            boost::interprocess::open_only,
+            c_onboardMessageQueueName.c_str());
     RCPLANE_LOG(
         info,
         "Opened attitude message queue: " << c_attitudeMessageQueueName);
@@ -64,7 +74,8 @@ bool TelemetryReceiverMQ::receiveDebugMessage(message::DebugMessage &message) {
   return true;
 }
 
-bool TelemetryReceiverMQ::receiveAttitudeMessage(message::AttitudeMessage &message) {
+bool TelemetryReceiverMQ::receiveAttitudeMessage(
+    message::AttitudeMessage &message) {
   RCPLANE_LOG_METHOD();
 
   uint32_t priority;
@@ -81,6 +92,29 @@ bool TelemetryReceiverMQ::receiveAttitudeMessage(message::AttitudeMessage &messa
                                      << message);
   } catch (boost::interprocess::interprocess_exception &ex) {
     RCPLANE_LOG(error, "Failed to attitude message: " << ex.what());
+    return false;
+  }
+  return true;
+}
+
+bool TelemetryReceiverMQ::receiveOnboardMessage(
+    message::OnboardStateMessage &message) {
+  RCPLANE_LOG_METHOD();
+
+  uint32_t priority;
+  boost::interprocess::message_queue::size_type messageSize;
+
+  try {
+    m_onboardMessageQueue->receive(&message,
+                                   sizeof(message::OnboardStateMessage),
+                                   messageSize,
+                                   priority);
+
+    RCPLANE_LOG(info,
+                "Received message: " << priority << " " << messageSize << "\n"
+                                     << message);
+  } catch (boost::interprocess::interprocess_exception &ex) {
+    RCPLANE_LOG(error, "Failed to onboard message: " << ex.what());
     return false;
   }
   return true;

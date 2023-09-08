@@ -24,6 +24,9 @@ public:
     m_scene->addItem( m_svgCase );
 
     setScene(m_scene);
+
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   }
 
   virtual ~HeadingIndicator() {

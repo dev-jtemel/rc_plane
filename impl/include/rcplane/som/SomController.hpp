@@ -90,6 +90,7 @@ private:
 
   io::telemetry::message::DebugMessage m_debugMessage{};
   io::telemetry::message::AttitudeMessage m_attitudeMessage{};
+  io::telemetry::message::OnboardStateMessage m_onboardMessage{};
   std::unique_ptr<io::telemetry::TelemetryTransmitterMQ>
       m_telemetryTransmitter{};
 };

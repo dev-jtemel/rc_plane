@@ -34,6 +34,8 @@ void ControlStation::handleMessages(QVariant debug, QVariant attitude) {
   rcplane::io::telemetry::message::AttitudeMessage attitudeMessage =
       attitude.value<rcplane::io::telemetry::message::AttitudeMessage>();
 
+  ui->chd->setText(QString::number(attitudeMessage.courseHeading));
+
   m_attitudeIndicator->setAttitude(attitudeMessage.rollAngle, attitudeMessage.pitchAngle);
   m_headingIndicator->setHeading(attitudeMessage.yawAngle);
 }

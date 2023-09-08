@@ -17,6 +17,7 @@
       "telemetry": {
         "debug_mq_name": "rcplane_mq_debug",
         "attitude_mq_name": "rcplane_mq_attitude",
+        "onboard_mq_name": "rcplane_mq_onboard",
         "mq_size": 100
       }
     },
