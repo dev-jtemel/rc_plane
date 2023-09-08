@@ -89,6 +89,12 @@ void ControlStation::handleMessages(QVariant debug, QVariant attitude) {
   double roll = attitudeMessage.rollAngle;
   double rollRad = M_PI * roll / 180.0;
   double pitch = attitudeMessage.pitchAngle;
+
+  if (pitch > 30) {
+    pitch = 30;
+  } else if (pitch < -30){
+    pitch = -30;
+  }
   double delta = pitch * 1.7;
 
   svgBack->setRotation(-roll);
@@ -98,7 +104,7 @@ void ControlStation::handleMessages(QVariant debug, QVariant attitude) {
   double newX = delta * sin(rollRad);
   double newY = delta * cos(rollRad);
 
-  svgFace->moveBy(newX - oldX, newY - oldY);
+  svgFace->moveBy(newX - oldX, -1 * (newY - oldY));
   svgFace2->setRotation(attitudeMessage.yawAngle);
 
   oldY = newY;

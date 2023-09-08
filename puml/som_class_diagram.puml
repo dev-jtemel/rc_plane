@@ -68,6 +68,77 @@ package rcplane.io {
 
     + T getValue<<T>>(const std::string &);
   }
+
+  package telemetry {
+    interface ITelemetryTransmitter {
+      + bool init();
+      + bool sendDebugMessage(message::DebugMessage &message);
+      + bool sendAttitudeMessage(message::AttitudeMessage &message);
+    }
+
+    interface ITelemetryReceiver {
+      + bool init();
+      + bool receiveDebugMessage(message::DebugMessage &message);
+      + bool receiveAttitudeMessage(message::AttitudeMessage &message);
+    }
+
+    class TelemetryTransmitterMQ {
+      + bool init();
+      + bool sendDebugMessage(const message::DebugMessage &message);
+      + bool sendAttitudeMessage(const message::AttitudeMessage &message);
+
+      - std::string c_debugMessageQueueName;
+      - std::string c_attitudeMessageQueueName;
+      - uint32_t c_messageQueueSize;
+      - std::unique_ptr<boost::interprocess::message_queue> m_debugMessageQueue;
+      - std::unique_ptr<boost::interprocess::message_queue> m_attitudeMessageQueue;
+    }
+
+    class TelemetryReceiverMQ {
+      + bool init();
+      + bool receiveDebugMessage(message::DebugMessage &message);
+      + bool receiveAttitudeMessage(message::AttitudeMessage &message);
+      - std::string c_debugMessageQueueNam;
+      - std::string c_attitudeMessageQueueNam;
+      - uint32_t c_messageQueueSize;
+      - std::unique_ptr<boost::interprocess::message_queue> m_debugMessageQueue;
+      - std::unique_ptr<boost::interprocess::message_queue> m_attitudeMessageQueue;
+    }
+
+
+    package message {
+      struct TelemetryMessage {
+      }
+
+      struct FaultMessage {
+        + uint32_t faults;
+      }
+
+      struct DebugMessage {
+        + uint32_t serialReads;
+        + uint32_t serialReadTimeouts;
+        + uint32_t serialWrites;
+        + uint32_t serialWriteTimeouts;
+        + uint32_t mainLoopCounter;
+      }
+
+      struct AttitudeMessage {
+        + double courseHeading;
+        + double rollAngle;
+        + double pitchAngle;
+        + double yawAngle;
+      }
+
+      struct OnboardStateMessage  {
+        + uint32_t mcuTimestamp;
+        + uint8_t throttle;
+        + int8_t aileronDeflection;
+        + int8_t elevatorDeflection;
+        + int8_t rudderDeflection;
+        + AutopilotType autopilotType;
+      }
+    }
+  }
 }
 
 package rcplane.autopilot {
@@ -162,9 +233,9 @@ package rcplane.som {
   }
 }
 
-BasePacket <|.. RcRxPacket
-BasePacket <|.. ImuPacket
-BasePacket <|.. ControlSurfacePacket
+BasePacket <.. RcRxPacket
+BasePacket <.. ImuPacket
+BasePacket <.. ControlSurfacePacket
 
 SerialController o.. ReadResult
 SerialController o-- ConfigManager
@@ -181,6 +252,8 @@ AutopilotManager o-- StabilizeAutopilot
 AutopilotUtility o-- ConfigManager
 StabilizeAutopilot o-- ConfigManager
 ManualAutopilot o-- ConfigManager
+TelemetryTransmitterMQ o-- ConfigManager
+TelemetryReceiverMQ o-- ConfigManager
 
 AutopilotUtility o-- BasePacket
 StabilizeAutopilot o-- BasePacket
@@ -191,5 +264,16 @@ SomController o-- ConfigManager
 SomController o-- SerialController
 SomController o-- AutopilotUtility
 SomController o-- AutopilotManager
+
+ITelemetryTransmitter <|.. TelemetryTransmitterMQ
+ITelemetryReceiver <|.. TelemetryReceiverMQ
+
+ITelemetryTransmitter o-- TelemetryMessage
+ITelemetryReceiver o-- TelemetryMessage
+
+TelemetryMessage <.. FaultMessage
+TelemetryMessage <.. DebugMessage
+TelemetryMessage <.. AttitudeMessage 
+TelemetryMessage <.. OnboardStateMessage
 
 @enduml

@@ -18,20 +18,55 @@ box Microcontroller #WHITE
   participant Microcontroller as mcu << (C,#ADD1B2) >>
 end box
 
+participant UART as uart << (H,#EB937F) >>
+
 box System On Module #WHITE
-  participant SerialController as serial << (C,#ADD1B2) >>
-  participant AutopilotManager as apm << (C,#ADD1B2) >>
-  participant AutopilotInterface as api << (I,#B4A7E5) >>
-  participant ManualAutopilot as map << (C,#ADD1B2) >>
-  participant StabilzeAutopilot as sap << (C,#ADD1B2) >>
-  participant AutopilotUtility as apu << (C,#ADD1B2) >>
+  box io #WHITE
+    participant SerialController as serial << (C,#ADD1B2) >>
+    participant TelemetryTransmitter as ttx << (C,#ADD1B2) >>
+  end box
+
+  participant SomController as sctr << (C,#ADD1B2 ) >>
+
+  box autopilot #WHITE
+    participant AutopilotManager as apm << (C,#ADD1B2) >>
+    participant AutopilotInterface as api << (I,#B4A7E5) >>
+    participant ManualAutopilot as map << (C,#ADD1B2) >>
+    participant StabilzeAutopilot as sap << (C,#ADD1B2) >>
+    participant AutopilotUtility as apu << (C,#ADD1B2) >>
+  end box
 end box
 
 == Initialization ==
 note over mcu, serial : Buffers are flushed
-mcu -> serial ++ : Write flush string
-serial -> mcu ++ : Write Handshake
-serial <-- mcu  : Write Handshake
+
+activate mcu
+activate sctr
+
+mcu -> uart ++ : Write flush string
+sctr -> serial ++ : Read flush string
+serial -> uart : Read
+uart --> serial : Flush string
+serial --> sctr -- : Flush string
+
+sctr -> serial ++ : Write handshake
+serial -> uart : Write handshake
+serial --> sctr -- : Status
+
+mcu -> uart : Read handshake
+uart --> mcu : Handshake
+
+mcu -> uart : Write handshake
+
+note over sctr : Attempt a few times, if fails, we exit here.
+
+sctr -> serial ++ : Read handshake
+serial -> uart : Read
+uart --> serial : Handshake
+serial --> sctr -- : Handshake
+
+sctr -> sctr : Verify Handshake
+
 
 == Main Loop ==
 note over mcu, serial : All implicit read calls are blocking\nand carry a time out.\nTimeout behavior is not modelled here.
@@ -42,14 +77,24 @@ rx --> mcu -- : RX input data
 
 mcu -> mcu : Compute state and stick position data
 
-mcu -> serial : Write RxRcPacket
+mcu -> uart : Write RxRcPacket
+
+sctr -> serial ++ : Read RxRcPacket
+serial -> uart : Read
+uart --> serial : RxRcPacket
+serial --> sctr -- : RxRcPacket
 
 imu <- mcu ++ : Read IMU data
 imu --> mcu -- : IMU data
 
-mcu -> serial : Write ImuPacket data
+mcu -> uart : Write ImuPacket data
 
-serial -> apm ++ : Trigger
+sctr -> serial ++ : Read ImuPacket
+serial -> uart : Read
+uart --> serial : ImuPacket
+serial --> sctr -- : ImuPacket
+
+sctr -> apm ++ : Trigger
 apm -> apm : Transition to correct autopilot (if necessary)
 
 apm -> api ++ : Trigger
@@ -68,9 +113,20 @@ else StabilzeAutopilot
 end
 
 api --> apm -- : ControlSurface Data
-apm --> serial -- : ControlSurface data
+apm --> sctr -- : ControlSurface data
 
-serial -> mcu : Write ControlSurfacePacket
+sctr -> sctr : Generate TelemetryMessages
+
+sctr -> ttx ++ : Send Telemetry
+ttx --> sctr -- : Status
+
+sctr -> serial ++ : Write ControlSurfacePacket
+serial -> uart : Write ControlSurfacePacket
+serial --> sctr -- : Status
+
+mcu -> uart : Read ControlSurfacePacket
+uart --> mcu : ControlSurfacePacket
+
 mcu -> srv ++ : Write servo data
 
 deactivate mcu
