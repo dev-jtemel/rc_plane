@@ -35,7 +35,6 @@ public:
       delete m_scene;
       m_scene = Q_NULLPTR;
     }
-
   }
 
   void setHeading(double heading) {

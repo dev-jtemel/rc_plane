@@ -12,7 +12,6 @@ Q_DECLARE_METATYPE(rcplane::io::telemetry::message::OnboardStateMessage);
 
 ControlStation::ControlStation(QWidget *parent)
   : QMainWindow(parent), ui(new Ui::ControlStation) {
-
   ui->setupUi(this);
 
   m_attitudeIndicator = new AttitudeIndicator(ui->gw);
@@ -51,5 +50,4 @@ void ControlStation::handleMessages(QVariant debug, QVariant attitude, QVariant 
 
   m_attitudeIndicator->setAttitude(attitudeMessage.rollAngle, attitudeMessage.pitchAngle);
   m_headingIndicator->setHeading(attitudeMessage.yawAngle);
-
 }

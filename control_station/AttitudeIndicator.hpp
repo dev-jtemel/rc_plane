@@ -51,7 +51,6 @@ public:
       delete m_scene;
       m_scene = Q_NULLPTR;
     }
-
   }
 
   void setAttitude(double roll, double pitch) {

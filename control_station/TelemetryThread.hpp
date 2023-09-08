@@ -16,7 +16,6 @@ class TelemetryThread : public QThread {
   Q_OBJECT
 public:
   TelemetryThread(rcplane::io::ConfigManager &configManager, QObject *parent) : QThread(parent) {
-
     receiver = std::make_unique<rcplane::io::telemetry::TelemetryReceiverMQ>(
         configManager);
   }
