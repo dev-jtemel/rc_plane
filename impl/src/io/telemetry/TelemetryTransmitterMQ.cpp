@@ -15,6 +15,8 @@ TelemetryTransmitterMQ::TelemetryTransmitterMQ(
       configManager.getValue<std::string>("rcplane.io.telemetry.debug_mq_name");
   c_attitudeMessageQueueName = configManager.getValue<std::string>(
       "rcplane.io.telemetry.attitude_mq_name");
+  c_onboardMessageQueueName = configManager.getValue<std::string>(
+      "rcplane.io.telemetry.onboard_mq_name");
   c_messageQueueSize =
       configManager.getValue<uint32_t>("rcplane.io.telemetry.mq_size");
 }
@@ -27,6 +29,9 @@ TelemetryTransmitterMQ::~TelemetryTransmitterMQ() {
       c_attitudeMessageQueueName.c_str());
   RCPLANE_LOG(info,
               "Removed attitude message queue: " << c_attitudeMessageQueueName);
+  boost::interprocess::message_queue::remove(c_onboardMessageQueueName.c_str());
+  RCPLANE_LOG(info,
+              "Removed onboard message queue: " << c_onboardMessageQueueName);
 }
 
 bool TelemetryTransmitterMQ::init() {
@@ -51,6 +56,16 @@ bool TelemetryTransmitterMQ::init() {
     RCPLANE_LOG(
         info,
         "Opened attitude message queue: " << c_attitudeMessageQueueName);
+
+    m_onboardMessageQueue =
+        std::make_unique<boost::interprocess::message_queue>(
+            boost::interprocess::open_or_create,
+            c_onboardMessageQueueName.c_str(),
+            c_messageQueueSize,
+            sizeof(message::OnboardStateMessage));
+
+    RCPLANE_LOG(info,
+                "Opened attitude message queue: " << c_onboardMessageQueueName);
     return true;
   } catch (boost::interprocess::interprocess_exception &e) {
     RCPLANE_LOG(error, "Failed to create message queue: " << e.what());
@@ -87,6 +102,23 @@ bool TelemetryTransmitterMQ::sendAttitudeMessage(
     }
   } catch (const boost::interprocess::interprocess_exception &e) {
     RCPLANE_LOG(error, "Failed to send attitude message :: " << e.what());
+    return false;
+  }
+  return true;
+}
+
+bool TelemetryTransmitterMQ::sendOnboardMessage(
+    const message::OnboardStateMessage &message) {
+  RCPLANE_LOG_METHOD();
+  try {
+    if (!m_onboardMessageQueue->try_send((uint8_t *)&message,
+                                         sizeof(message::OnboardStateMessage),
+                                         0)) {
+      RCPLANE_LOG(error, "Failed to send onboard message");
+      return false;
+    }
+  } catch (const boost::interprocess::interprocess_exception &e) {
+    RCPLANE_LOG(error, "Failed to send onboard message :: " << e.what());
     return false;
   }
   return true;

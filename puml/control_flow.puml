@@ -1,0 +1,35 @@
+@startuml
+
+node "HW" {
+  [Servos]
+  [IMU]
+  [RX]
+  [GPS]
+}
+
+node "MCU" {
+}
+
+node "SoM" {
+  [ITelemetryTransmitter]
+  [SomController]
+  database "Logs" {
+  }
+}
+
+node "PC" {
+  [ITelemetryReceiver]
+  [ControlStation]
+}
+
+MCU --> [Servos] : Controls
+[IMU] ..> MCU : Data
+[RX] ..> MCU : Data
+[GPS] ..> [SomController] : Data
+
+[SomController] <..> MCU : UART
+[SomController] --> Logs : Logs
+[SomController] -> [ITelemetryTransmitter] : Telemetry
+
+[ITelemetryTransmitter] ..> [ITelemetryReceiver] : Telemetry
+[ITelemetryReceiver] .> [ControlStation] : Telemetry

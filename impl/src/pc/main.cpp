@@ -13,9 +13,14 @@ int main(int argc, char *argv[]) {
   RCPLANE_ASSERT_EXTERNAL(receiver.init(), "main");
 
   while (true) {
-    while (!receiver.receiveDebugMessage())
+    rcplane::io::telemetry::message::DebugMessage debugMessage;
+    rcplane::io::telemetry::message::AttitudeMessage attitudeMessage;
+    rcplane::io::telemetry::message::OnboardStateMessage onboardMessage;
+    while (!receiver.receiveDebugMessage(debugMessage))
       ;
-    while (!receiver.receiveAttitudeMessage())
+    while (!receiver.receiveAttitudeMessage(attitudeMessage))
+      ;
+    while (!receiver.receiveOnboardMessage(onboardMessage))
       ;
   }
 

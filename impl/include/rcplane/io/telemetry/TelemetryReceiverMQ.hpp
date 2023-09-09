@@ -34,20 +34,24 @@ public:
    * @brief Receive a debug telemetry message.
    * @return bool Status of the read operation.
    */
-  bool receiveDebugMessage() override;
+  bool receiveDebugMessage(message::DebugMessage &message) override;
 
   /**
    * @brief Receive an attitude telemetry message.
    * @return bool Status of the read operation.
    */
-  bool receiveAttitudeMessage() override;
+  bool receiveAttitudeMessage(message::AttitudeMessage &message) override;
+
+  bool receiveOnboardMessage(message::OnboardStateMessage &message);
 
 private:
   std::string c_debugMessageQueueName{};
   std::string c_attitudeMessageQueueName{};
+  std::string c_onboardMessageQueueName{};
   uint32_t c_messageQueueSize{0U};
   std::unique_ptr<boost::interprocess::message_queue> m_debugMessageQueue{};
   std::unique_ptr<boost::interprocess::message_queue> m_attitudeMessageQueue{};
+  std::unique_ptr<boost::interprocess::message_queue> m_onboardMessageQueue{};
 };
 
 }  // namespace telemetry

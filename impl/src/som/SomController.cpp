@@ -97,6 +97,18 @@ void SomController::runMainLoop() {
 
     RCPLANE_LOG(debug, controlSurfacePacket);
 
+    m_onboardMessage.mcuTimestamp = kRcRxPacketResult.packet.timestamp;
+    m_onboardMessage.throttle = controlSurfacePacket.motorSpeed;
+    m_onboardMessage.aileronDeflection = controlSurfacePacket.aileronDeflection;
+    m_onboardMessage.elevatorDeflection =
+        controlSurfacePacket.elevatorDeflection;
+    m_onboardMessage.rudderDeflection = controlSurfacePacket.rudderDeflection;
+    m_onboardMessage.autopilotType = m_autopilotManager->isInManualMode()
+        ? io::telemetry::message::AutopilotType::MANUAL_AUTOPILOT
+        : io::telemetry::message::AutopilotType::STABILIZE_AUTOPILOT;
+    m_onboardMessage.imuTemperature =
+        static_cast<uint8_t>(kImuPacketResult.packet.temperature);
+
     if (!m_serialController->writePacket<common::ControlSurfacePacket>(
             controlSurfacePacket)) {
       RCPLANE_LOG(error, "Failed to write packet to MCU.");
@@ -177,6 +189,9 @@ void SomController::sendTelemetry() {
   }
   if (!m_telemetryTransmitter->sendAttitudeMessage(m_attitudeMessage)) {
     RCPLANE_LOG(error, "Failed to send attitude telemetry!");
+  }
+  if (!m_telemetryTransmitter->sendOnboardMessage(m_onboardMessage)) {
+    RCPLANE_LOG(error, "Failed to send onboard telemetry!");
   }
 }
 
